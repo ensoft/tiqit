@@ -1,0 +1,62 @@
+<table class='tiqitViewTable'>
+ <tr>
+  <td>%(Found-duringLabel)s</td>
+  <td>%(Found-during)s</td>
+  <td>%(Activity-when-foundLabel)s</td>
+  <td>%(Activity-when-found)s</td>
+  <td>%(Impact-RETILabel)s</td>
+  <td>%(Impact-RETI)s</td>
+ </tr>
+ <tr>
+  <td>%(Bug-originLabel)s</td>
+  <td>%(Bug-origin)s</td>
+  <td>%(BreakageLabel)s</td>
+  <td>%(Breakage)s</td>
+  <td>%(Previous-commit-idLabel)s</td>
+  <td>%(Previous-commit-id)s</td>
+ </tr>
+ <tr>
+  <td>%(Released-codeLabel)s</td>
+  <td>%(Released-code)s</td>
+  <td>%(Released-code-idLabel)s</td>
+  <td>%(Released-code-id)s</td>
+  <td>%(Automated-testLabel)s</td>
+  <td>%(Automated-test)s</td>
+ </tr>
+ <tr>
+  <td>%(HeldLabel)s</td>
+  <td>%(Held)s</td>
+  <td>Held on:</td>
+  <td>%(Held-on)s</td>
+  <td>%(Dev-escape-activityLabel)s</td>
+  <td>%(Dev-escape-activity)s</td>
+ </tr>
+ <tr>
+  <td>%(Duplicate-ofLabel)s</td>
+  <td>%(Duplicate-of)s</td>
+  <td>Duplicate on:</td>
+  <td>%(Duplicate-on)s</td>
+  <td>%(Behavior-changedLabel)s</td>
+  <td>%(Behavior-changed)s</td>
+ </tr>
+ <tr>
+  <td>%(Forwarded-toLabel)s</td>
+  <td>%(Forwarded-to)s</td>
+  <td>Forwarded on:</td>
+  <td>%(Forwarded-on)s</td>
+  <td>Forwarded by:</td>
+  <td>%(Forwarder)s</td>
+ </tr>
+ <tr>
+  <td>%(Postponed-untilLabel)s</td>
+  <td>%(Postponed-until)s</td>
+  <td>Postponed on:</td>
+  <td>%(Postponed-on)s</td>
+ </tr>
+ <tr>
+  <td>%(Info-awaitingLabel)s</td>
+  <td>%(Info-awaiting)s</td>
+  <td>Info Req. on:</td>
+  <td>%(Info-req-on)s</td>
+ </tr>
+</table>

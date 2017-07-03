@@ -1,0 +1,143 @@
+/*
+ * Tiqit theme for the Tiqit Calendar.
+ */
+
+div.tiqitCalendar {
+  background-color:   white;
+  border:             black outset 1px;
+  position:           fixed;
+  font-size:          90%;
+  -moz-border-radius: 10px;
+}
+
+div.tiqitCalendarShadow {
+  opacity:            0.4;
+  position:           fixed;
+  background-color:   black;
+  -moz-border-radius: 10px;
+  border:             solid black 1px;
+}
+
+/* Header styles */
+
+div.tiqitCalendar .tiqitCalendarHead {
+  background-color:            #5599EE;
+  border:                      solid #5599EE 2px;
+  white-space:                 nowrap;
+  -moz-border-radius-topleft:  10px;
+  -moz-border-radius-topright: 10px;
+}
+
+/* Nav styles */
+
+div.tiqitCalendar .tiqitCalendarNav {
+  float:       left;
+  margin-left: 2px;
+}
+
+div.tiqitCalendar .tiqitCalendarNav img {
+  padding-top:        2px;
+  padding-bottom:     2px;
+  border:             solid transparent 1px;
+  -moz-border-radius: 4px;
+}
+
+div.tiqitCalendar .tiqitCalendarNav img:hover {
+  border:           black outset 1px;
+  background-color: #66AAFF;
+  cursor:           pointer;
+}
+
+div.tiqitCalendar .tiqitCalendarNav img:active {
+  border:           black inset 1px;
+  background-color: #3388DD;
+  cursor:           pointer;
+}
+
+/* Title styles */
+
+div.tiqitCalendar .tiqitCalendarTitle {
+  padding:     0.1em;
+  display:     block;
+  font-weight: bold;
+}
+
+/* Toggler styles */
+
+div.tiqitCalendar .tiqitCalendarTimeToggler {
+  float:  right;
+  cursor: pointer;
+}
+
+/* Table styles */
+
+div.tiqitCalendar table {
+  font-size:       90%;
+  text-align:      center;
+  border-collapse: collapse;
+  margin-left:     0.5em;
+  margin-bottom:   0.5em;
+  margin-right:    0.5em;
+}
+
+div.tiqitCalendar table th {
+  border-bottom: solid lightgrey 2px;
+}
+
+div.tiqitCalendar table td {
+  cursor:     pointer;
+  min-width:  20px;
+  min-height: 20px;
+}
+
+div.tiqitCalendar table tbody td:hover {
+  background-color: #ffe87c !important;
+}
+
+div.tiqitCalendar table tbody tr:hover {
+  background-color: #f8f8f8 !important;
+}
+
+div.tiqitCalendar table col:hover {
+  background-color: #f8f8f8;
+}
+
+div.tiqitCalendar table tbody td.selected {
+  background: url('../images/selected-20x16.png') no-repeat center;
+  overflow:   visible;
+}
+
+div.tiqitCalendar table tbody td.today {
+  background-color: #c3fdb8;
+}
+
+div.tiqitCalendar table td.othermonth {
+  opacity: 0.3;
+}
+
+/* Clock styles */
+
+div.tiqitCalendar .tiqitCalendarClock {
+  border-top: solid lightgrey 2px;
+  margin:     0 0.5em 1px 0.5em;
+}
+
+div.tiqitCalendar .tiqitCalendarClockElement {
+  border:  solid darkgrey 1px;
+  margin:  1px;
+  padding: 1px 0;
+  cursor:  pointer;
+}
+
+div.tiqitCalendar span.tiqitCalendarClockElement:hover {
+  background-color: #ffe87c;
+}
+
+div.tiqitCalendar span.tiqitCalendarClockElement:active {
+  background-color: #5599EE;
+}
+
+div.tiqitCalendar .tiqitCalendarClock select {
+  margin-left: 0.5em;
+}
+

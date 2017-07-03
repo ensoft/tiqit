@@ -1,0 +1,21 @@
+<VirtualHost *:80>
+	ServerName # Fill in
+	ServerAlias # Fill in
+
+	DocumentRoot /usr/lib/tiqit
+	AddHandler cgi-script .py
+
+	AllowEncodedSlashes On
+
+	<Location ~ "/images/">
+		Satisfy any
+	</Location>
+
+        ErrorLog /var/log/apache2/error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        ServerSignature On
+</VirtualHost>

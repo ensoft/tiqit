@@ -1,0 +1,19 @@
+/*
+ * Styles for Toolbars
+ */
+
+.tiqitToolbarEditing {
+  border: none;
+  background: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+}
+
+.tiqitToolbarEditing:focus, .tiqitToolbarEditing:hover {
+  outline: inset black 1px;
+  background: white;
+  text-decoration: none;
+  color: black;
+  -moz-outline-radius: 3px;
+}

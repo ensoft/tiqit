@@ -1,0 +1,13 @@
+#
+# Remote API special rules
+#
+
+AddHandler cgi-script .py
+
+AuthBasicProvider anon
+AuthName "Tiqit API"
+AuthType Basic
+Anonymous tiqit-api
+Anonymous_LogEmail off
+Anonymous_MustGiveEmail off
+Require user tiqit-api

@@ -1,0 +1,21 @@
+/*
+ * Fortune Cookie Styles
+ */
+
+div.tiqitFortune {
+  margin:           1em;
+  padding:          1em;
+  border:           solid black 1px;
+  background-color: #fffff4;
+}
+
+div.tiqitFortune img {
+  float:         left;
+  margin-bottom: -2px;
+  cursor:        pointer;
+}
+
+div.tiqitFortune pre {
+  margin-left: 4em;
+}
+

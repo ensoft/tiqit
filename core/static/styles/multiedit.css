@@ -1,0 +1,15 @@
+/*
+ * Styles for the multiple edit feature.
+ */
+
+/*
+ * The saver column should have no borders
+ */
+
+table.tiqitTable td.tiqitEditingRowSaver {
+  border: none;
+}
+
+table.tiqitTable td.tiqitEditingRowSaver img {
+  cursor: pointer;
+}

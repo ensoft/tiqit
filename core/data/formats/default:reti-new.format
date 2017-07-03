@@ -1,0 +1,67 @@
+<input type='hidden' id='Is-RETI' name='Is-RETI' value='Y'>
+<table class='tiqitViewTable'>
+ <tr>
+  <td>%(HeadlineLabel)s</td>
+  <td colspan=7'>%(Headline)s</td>
+ </tr>
+ <tr>
+  <td>%(ProductLabel)s</td>
+  <td colspan='3'>%(Product)s</td>
+  <td>%(ComponentLabel)s</td>
+  <td>%(Component)s</td>
+  <td>%(SeverityLabel)s</td>
+  <td>%(Severity)s</td>
+ </tr>
+ <tr>
+  <td>%(StatusLabel)s</td>
+  <td colspan='3'>%(Status)s</td>
+  <td>%(KeywordLabel)s</td>
+  <td>%(Keyword)s</td>
+  <td>%(DE-priorityLabel)s</td>
+  <td>%(DE-priority)s</td>
+ </tr>
+ <tr>
+  <td>%(DE-managerLabel)s</td>
+  <td colspan='3'>%(DE-manager)s</td>
+  <td>%(Other-mailLabel)s</td>
+  <td>%(Other-mail)s</td>
+  <td>%(SoftwareLabel)s</td>
+  <td>%(Software)s</td>
+ </tr>
+ <tr>
+  <td>%(Feature-RETILabel)s</td>
+  <td>%(Feature-RETI)s</td>
+  <td>%(Regression-submitterLabel)s</td>
+  <td>%(Regression-submitter)s</td>
+  <td>%(VersionLabel)s</td>
+  <td>%(Version)s</td>
+  <td>%(DocumentLabel)s</td>
+  <td>%(Document)s</td>
+ </tr>
+ <tr>
+  <td>%(EngineerLabel)s</td>
+  <td colspan='3'>%(Engineer)s</td>
+  <td>%(To-be-fixedLabel)s</td>
+  <td>%(To-be-fixed)s</td>
+  <td>%(HardwareLabel)s</td>
+  <td>%(Hardware)s</td>
+ </tr>
+ <tr>
+  <td>%(AttributeLabel)s</td>
+  <td colspan='5'>%(Attribute)s</td>
+  <td>%(Automated-testLabel)s</td>
+  <td>%(Automated-test)s</td>
+ </tr>
+ <tr>
+  <td>%(Found-duringLabel)s</td>
+  <td colspan='3'>%(Found-during)s</td>
+  <td>%(Activity-when-foundLabel)s</td>
+  <td>%(Activity-when-found)s</td>
+  <td>%(Impact-RETILabel)s</td>
+  <td>%(Impact-RETI)s</td>
+ </tr>
+ <tr>
+  <td valign='top'>%(SummaryLabel)s</td>
+  <td colspan='7'>%(Summary)s</td>
+ </tr>
+</table>

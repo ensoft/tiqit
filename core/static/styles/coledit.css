@@ -1,0 +1,15 @@
+/*
+ * Rules for column editing feature
+ */
+
+ul.tiqitColEditMenu li img.tiqitColEditMoverUp {
+  float: right;
+}
+
+ul.tiqitColEditMenu li img.tiqitColEditMoverDown {
+  float: left;
+}
+
+ul.tiqitColEditMenu li.tiqitTableMenuTitle + li img.tiqitColEditMoverUp {
+  display: none;
+}

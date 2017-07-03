@@ -1,0 +1,128 @@
+#!/bin/bash
+
+# Functions
+die() {
+    echo "$(basename $0): ERROR: $1" 1>&2
+    exit -1
+}
+
+mkdir_or_die() {
+    mkdir -p "$1" || die "Couldn't make directory '$0'"
+}
+
+fakeroot_state() {
+    fakeroot -i "$FAKEROOT_STATE" -s "$FAKEROOT_STATE" $@
+}
+
+usage() {
+    echo "Usage:"
+    echo " $(basename $0) [Package version]"
+    exit -1
+}
+
+# Set the package version to <tiqit version>-<package version>, e.g. 2.3.2-5
+# The package version can be specified as a command line argument (defaults to
+# 1).
+cd scripts
+PACKAGE_VERSION=$(python -c "import tiqit; print tiqit.VERSION_STRING")
+CHANGELOG_FILE=debian/changelog
+cd ..
+if [ -z "$1" ]; then
+    PACKAGE_VERSION="$PACKAGE_VERSION-1"
+elif [[ "$1" =~ ^[0-9]+$ ]]; then
+    PACKAGE_VERSION="$PACKAGE_VERSION-$1"
+else
+    usage
+fi
+
+# Check the changelog is up-to-date
+if ! grep "^[^ ].*$PACKAGE_VERSION" $CHANGELOG_FILE &> /dev/null; then
+    die "Entry for $PACKAGE_VERSION not found in changelog ($CHANGELOG_FILE)"
+fi
+
+# Variables used throughout
+PACKAGE_DIR="package"
+DEBIAN_DIR="$PACKAGE_DIR/DEBIAN"
+MAIN_DIR="$PACKAGE_DIR/usr/share/tiqit"
+DATA_DIR="$PACKAGE_DIR/var/lib/tiqit/data"
+CONFIG_DIR="$PACKAGE_DIR/etc/tiqit"
+DOC_DIR="$PACKAGE_DIR/usr/share/doc/tiqit"
+FAKEROOT_STATE="./fakeroot_state"
+
+# Run setup and compile tiqit.zip
+./setup pkg || die "Setup failed."
+./compile || die "Compile failed."
+
+# Cleanup ./package/ and (re)build the directory structure within.
+if [ -f "$FAKEROOT_STATE" ]; then
+    rm "$FAKEROOT_STATE" || die "Couldn't remove fakeroot state file '$FAKEROOT_STATE'"
+fi
+if [ -d "$PACKAGE_DIR" ]; then
+    chmod -R a+w "$PACKAGE_DIR" || die "Couldn't set write perms on '$PACKAGE_DIR'"
+    rm -r "$PACKAGE_DIR" || die "Couldn't remove directory '$PACKAGE_DIR'"
+fi
+mkdir_or_die "$PACKAGE_DIR"
+mkdir_or_die "$DEBIAN_DIR"
+mkdir_or_die "$MAIN_DIR"
+mkdir_or_die "$MAIN_DIR/api"
+mkdir_or_die "$MAIN_DIR/scripts"
+mkdir_or_die "$MAIN_DIR/static/scripts"
+mkdir_or_die "$MAIN_DIR/static/styles"
+mkdir_or_die "$MAIN_DIR/static/images"
+mkdir_or_die "$DATA_DIR"
+mkdir_or_die "$DATA_DIR/formats"
+mkdir_or_die "$DATA_DIR/news"
+mkdir_or_die "$DATA_DIR/profiles"
+mkdir_or_die "$CONFIG_DIR"
+mkdir_or_die "$DOC_DIR"
+mkdir_or_die "$DOC_DIR/examples"
+
+# Put files into $MAIN_DIR
+# Note this excludes tiqit.db, tiqit.pickle and fielddata.js: These will be
+# created by the post-install script (@@@ TBD).
+cp scripts/{index.py,loadfields.py,loadclasses.py,tiqit.zip} \
+    "$MAIN_DIR/scripts"
+cp static/scripts/*.js "$MAIN_DIR/static/scripts"
+rm "$MAIN_DIR/static/scripts"/fielddata.js
+cp static/images/*.{png,svg,gif} "$MAIN_DIR/static/images"
+cp static/styles/*.css "$MAIN_DIR/static/styles"
+cp .htaccess "$MAIN_DIR"
+cp api/{.htaccess,api.py} "$MAIN_DIR/api"
+fakeroot_state chmod -R a-x,u=rw,go=r "$MAIN_DIR"
+fakeroot_state chmod a+x "$MAIN_DIR/scripts/index.py"
+fakeroot_state chmod a+x "$MAIN_DIR/api/api.py"
+
+# Put files into $DATA_DIR
+cp data/formats/* "$DATA_DIR/formats"
+cp data/tiqit.db "$DATA_DIR"
+fakeroot_state chmod -R a-x,u=rw,go=r "$DATA_DIR"
+fakeroot_state chown -R www-data:www-data "$DATA_DIR"
+
+# Put files into $CONFIG_DIR
+cp doc/examples/tiqit.conf "$CONFIG_DIR/tiqit.conf"
+fakeroot_state chmod -R a-x,u=rw,go=r "$CONFIG_DIR"
+
+# Put files into $DOC_DIR
+cp doc/examples/* "$DOC_DIR/examples"
+cp copyright "$DOC_DIR"
+cp $CHANGELOG_FILE "$DOC_DIR/changelog.Debian"
+gzip "$DOC_DIR/changelog.Debian"
+fakeroot_state chmod -R a-x,u=rw,go=r "$DOC_DIR"
+
+# Make sure every directory in the tree is +x
+fakeroot_state chmod -R a+X "$PACKAGE_DIR"
+
+# Make .deb metadata files
+# http://www.debian.org/doc/manuals/maint-guide/dreq.en.html
+# http://www.debian.org/doc/manuals/maint-guide/dother.en.html
+cp debian/control "$DEBIAN_DIR/control"
+
+cat <<EOF > "$DEBIAN_DIR/conffiles"
+/etc/tiqit/tiqit.conf
+/usr/share/tiqit/.htaccess
+/var/lib/tiqit/data/tiqit.db
+EOF
+
+# Make the deb file.
+fakeroot_state dpkg-deb --build "$PACKAGE_DIR" .
+

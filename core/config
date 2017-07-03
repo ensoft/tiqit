@@ -1,0 +1,87 @@
+#
+# TiQiT configuration file
+#
+# This file should be placed in $TIQIT_CONFIG, <tiqit root>/config, or
+# /etc/tiqit/config.
+
+[general]
+
+## Used as site title in various places
+sitename = TiQiT
+## Used in page title
+sitetitle = TiQiT Bug Tracker
+## Intro text used on home page
+siteintro = Welcome to the The Intelligent Issue Tracker
+## URL given for links to the home page
+siteurl = http://tiqit.example.com/
+## Glob to match TiQiT URLs
+#siteurlmatch = tiqit.*
+## Users who have admin permissions (e.g. to edit news)
+#administrators = fred, bob
+
+## Similar data to above but for the metadata site
+metaname = MetaTiqit
+metatitle = Tiqit Metadata Site
+metaurl = http://metatiqit.example.com/
+#metaurlmatch = meta.*
+
+## URL for the Information link.
+#infourl = http://example.com/
+
+## Path(s) to directories containing plugin modules/packages
+pluginpath = .
+
+## Directories in which data and static files are found
+datapath = ../data
+staticpath = ../static
+
+## Overlay information
+#overlays = ../../<my overlay>
+
+# User Details (fetched via LDAP)
+# Provides the options to fetch user details via LDAP for ID card popups
+[userdetails]
+
+## LDAP directory properties
+#ldap_server  =
+#ldap_base    =
+
+## LDAP field names
+#ldap_uname   = uid
+#ldap_unum    = employeeNumber
+#ldap_cname   = cn
+#ldap_title   = title
+#ldap_company = vendorname
+#ldap_dept    = description
+#ldap_phone   = telephonenumber
+#ldap_phone2  = mobile
+#ldap_manager = manageruid
+
+## External URLs. Use %s to substitute user IDs.
+#directory_url = 
+#photo_url     = 
+#maildomain    = 
+
+# Plugin configuration section
+# Consists of module = True pairs for every plugin that should be loaded
+[plugins]
+
+# Backend configuration section
+# Each prefix (3 upper case chars) can use a different backend
+# Unlisted prefixes are not supported. The value is the backend module name
+[backends]
+
+TQT = backend.pickle
+
+# Other Links
+# Use %(Identifier)s where the bug ID needs to go
+[otherlinks]
+
+#EXAMPLE = http://othertracker.example.com/view_bug?id=%(Identifier)s
+
+# Help Links
+# key is the field name; value is the URL to link to
+[helpfields]
+
+#Identifier = http://example.com/IdentifierHelp.html
+

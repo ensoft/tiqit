@@ -1,0 +1,75 @@
+<!-- Currently this is just the non-UT view. TBD: Get rid of unnecessary fields. -->
+<input type='hidden' id='Identifier' name='Identifier' value='%(Identifier)s'>
+<input type='hidden' name='Sys-Last-Updated' value='%(Sys-Last-Updated)s'>
+<input type='hidden' id='Project' name='Project' value='%(Project)s'>
+<input type='hidden' id='Is-RETI' name='Is-RETI' value='N'>
+<table class='tiqitViewTable'>
+ <tr>
+  <td>%(HeadlineLabel)s</td>
+  <td colspan='5'>%(Headline)s</td>
+  <td>%(ProjectLabel)s</td>
+  <td>%(Project)s</td>
+ </tr>
+ <tr>
+  <td>%(ProductLabel)s</td>
+  <td colspan='3'>%(Product)s</td>
+  <td>%(ComponentLabel)s</td>
+  <td>%(Component)s</td>
+  <td>Submitted-on:</td>
+  <td>%(Submitted-on)s</td>
+ </tr>
+ <tr>
+  <td>%(StatusLabel)s</td>
+  <td colspan='3'>%(Status)s</td>
+  <td>%(KeywordLabel)s</td>
+  <td>%(Keyword)s</td>
+  <td>%(SeverityLabel)s</td>
+  <td>%(Severity)s</td>
+ </tr>
+ <tr>
+  <td>Submitter:</td>
+  <td colspan='3'>%(Submitter)s</td>
+  <td>%(Code-reviewerLabel)s</td>
+  <td>%(Code-reviewer)s</td>
+  <td>%(DE-priorityLabel)s</td>
+  <td>%(DE-priority)s</td>
+ </tr>
+ <tr>
+  <td>%(EngineerLabel)s</td>
+  <td colspan='3'>%(Engineer)s</td>
+  <td>%(Other-mailLabel)s</td>
+  <td>%(Other-mail)s</td>
+  <td>%(SoftwareLabel)s</td>
+  <td>%(Software)s</td>
+ </tr>
+ <tr>
+  <td>%(DE-managerLabel)s</td>
+  <td colspan='3'>%(DE-manager)s</td>
+  <td>%(VersionLabel)s</td>
+  <td>%(Version)s</td>
+  <td>%(DocumentLabel)s</td>
+  <td>%(Document)s</td>
+ </tr>
+ <tr>
+  <td>%(FeatureLabel)s</td>
+  <td>%(Feature)s</td>
+  <td>%(RegressionLabel)s</td>
+  <td>%(Regression)s</td>
+  <td>%(To-be-fixedLabel)s</td>
+  <td>%(To-be-fixed)s</td>
+  <td>%(HardwareLabel)s</td>
+  <td>%(Hardware)s</td>
+ </tr>
+ <tr>
+  <td>%(AttributeLabel)s</td>
+  <td colspan='3'>%(Attribute)s</td>
+  <td>%(Apply-toLabel)s</td>
+  <td>%(Apply-to)s</td>
+  <td>%(Integrated-releasesLabel)s</td>
+  <td>%(Integrated-releases)s</td>
+ </tr>
+ <tr>
+  <td valign='top'>%(SummaryLabel)s</td>
+  <td colspan='7'>%(Summary)s</td>
+ </tr>
+</table>

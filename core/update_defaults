@@ -1,0 +1,30 @@
+#!/bin/bash
+
+die() {
+    echo "Error: $1" 1>&2
+    exit 1
+}
+
+cd $(dirname "$0") || die "Failed to change to script dir"
+cp /var/lib/tiqit/data/tiqit.db data/tiqit.db
+echo "Size of tiqit.db before:    $(wc -c data/tiqit.db | cut -d' ' -f1) bytes"
+echo "md5sum of tiqit.db before:  $(md5sum data/tiqit.db | cut -d' ' -f1)"
+
+LOGFILE="$(pwd)/updatedefaults_$(date --utc +%Y%m%d_%H%M%S).log"
+echo "Logging to:                 $LOGFILE"
+echo
+cd scripts/ || die "Failed to change to scripts dir"
+PYTHONPATH=. time util/updatedefaults.py &> "$LOGFILE"
+echo "Return code:                $?"
+cd ..
+echo "Log file is:                $(wc -l "$LOGFILE" | cut -d' ' -f1) lines long"
+echo "Size of tiqit.db after:     $(wc -c data/tiqit.db | cut -d' ' -f1) bytes"
+echo "md5sum of tiqit.db after:   $(md5sum data/tiqit.db | cut -d' ' -f1)"
+echo
+echo "Review the log file and run:"
+echo "   cp $(pwd)/data/tiqit.db /var/lib/tiqit/data/tiqit.db"
+echo "To update the live defaults DB."
+echo
+echo "Last 1000 lines of the log are below:"
+echo
+tail -1000 "$LOGFILE"

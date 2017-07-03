@@ -1,0 +1,37 @@
+tiqit (1.0.4-1) trusty; urgency=low
+
+  * Fixes to the make_deb script.
+  * Migrated codebase from Launchpad to GitHub.
+
+ -- Jonathan Loh <joloh@ensoft.co.uk>  Fri, 24 Mar 2017 13:10:00 +0100
+
+tiqit (1.0.3-1) trusty; urgency=low
+
+  * Revert buggy changes made in 1.0.2 to edit enclosures and other bug fields at the same time. 
+
+ -- Jonathan Loh <joloh@ensoft.co.uk>  Fri, 24 Mar 2017 13:10:00 +0100
+
+tiqit (1.0.2-1) trusty; urgency=low
+
+  * Allow tables on the preferences and search pages to be reordered using drag'n'drop.
+  * Allow plugins more control over cookie values.
+  * Allow enclosures to be edited at the same time as other bug fields.
+  * Add a 'disable double-click to edit' preference for search results.
+  * Fix bug in which search results couldn't be grouped by certain bug fields.
+  * Other bug fixes.
+
+ -- Matthew Hall <launchpad@matthall.co.uk>  Fri, 27 Nov 2015 11:34:47 +0000
+
+tiqit (1.0.1-1) precise; urgency=low
+
+  * Provide a Debian package for the client library (tiqitlib.py).
+  * Fix a bug in tiqitlib.py to allow named searches to be executed.
+
+ -- Matthew Hall <launchpad@matthall.co.uk>  Fri, 27 Nov 2015 11:34:47 +0000
+
+tiqit (1.0.0-1) precise; urgency=low
+
+  * Initial open source release.
+
+ -- Martin Morrison <martin.morrison@gmail.com>  Thu, 09 Jan 2014 16:09:29 +0000
+

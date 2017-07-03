@@ -1,0 +1,19 @@
+.tiqitFieldSelectorTable {
+    text-align: center;
+}
+
+.addIcon:hover {
+    opacity: 1.0;
+}
+
+.addIcon {
+    opacity: 0.5;
+    cursor: pointer;
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
+.hamburger-move {
+    opacity: 1!important;
+    cursor: move!important;
+}

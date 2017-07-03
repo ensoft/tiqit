@@ -1,0 +1,9 @@
+/*
+ * Stylesheet for Independence Day
+ */
+
+.tiqitBugsyLogo {
+    background:   url("../../images/bugsy-logo-unclesam.png") right no-repeat;
+    min-height: 300px;
+}
+

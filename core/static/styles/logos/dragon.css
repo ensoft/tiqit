@@ -1,0 +1,9 @@
+/*
+ * Stylesheet for Chinese New Year Bugsy
+ */
+
+.tiqitBugsyLogo {
+    background:   url("../../images/bugsy-logo-dragon.png") right no-repeat;
+    min-height: 300px;
+}
+

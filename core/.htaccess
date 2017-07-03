@@ -1,0 +1,32 @@
+#
+# New installs need to update this first line to the external path that the
+# installation directory is available from.
+#
+RewriteBase /
+
+AddHandler cgi-script .py
+
+#
+# Rewrite the various sub files that are important
+#
+RewriteEngine on
+# First two rules protect rewritten URLs
+RewriteRule ^scripts/index.py	-	[last]
+RewriteRule ^api/api.py	-	[last]
+
+# Redirect API requests
+RewriteRule ^api/(.*)  api/api.py/$1   [last,type=application/x-httpd-cgi]
+
+# Everything else goes to the index.py script
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteRule ^(.*) scripts/index.py/	[last,type=application/x-httpd-cgi]
+
+#
+# Add authentication support
+#
+AuthBasicProvider ldap
+AuthBasicAuthoritative Off
+AuthLDAPURL ldap://ldap.example.com:389/ou=active,ou=employees,ou=people,o=example.com?uid
+AuthType basic
+AuthName "Tiqit Bug Tracker"
+Require valid-user

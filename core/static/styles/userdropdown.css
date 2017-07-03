@@ -1,0 +1,108 @@
+/*
+ * Styles required by the DropDown feature.
+ */
+
+div#userDropDown {
+  z-index:            10; /* Display on top of everything */
+  font-size:          90%;
+  position:           fixed;
+  border:             black outset 1px;
+  -moz-border-radius: 10px;
+}
+
+div#userDropDown > div {
+  background-color:   #5599EE;
+  border:             solid #5599EE 2px;
+  padding:            0.6em 0 0 0.1em;
+  -moz-border-radius: 10px;
+}
+
+div#userDropDown div div {
+  margin-left:   68px;
+  background-color:    #f0f0f0;
+  min-width:     7em;
+  border:        solid #f0f0f0 1px;
+  margin-right:  -2px;
+  margin-bottom: -2px;
+  padding:       0.1em 0.5em 0.1em 0.1em;
+
+  -moz-border-radius-bottomright: 10px;
+}
+
+div#userDropDown p {
+  margin: 0;
+}
+
+div#userDropDown h3 {
+  margin: 0;
+}
+
+div#userDropDown h3 img {
+  float:       right;
+  border:      none;
+  cursor:      pointer;
+  margin-left: 0.2em;
+}
+
+div#userDropDown img {
+  float:  left;
+  border: inset black 2px;
+  margin-bottom: 0.1em;
+}
+
+div#userDropDown a[href^="mailto"] {
+  padding-left: 20px;
+  background:   url("../images/mail2-small.png") left no-repeat;
+}
+
+div#userDropDown a.tiqitUserDirectory {
+  padding-left: 20px;
+  background:   url("../images/address_book-small.png") left no-repeat;
+}
+
+div#userDropDown h3 {
+  border-bottom: solid lightblue 2px;
+}
+
+div.userDropDownShadow {
+  opacity:            0.4;
+  position:           fixed;
+  background-color:   black;
+  -moz-border-radius: 5px;
+  border:             solid black 1px;
+}
+
+span#tiqitUserPhone {
+  padding-left: 0.2em;
+}
+
+span.tiqitUserEditable {
+  position:    relative;
+}
+
+span.tiqitUserEditable input {
+  padding-left: 18px;
+}
+
+span.tiqitUserEditable a {
+  position: absolute;
+  top:      0;
+  bottom:   0;
+  height:   100%;
+  width:    20px;
+  padding:  0;
+}
+
+a[onclick^="showUserDropDown"], a.tiqitUserDropDown {
+  background:      url("../images/id_card-small.png") left no-repeat;
+  cursor:          pointer;
+  text-decoration: none;
+  padding-left:    20px;
+  color:           inherit;
+  margin-left:     4px; /* This moved editable ones into the text field */
+}
+
+a[onclick^="showUserDropDown"]:hover, a.tiqitUserDropDown:hover {
+  //text-decoration: underline;
+  border-bottom: dashed 1px black;
+}

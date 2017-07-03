@@ -1,0 +1,9 @@
+/*
+ * Stylesheet for Easter Bugsy
+ */
+
+.tiqitBugsyLogo {
+    background:   url("../../images/bugsy-logo-easter.png") right no-repeat;
+    min-height: 300px;
+}
+

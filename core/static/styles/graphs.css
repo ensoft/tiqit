@@ -1,0 +1,104 @@
+/* Histogram */
+
+div.tiqitGraph {
+  position: relative;
+  width: 90%;
+}
+
+div.tiqitGraph div.header {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5em;
+}
+
+div.tiqitGraph div.header div {
+  font-family: Fixed, monospace;
+}
+
+div.tiqitGraph div.graph {
+  position: absolute;
+  left: 5em;
+  top: 0;
+  right: 0;
+  border-top: solid black 1px;
+  border-bottom: solid black 1px;
+}
+
+div.tiqitGraph div.row {
+  position: absolute;
+  height: 1em;
+  white-space: nowrap;
+}
+
+div.tiqitGraph div.graph div {
+  border-left: solid black 1px;
+}
+
+div.tiqitGraph div.graph div.N {
+  background-color: red;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.D {
+  background-color: pink;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.A {
+  background-color: green;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.O {
+  background-color: magenta;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.W {
+  background-color: blue;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.H {
+  background-color: cyan;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.M {
+  background-color: lightblue;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.R {
+  background-color: darkblue;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.I {
+  background-color: yellow;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.P {
+  background-color: orange;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.J {
+  background-color: purple;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.U {
+  background-color: grey;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.C {
+  background-color: maroon;
+  text-align: center;
+}
+div.tiqitGraph div.graph div.V {
+  background-color: gold;
+  text-align: center;
+}
+
+div.tiqitGraph div.graph div.scale {
+  border: none;
+  margin-left: -2em;
+}
+div.tiqitGraph div.graph div.ruleline {
+  position: absolute;
+  border-left: dotted black 1px;
+  height: 100%;
+}
+

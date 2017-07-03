@@ -1,0 +1,29 @@
+Source: tiqit
+Maintainer: Tiqit developers at Ensoft <tiqit@ensoft.co.uk>
+Uploaders:
+ Matthew Hall <github@matthall.co.uk>,
+ Jonathan Loh <jonathan.loh@ensoft.co.uk>,
+ Kyle Sutherland-Cash <kyle.sutherland-cash@ensoft.co.uk>
+Section: misc
+Priority: optional
+Build-Depends: debhelper (>= 9), dh-python, python (>= 2.7)
+Standards-Version: 3.9.5
+X-Python-Version: >= 2.7
+
+Package: tiqit
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}
+Description: The Intelligent Issue Tracker
+ Tiqit is an issue (or bug) tracker with a number of advanced user-interface
+ features. It is also fully customisable for a variety of use cases, and
+ provides a plugin API that can be used to further modify the behaviour, or
+ to integrate into an existing bug database.
+
+Package: tiqitlib
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}
+Description: The Intelligent Issue Tracker's client library
+ Tiqit is an issue (or bug) tracker with a number of advanced user-interface
+ features. This package provides a prototype command line client and Python
+ API.
+

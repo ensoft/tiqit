@@ -1,0 +1,73 @@
+#!/bin/bash
+
+#
+# This file attempts to set up a new Tiqit install.
+#
+
+#
+# If we are obviously in the current directory (eg. /home/someuser/public_html
+# /tiqit-foo) then provide the most obvious likely path - ~someuser/tiqit-foo
+# in this case.
+#
+# Otherwise fall back to suggesting the current value in .htaccess
+#
+
+# In package mode, set up files for inclusion in a .deb. This means:
+#  - .htaccess referring to /
+#  - Field meta-data and class meta-data blank, including fielddata.js.
+if [ "$1" = "pkg" ]; then
+    PACKAGEMODE=true
+else
+    PACKAGEMODE=false
+fi
+
+if [ "$PACKAGEMODE" = true ]; then
+    echo "Setting up for packaging."
+fi
+
+if pwd | grep -q public_html ; then
+    BASEPATH=`pwd | sed -e 's|/home/\(.*\)/public_html/\(.*\)|/~\1/\2/|;'`
+else
+    BASEPATH=`sed -n 's/RewriteBase //;T;p' .htaccess`;
+fi
+
+if [ "$PACKAGEMODE" != true ]; then
+    echo 'What is the base path of this Tiqit instance?'
+    read -p "[$BASEPATH] " NEWBASE
+
+    if [ -z $NEWBASE ]; then
+      NEWBASE=$BASEPATH
+    fi
+else
+    NEWBASE=/
+fi
+
+sed -i -e "s|RewriteBase .*|RewriteBase $NEWBASE|" .htaccess
+
+# Skip updating data files if we're just creating a .deb: These aren't included
+# in the deb anyway.
+if [ "$PACKAGEMODE" != true ]; then
+    python -c "import pickle; pickle.dump({}, open('data/tiqit.pickle', 'wb'))"
+    echo > static/scripts/fielddata.js
+
+    cd scripts
+    ./loadclasses.py
+    ./loadfields.py
+    ./generatejs.py
+    cd ..
+
+    echo "Creating empty databases..."
+    cd data
+    [ -f tiqit.db ] && rm tiqit.db
+    echo 'CREATE TABLE [tiqit#authtokens] (token TEXT PRIMARY KEY UNIQUE NOT NULL, uname TEXT NOT NULL, created DATE NOT NULL, who TEXT NOT NULL);' | sqlite3 tiqit.db
+
+    echo 'CREATE TABLE [tiqit#defaults] (field TEXT NOT NULL, value TEXT, defaultField TEXT NOT NULL, defaultValue TEXT NOT NULL, PRIMARY KEY(field, value, defaultField));' | sqlite3 tiqit.db
+
+    echo "Modifying permissions on data directories"
+    cd ..
+fi
+
+mkdir -p data/profiles
+mkdir -p data/news
+chmod -R a+w data data/profiles data/news
+echo "Done"

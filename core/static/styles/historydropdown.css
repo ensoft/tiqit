@@ -1,0 +1,74 @@
+/*
+ * Styles required by historyDropDown
+ */
+div.historyDropDown {
+  z-index: 8; /* Display on top of all but ID cards */
+  position: fixed;
+  background: whitesmoke;
+  opacity: 0.9;
+  font-size: small;
+  border: black 1px solid;
+  padding: 0;
+}
+
+table.historyDropDownNarrowTable {
+  max-width: 900px;
+  background: white;
+  opacity: 1.0;
+}
+
+.historyDropDownTicker {
+  display: block;
+  border: solid black 1px;
+  background: whitesmoke;
+  padding: 0.5em;
+}
+
+div.tiqitHistoryDropDownMenu {
+  width: 16px;
+  height: 16px;
+  display: inline;
+}
+
+div.tiqitHistoryDropDownMenu div.tiqitHistoryDropDownPopup {
+  display: none;
+}
+
+div.tiqitHistoryDropDownMenu:hover div.tiqitHistoryDropDownPopup {
+  display: block;
+}
+
+img.tiqitHistoryDropDownIcon, img.tiqitHistoryDropDownIconLoading {
+  background-image: url(../images/clock-small.png);
+  z-index: 9; /* Always above the popup */
+  position: relative;
+  width: 16px;
+  height: 16px;
+}
+
+img.tiqitHistoryDropDownIcon:hover {
+  background-image: url(../images/tick-small.png);
+}
+
+img.tiqitHistoryDropDownIconLoading:hover {
+  background-image: url(../images/tick-small.png);
+}
+
+img.tiqitHistoryDropDownIconLoading {
+  background-image: url(../images/loading.gif);
+}
+
+div.tiqitHistoryDropDownPopup {
+  z-index: 8;
+  position: absolute;
+  background: none;
+  padding: 16px;
+  padding-right: 18px;
+  overflow: auto;
+}
+
+img.tiqitFullHistoryToggleIcon {
+  float:  right;
+  cursor: pointer;
+}
+

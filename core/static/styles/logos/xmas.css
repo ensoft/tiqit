@@ -1,0 +1,9 @@
+/*
+ * Stylesheet for Christmas Bugsy
+ */
+
+.tiqitBugsyLogo {
+    background:   url("../../images/bugsy-logo-xmas.png") right no-repeat;
+    min-height: 300px;
+}
+

@@ -1,0 +1,457 @@
+/*
+ * Stylesheet for Tiqit
+ */
+
+/*
+ * Common Styles for all Pages
+ */
+
+html, body {
+  margin:  0;
+  padding: 0;
+  height: 100%;
+  background-color: white;
+}
+
+pre {
+  word-wrap: break-word;      /* IE 5.5-7 */
+  white-space: -moz-pre-wrap; /* Firefox 1.0-2.0 */
+  white-space: pre-wrap;      /* current browsers */
+}
+
+dt {
+  font-weight: bold;
+}
+
+h1, h2, h3 {
+  font-family: Calibri, Arial, sans-serif;
+}
+
+h3 {
+  border-bottom: solid lightblue 2px;
+}
+
+div#tiqitContainer {
+  position:       relative;
+  min-height:     100%;
+}
+
+div.tiqitWatermark {
+  background: url("../images/bugsy-faint.png") no-repeat scroll -100px -200px transparent;
+}
+
+div#tiqitContent {
+  position:       relative;
+  padding-left:   0.5em;
+  padding-right:  0.5em;
+  padding-bottom: 1.5em;
+}
+
+/* External Links */
+a[href^="http://"] {
+  background: url("../images/link.png") no-repeat left;
+  padding-left: 20px;
+}
+
+span.tiqitIndicatorContainer {
+  /* So we can put red borders around them later... */
+  position:    relative;
+  padding:     3px 0;
+  border:      solid 2px transparent;
+  margin-left: -2px;
+}
+
+a.tiqitIndicator {
+  position:     absolute;
+  background:   url("../images/warning-small.png") no-repeat right center;
+  width:        20px;
+  top:          0;
+  bottom:       0;
+  right:        0;
+  margin-right: 2px;
+}
+
+a.tiqitDefaultLink {
+  background:   url("../images/component_edit-tiny.png") no-repeat left center;
+  cursor:       pointer;
+  padding-left: 20px;
+}
+
+/* Dropdown links */
+a.tiqitCalendarDropDown {
+  padding-left:    20px;
+  background:      url("../images/cal-16x16.png") left no-repeat;
+  text-decoration: underline;
+  color:           blue;
+  cursor:          pointer;
+}
+
+/* Hide section Show/Hiders from non-JS browsers */
+h3 input {
+  display: none;
+}
+
+/*
+ * Header Styles
+ */
+
+div#tiqitHeader {
+/*  margin-top:       -0.5em;*/
+/*  margin-left:      -0.5em;*/
+/*  margin-right:     -0.5em;*/
+  padding:           0.5em;
+  border-bottom:     solid black 1px;
+  background-color:  aliceblue;
+}
+
+div#tiqitHeader p {
+  margin-top:    0;
+  margin-bottom: 0.1em;
+  margin-right:  15em;
+}
+
+div#tiqitHeader a img {
+  border:         none;
+  padding-right:  0.2em;
+  vertical-align: text-bottom;
+}
+
+div#tiqitHeader a[href^="http://"] {
+  background:   none;
+  padding-left: 0;
+}
+
+form#tiqitGoto {
+  position: absolute;
+  right:    0.5em;
+  top:      0.5em;
+}
+
+div.tiqitToolbar {
+  margin-top:       -1px;
+/*  margin-left:      -0.5em;*/
+/*  margin-right:     -0.5em;*/
+  padding-top:       0.2em;
+  padding-left:      0.5em;
+  padding-right:     0.5em;
+  border-top:        dashed 1px black;
+  border-bottom:     solid black 1px;
+  background-color:  whitesmoke;
+}
+
+div.tiqitToolbar p {
+  margin: 0.1em;
+}
+
+div.tiqitToolbar img {
+  border: none;
+  margin-left: 0.1em;
+  cursor: pointer;
+  vertical-align: text-top;
+}
+
+div.tiqitToolbar p > img {
+  float: right;
+}
+
+/*
+ * Footer Styles
+ */
+
+div#tiqitFooter {
+  position:      absolute;
+  bottom:        0;
+  width:         100%;
+
+  height:           1em;
+  border-top:       solid black 1px;
+  background-color: aliceblue;
+  text-align:       right;
+  margin:           0;
+  margin-bottom:    1px;
+}
+
+div#tiqitFooter p {
+  margin:     0;
+  padding:    0 0.5em;
+  font-style: italic;
+  font-size:  smaller;
+}
+
+/*
+ * Message Styles
+ */
+
+p.tiqitMessage {
+  margin-top:        0.5em;
+  margin-left:      -0.5em;
+  margin-right:     -0.5em;
+  padding-left:      0.5em;
+  padding-right:     0.5em;
+  border-top:        solid black 1px;
+  border-bottom:     solid black 1px;
+  background-color:  #ffffc0;
+}
+
+p.tiqitMessage img {
+  cursor:         pointer;
+  margin-right:   0.2em;
+  vertical-align: middle;
+}
+
+p.tiqitWarningMessage {
+  background-color: #f38686;
+}
+
+p.tiqitNewsMessage {
+  background-color: lightblue;
+}
+
+/*
+ * Table styles
+ */
+
+table.tiqitTable {
+  border-collapse: collapse;
+}
+
+table.tiqitTable caption {
+  font-family: Calibri, "Arial Narrow", Arial, sans-serif;
+  font-weight: bold;
+  font-size:   120%;
+}
+
+table.tiqitTable caption span.tiqitTableCount {
+  float: right;
+}
+
+table.tiqitTable th {
+  background-color: aliceblue;
+  border:           solid black 1px;
+}
+
+table.tiqitTable td {
+  padding-left:   0.2em;
+  padding-right:  0.2em;
+  border:         solid black 1px;
+  vertical-align: text-top;
+}
+
+table.tiqitTable th a:hover {
+  text-decoration: underline;
+  cursor:          pointer;
+}
+
+table.tiqitTable th.sortAsc a {
+  padding-right: 16px;
+  background:    url("../images/sort-asc.gif") right no-repeat transparent;
+}
+
+table.tiqitTable th.sortDesc a {
+  padding-right: 16px;
+  background:    url("../images/sort-desc.gif") right no-repeat transparent;
+}
+
+table.tiqitTable input.hidden {
+  background-color: transparent;
+  border:           0px solid transparent;
+  padding:          2px;
+  margin:           0;
+}
+
+table.tiqitTable input.hidden:focus {
+  border:           1px inset black;
+  background-color: white;
+  padding:          1px;
+}
+
+table.tiqitTable td.tiqitTableRowActions {
+  border: none;
+}
+
+table.tiqitTable td.tiqitTableRowActions img {
+  cursor: pointer;
+}
+
+table.tiqitTable td a img { 
+  border: none;
+}
+
+/*
+ * New/View page-specific styles 
+ */
+
+a.tiqitHelp {
+  color:            inherit;
+  background-image: none;
+  padding-left:     0px;
+  border-bottom:    black dotted 1px;
+  text-decoration:  none;
+}
+
+a.tiqitHelp:hover {
+  color:           blue;
+  text-decoration: underline;
+  border-bottom:   none;
+  cursor:          help;
+}
+
+/* Stretch selects in cells */
+table.tiqitViewTable td select {
+  width: 100%;
+}
+
+/* Make 'other' link bar float */
+div#tiqitOtherLinks {
+  float:        right;
+  margin-top:   0.5em;
+  margin-right: 5em;
+}
+
+div#tiqitOtherLinks a img {
+  border: none;
+  margin-right: 0.5em;
+  margin-top: 2px;
+  margin-bottom: -2px;
+}
+
+/* Duplicate-of link icon */
+div#tiqitSectionContentsExtra a[href^="view/"] {
+  padding-left: 24px;
+  background:   url("../images/bug.png") left no-repeat;
+}
+
+/* Enclosures */
+
+div#tiqitSectionContentsNotes iframe {
+  width:  100%;
+  height: 22em;
+  border: none;
+  margin: 0;
+}
+
+div#tiqitSectionContentsNotes textarea {
+  width: 100%;
+}
+
+div#tiqitSectionContentsNotes tr td[onclick] {
+  cursor: pointer;
+}
+
+div#tiqitSectionContentsNotes tr td[onclick] img {
+  margin-top: 2px;
+  margin-bottom: -2px;
+}
+
+div#tiqitSectionContentsNotes tr td[onclick]:hover {
+  background-color: #ffffc0;
+}
+
+div#tiqitSectionContentsNotes tr td[onclick]:hover img {
+  outline: dotted 1px black;
+}
+
+/*
+ * Results page specific styles
+ */
+
+div#resultsFilters {
+  margin: 1em 0;
+}
+
+div.tiqitMenu + div.tiqitMenu {
+  margin-top: 18px;
+}
+
+div.tiqitMenu + div.tiqitMenu + div.tiqitMenu {
+  margin-top: 36px;
+}
+
+div.tiqitMenu + div.tiqitMenu + div.tiqitMenu + div.tiqitMenu {
+  margin-top: 54px;
+}
+
+div.tiqitMenu:hover > img {
+  opacity: 1;
+}
+
+div.tiqitMenu > img {
+  opacity: 0.5;
+}
+
+div.tiqitMenu {
+  position: absolute;
+  right:    0;
+  width:    16px;
+  height:   16px;
+  overflow: hidden;
+  z-index:  10;
+
+  /* Border to prevent 1px down shift when hovering */
+  border-top: solid 1px transparent;
+}
+
+div.tiqitMenu:hover {
+  width:            16em;
+  height:           auto;
+  opacity:          0.9;
+  background-color: whitesmoke;
+  border:           solid black 1px;
+  border-right:     none;
+
+  /* Make it a little prettier if we can */
+  -moz-border-radius-topleft:    20px;
+  -moz-border-radius-bottomleft: 20px;
+}
+
+div.tiqitMenu > img {
+  float:   right;
+  margin:  0;
+}
+
+div.tiqitMenu ul {
+  list-style-type: none;
+  padding:         0.1em;
+  padding-left:    0.6em;
+  margin-right:    16px;
+}
+
+div.tiqitMenu li.tiqitMenuAction, div.tiqitMenu li.link {
+  cursor:          pointer;
+  text-decoration: underline;
+  color:           blue;
+}
+
+div.tiqitMenu li.tiqitMenuAction img {
+  padding-right: 0.5em;
+}
+
+
+/*
+ * Search
+ */
+
+span.tiqitSearchFieldSelector {
+  float: left;
+}
+
+div.tiqitActions img:hover {
+    opacity: 1.0;
+}
+
+div.tiqitActions img {
+    opacity: 0.5;
+    cursor: pointer;
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
+/*
+ * Home
+ */
+
+.tiqitBugsyLogo {
+    background: url("../images/bugsy-logo.png") right no-repeat;
+    min-height: 300px;
+}
+

@@ -1,0 +1,58 @@
+<table class='tiqitViewTable'>
+ <tr>
+  <td>%(FoundLabel)s</td>
+  <td>%(Found)s</td>
+  <td>%(ImpactLabel)s</td>
+  <td>%(Impact)s</td>
+  <td>%(TriggersLabel)s</td>
+  <td>%(Triggers)s</td>
+ </tr>
+ <tr>
+  <td>%(OriginLabel)s</td>
+  <td>%(Origin)s</td>
+  <td>%(CategoryLabel)s</td>
+  <td>%(Category)s</td>
+  <td>%(ReasonLabel)s</td>
+  <td>%(Reason)s</td>
+ </tr>
+ <tr>
+  <td>%(HeldLabel)s</td>
+  <td>%(Held)s</td>
+  <td>Held on:</td>
+  <td>%(Held-on)s</td>
+  <td>%(Dev-escapeLabel)s</td>
+  <td>%(Dev-escape)s</td>
+ </tr>
+ <tr>
+  <td>%(Duplicate-ofLabel)s</td>
+  <td>%(Duplicate-of)s</td>
+  <td>Duplicate on:</td>
+  <td>%(Duplicate-on)s</td>
+  <td>%(Dev-escape-activityLabel)s</td>
+  <td>%(Dev-escape-activity)s</td>
+ </tr>
+ <tr>
+  <td>%(Forwarded-toLabel)s</td>
+  <td>%(Forwarded-to)s</td>
+  <td>Forwarded on:</td>
+  <td>%(Forwarded-on)s</td>
+  <td>Forwarded by:</td>
+  <td>%(Forwarder)s</td>
+ </tr>
+ <tr>
+  <td>%(Postponed-untilLabel)s</td>
+  <td>%(Postponed-until)s</td>
+  <td>Postponed on:</td>
+  <td>%(Postponed-on)s</td>
+  <td>%(BadcodefixIdLabel)s</td>
+  <td>%(BadcodefixId)s</td>
+ </tr>
+ <tr>
+  <td>%(Info-awaitingLabel)s</td>
+  <td>%(Info-awaiting)s</td>
+  <td>Info Req. on:</td>
+  <td>%(Info-req-on)s</td>
+  <td>%(Behavior-changedLabel)s</td>
+  <td>%(Behavior-changed)s</td>
+ </tr>
+</table>

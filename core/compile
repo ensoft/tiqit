@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Compile everything
+python -c "import compileall; compileall.compile_dir('scripts', force=True)"
+
+# Zip it up
+cd scripts
+rm tiqit.zip
+find . -name \*.pyc | xargs zip tiqit.zip
