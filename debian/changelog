@@ -3,6 +3,8 @@ tiqit (1.0.5-1) trusty; urgency=low
   * Fixes to the make_deb script.
   * Gracefully handle searches updating between 0 and 1 results.
   * Sort search fields by display name, rather than internal name.
+  * Stop logical operators being changed when removing entries from
+    a compound search.
 
  -- Jonathan Loh <joloh@ensoft.co.uk> Wed, 4 Jul 2018 15:30:00 +0100
 
