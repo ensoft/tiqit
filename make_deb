@@ -10,6 +10,14 @@ mkdir_or_die() {
     mkdir -p "$1" || die "Couldn't make directory '$0'"
 }
 
+fakeroot_state_first() {
+    # This should only be called once, as the first call to fakeroot.
+    # This will not expect $FAKEROOT_STATE to exist, and should
+    # prevent the first error message from appearing.
+    fakeroot -s "$FAKEROOT_STATE" $@
+}
+
+
 fakeroot_state() {
     fakeroot -i "$FAKEROOT_STATE" -s "$FAKEROOT_STATE" $@
 }
@@ -88,7 +96,7 @@ cp static/images/*.{png,svg,gif} "$MAIN_DIR/static/images"
 cp static/styles/*.css "$MAIN_DIR/static/styles"
 cp .htaccess "$MAIN_DIR"
 cp api/{.htaccess,api.py} "$MAIN_DIR/api"
-fakeroot_state chmod -R a-x,u=rw,go=r "$MAIN_DIR"
+fakeroot_state_first chmod -R a-x,u=rw,go=r "$MAIN_DIR"
 fakeroot_state chmod a+x "$MAIN_DIR/scripts/index.py"
 fakeroot_state chmod a+x "$MAIN_DIR/api/api.py"
 
@@ -115,7 +123,18 @@ fakeroot_state chmod -R a+X "$PACKAGE_DIR"
 # Make .deb metadata files
 # http://www.debian.org/doc/manuals/maint-guide/dreq.en.html
 # http://www.debian.org/doc/manuals/maint-guide/dother.en.html
-cp debian/control "$DEBIAN_DIR/control"
+cat << EOF >  "$DEBIAN_DIR/control"
+Package: tiqit
+Version: $PACKAGE_VERSION
+Section: misc
+Priority: optional
+Architecture: all
+Depends: python (>=2.6.5-0ubuntu1)
+Maintainer: Tiqit developers at Ensoft <tiqit@ensoft.co.uk>
+Description: The Intelligent Issue Tracker
+ A Bug Tracker with a twist. Focuses on user experience and flexibility,
+ adapting to the needs of the project.
+EOF
 
 cat <<EOF > "$DEBIAN_DIR/conffiles"
 /etc/tiqit/tiqit.conf
