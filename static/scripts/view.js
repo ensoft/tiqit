@@ -856,8 +856,8 @@ function updateFileName() {
 
   //window.alert(fileName);
 
-  if (fileTitle.value == "" || default_being_used) {
-      fileTitle.value = fileName;
+  if (encTitle.value == "" || default_being_used) {
+      encTitle.value = fileName;
       default_being_used = true;
   }
 }
