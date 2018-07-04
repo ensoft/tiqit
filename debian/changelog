@@ -1,3 +1,9 @@
+tiqit (1.0.5-1) trusty; urgency=low
+
+  * Fixes to the make_deb script.
+
+ -- Jonathan Loh <joloh@ensoft.co.uk>  Fri, 24 Mar 2017 13:10:00 +0100
+
 tiqit (1.0.4-1) trusty; urgency=low
 
   * Fixes to the make_deb script.
