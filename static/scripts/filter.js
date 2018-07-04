@@ -476,6 +476,10 @@ function tiqitFilterTable(tableName, filterFunc, prepFunc) {
 
     for (var j = 0; j < tables[i].tBodies.length; j++) {
       for (var k = 0; k < tables[i].tBodies[j].rows.length; k++) {
+        if (tables[i].tBodies[j].rows[k].id == tableName + 'TablePlaceholderRow'
+            || tables[i].tBodies[j].rows[k].isRemoved) {
+          continue;
+        }
         show = filterFunc(tables[i].tBodies[j].rows[k], filter);
 
         total++;
