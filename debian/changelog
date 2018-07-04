@@ -1,3 +1,9 @@
+tiqit (1.0.6-1) trusty; urgency=low
+
+  * Gracefully handle searches updating between 0 and 1 results.
+
+ -- Kyle Sutherland-Cash <kyle.sutherland-cash@ensoft.co.uk> Wed, 4 Jul 2018 15:30:00 +0100
+
 tiqit (1.0.5-1) trusty; urgency=low
 
   * Fixes to the make_deb script.
