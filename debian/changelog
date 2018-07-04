@@ -1,3 +1,9 @@
+tiqit (1.0.6-1) trusty; urgency=low
+
+  * Sort search fields by display name, rather than internal name.
+
+ -- Kyle Sutherland-Cash <kyle.sutherland-cash@ensoft.co.uk> Wed, 4 Jul 2018 15:30:00 +0100
+
 tiqit (1.0.5-1) trusty; urgency=low
 
   * Fixes to the make_deb script.

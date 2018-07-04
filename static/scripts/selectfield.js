@@ -44,6 +44,15 @@ function createFieldSelector(name, num) {
   newS.setAttribute('id', name + num);
   newS.setAttribute('name', name + num);
   newS.addEventListener('change', Tiqit.search.checkGroupBy, false);
+
+  // Sorts fields by their display names, instead of internal names
+  allViewableFields.sort(
+    function(a, b) {
+      return allFields[a].longname.toLowerCase().localeCompare(
+               allFields[b].longname.toLowerCase());
+    }
+  );
+
   for (f in allViewableFields) {
     opt = document.createElement('option');
     opt.setAttribute('value', allViewableFields[f]);
