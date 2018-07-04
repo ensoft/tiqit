@@ -289,6 +289,14 @@ function createFieldPicker(num) {
     newF.setAttribute('name', 'field' + num);
     newF.onchange = updateRels;
 
+    // Sort fields by their display names rather than their internal names
+    allSearchableFields.sort(
+      function(a, b) {
+        return allFields[a].longname.toLowerCase().localeCompare(
+                 allFields[b].longname.toLowerCase());
+      }
+    );
+
     for (var i in allSearchableFields) {
         opt = document.createElement('option');
         opt.setAttribute('value', allSearchableFields[i]);
