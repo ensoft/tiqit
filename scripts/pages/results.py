@@ -170,79 +170,85 @@ if outputType == FORMAT_NORMAL:
 
     print "<h1>Search Results - <span id='resultsFilterCount'>%s matching entr%s</span></h1>" % (numres, numres == "1" and 'y' or 'ies')
 
-    if len(matches) > 0:
-        if not args.has_key('groupby'):
-            groupby = ''
-        else:
-            groupby = sort[0].field.name
-        filters = Filter('results',
-                         [x.name for x in selection if x.filterable],
-                         showCount='resultsFilterCount', clearbutton=True,
-                         allowMulti=True, allowInvert=True, allowGroupBy=True,
-                         initialGroupBy=groupby)
+    if len(matches) == 0:
+        print "<p id='noResultsWarning'><img src='images/warning-small.png' alt='/!\\'> No results returned.</p>"
 
-        for bug in matches:
-            filterArgs = {}
-            for i in range(len(selection)):
-                # Strip any HTML tags out of the strings
-                field = selection[i].name
-                filterArgs[field] = tagre.sub("", bug.getSanitisedValue(field, outputType == FORMAT_NORMAL))
-            filters.add(filterArgs)
-
-        filters.write()
-
-        tableNameCounter = 1
-        def printTableHeader(caption, num):
-            tabid = 'results'
-            if args.has_key('groupby'):
-                tabid = 'results%d' % num
-            print "<table id='%s' style='margin-bottom: 2em; width: 100%%;' class='tiqitTable'>" % tabid
-            if caption and args.has_key('groupby'):
-                print "<caption><span class='tiqitTableCount'></span>%s: %s</caption>" % (prikeytype.name, caption)
-            else:
-                print "<caption><span class='tiqitTableCount'></span></caption>"
-            print "<colgroup span='%d'></colgroup>" % len(selection)
-            print "<colgroup></colgroup>"
-            print "<thead>"
-            print "<tr>%s</tr>" % "".join(["<th field='%s'><a onclick='sortResults(event);'>%s</a></th>" % (encodeHTML(f.name), encodeHTML(f.shortname)) for f in selection])
-            print "</thead>"
-            print "<tbody>"
-
-        def printTableFooter():
-            print "</tbody>\n</table>"
-
-        # Get the first primary key and start the first table
-        prikey = matches[0][prikeytype.name]
-        print "<div id='resultsTableContainer'>"
-        printTableHeader(prikey, tableNameCounter)
-
-        # We'll be adding attributes to each row, so get the names once
-        attr_names = [x.name for x in parents]
-
-        for bug in matches:
-            # Check whether we need to start a new table
-            newprikey = bug[prikeytype.name]
-            if prikey != newprikey and args.has_key('groupby'):
-                printTableFooter()
-                prikey = newprikey
-                tableNameCounter += 1
-                printTableHeader(prikey, tableNameCounter)
-
-            #
-            # Construct the parent list. All parents should be there as
-            # attributes whether their values are empty or not
-            # 
-            attr_values = ["'%s'" % encodeHTML(bug[x.name]) for x in parents]
-            attributes = map("=".join, zip(attr_names, attr_values))
-
-            pretty_vals = [bug.getSanitisedValue(x.name, outputType == FORMAT_NORMAL) for x in selection]
-
-            print "<tr id='%s' lastupdate='%s'%s><td>%s</td></tr>" % (bug['Identifier'], bug['Sys-Last-Updated'], " ".join(attributes), "</td><td>".join(pretty_vals))
-
-        printTableFooter()
-        print "</div>"
+    if not args.has_key('groupby'):
+        groupby = ''
     else:
-        print "<p><img src='images/warning-small.png' alt='/!\\'> No results returned.</p>"
+        groupby = sort[0].field.name
+    filters = Filter('results',
+                     [x.name for x in selection if x.filterable],
+                     showCount='resultsFilterCount', clearbutton=True,
+                     allowMulti=True, allowInvert=True, allowGroupBy=True,
+                     initialGroupBy=groupby)
+
+    for bug in matches:
+        filterArgs = {}
+        for i in range(len(selection)):
+            # Strip any HTML tags out of the strings
+            field = selection[i].name
+            filterArgs[field] = tagre.sub("", bug.getSanitisedValue(field, outputType == FORMAT_NORMAL))
+        filters.add(filterArgs)
+
+    filters.write()
+
+    tableNameCounter = 1
+    def printTableHeader(caption, num):
+        tabid = 'results'
+        if args.has_key('groupby'):
+            tabid = 'results%d' % num
+        print "<table id='%s' style='margin-bottom: 2em; width: 100%%;' class='tiqitTable'>" % tabid
+        if caption and args.has_key('groupby'):
+            print "<caption><span class='tiqitTableCount'></span>%s: %s</caption>" % (prikeytype.name, caption)
+        else:
+            print "<caption><span class='tiqitTableCount'></span></caption>"
+        print "<colgroup span='%d'></colgroup>" % len(selection)
+        print "<colgroup></colgroup>"
+        print "<thead>"
+        print "<tr>%s</tr>" % "".join(["<th field='%s'><a onclick='sortResults(event);'>%s</a></th>" % (encodeHTML(f.name), encodeHTML(f.shortname)) for f in selection])
+        print "</thead>"
+        print "<tbody>"
+
+    def printTableFooter():
+        print "</tbody>\n</table>"
+
+    # Get the first primary key and start the first table
+    prikey = ""
+    print "<div id='resultsTableContainer'>"
+    if len(matches) > 0:
+        prikey = matches[0][prikeytype.name]
+        printTableHeader(prikey, tableNameCounter)
+    else:
+        printTableHeader(prikey, tableNameCounter)
+        # Insert an empty table row to keep the table rendered
+        print "<tr id='resultsTablePlaceholderRow'>%s</tr>" % "".join(["<td></td>" for f in selection])
+
+    # We'll be adding attributes to each row, so get the names once
+    attr_names = [x.name for x in parents]
+
+    for bug in matches:
+        # Check whether we need to start a new table
+        newprikey = bug[prikeytype.name]
+        if prikey != newprikey and args.has_key('groupby'):
+            printTableFooter()
+            prikey = newprikey
+            tableNameCounter += 1
+            printTableHeader(prikey, tableNameCounter)
+
+        #
+        # Construct the parent list. All parents should be there as
+        # attributes whether their values are empty or not
+        #
+        attr_values = ["'%s'" % encodeHTML(bug[x.name]) for x in parents]
+        attributes = map("=".join, zip(attr_names, attr_values))
+
+        pretty_vals = [bug.getSanitisedValue(x.name, outputType == FORMAT_NORMAL) for x in selection]
+
+        print "<tr id='%s' lastupdate='%s'%s><td>%s</td></tr>" % (bug['Identifier'], bug['Sys-Last-Updated'], " ".join(attributes), "</td><td>".join(pretty_vals))
+
+    printTableFooter()
+    print "</div>"
 
     printPageFooter()
 
