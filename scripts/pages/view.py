@@ -230,7 +230,7 @@ def displayGeneral(hide=False):
 <div id='extraCopies'></div>
 <p>
  <input type='submit' value='Save Changes'>
- <input type='button' value='Reset Form' onclick='this.form.reset(); checkChildren(); checkFormValidity();'>
+ <input type='button' value='Reset Form' onclick='resetForm();'>
  <input type='button' onclick='if (!amEditing || confirm("You&apos;ve made changes to this bug. Cloning it will throw them away. Are you sure you want to continue?")) document.location = "newbug.py?bugid=%(Identifier)s";' value='Clone Bug'>
 </p>
 </form>""" % args
