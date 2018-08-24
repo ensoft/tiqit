@@ -842,3 +842,26 @@ function prepareForm() {
   else
     return true;
 }
+
+//
+// Update the default file name when a file is entered
+//
+var default_being_used = true;
+
+function updateFileName() {
+  var encTitle = document.getElementById("fileTitle");
+  var fileInput = document.getElementById("theFile");
+
+  var fileName = fileInput.files.item(0).name.split('.', 1)[0];
+
+  //window.alert(fileName);
+
+  if (encTitle.value == "" || default_being_used) {
+      encTitle.value = fileName;
+      default_being_used = true;
+  }
+}
+
+function unsetDefault() {
+    default_being_used = false;
+}
