@@ -520,6 +520,19 @@ function getFieldValueView(field) {
     }
 }
 
+function resetForm() {
+    // Want to reset both initial form and extras form.
+    document.getElementById("tiqitBugEdit").reset();
+    document.getElementById("tiqitExtraFormData").reset();
+
+    // Also clear the indicator on the Component name if it has been set - 
+    // not being reset in checkFormValidity().
+    element = document.getElementById("Component");
+    Tiqit.clearIndicator(element);
+
+    checkChildren();
+    checkFormValidity();
+}
 
 function checkChildren() {
     var ev = new Object();
