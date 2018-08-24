@@ -9,6 +9,8 @@ args = Arguments()
 # Get a temporary file to put the attachment into
 filename = args.writeToTempFile('theFile')
 
+queueMessage(MSG_WARNING, "Filename: '{}'".format(args['fileTitle']))
+
 try:
     addAttachment(args['bugid'], args['fileTitle'], filename)
 
