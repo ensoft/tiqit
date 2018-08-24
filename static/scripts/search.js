@@ -538,10 +538,16 @@ function addRow(event) {
         }
     }
 
-    // If the row above doesn't have its Op, then put our Op where its Op is.
+    // If the row above doesn't have its Op, then put our Op where its Op is and give it back its Op
     var theOp = document.getElementById('operation' + (num - 1));
     var theP = document.getElementById('row' + (num - 1));
     if (theOp && theOp.parentNode != theP) {
+        // Swap the select values
+        var theSelectValue = theOp.getElementsByTagName('select')[0].value;
+        theOp.getElementsByTagName('select')[0].value = newOp.getElementsByTagName('select')[0].value;
+        newOp.getElementsByTagName('select')[0].value = theSelectValue;
+
+        // Position the ops
         theOp.parentNode.appendChild(newOp);
         newOp.setLevel(theOp.getElementsByTagName('input')[0].value);
         theP.appendChild(theOp);
@@ -608,6 +614,13 @@ function removeRow() {
     var theOp = document.getElementById('operation' + num);
     if (theOp) {
         var oldOp = document.getElementById('operation' + (num - 1));
+
+        // Swap the select values
+        var theSelectValue = theOp.getElementsByTagName('select')[0].value;
+        theOp.getElementsByTagName('select')[0].value = oldOp.getElementsByTagName('select')[0].value;
+        oldOp.getElementsByTagName('select')[0].value = theSelectValue;
+
+        // Reposition the Op
         theOp.parentNode.appendChild(oldOp);
         oldOp.setLevel(theOp.getElementsByTagName('input')[0].value);
         theOp.parentNode.removeChild(theOp);
