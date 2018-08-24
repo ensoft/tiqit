@@ -324,14 +324,14 @@ def displayNotes(hide=False):
  <form action='addfile.py' method='post' enctype='multipart/form-data'>
   <input type='hidden' name='bugid' value='%s'>
   <p>
-   Title: <input name='fileTitle' type='text' size='50'>
+   Title: <input id='fileTitle' name='fileTitle' type='text' size='50' value="" onchange='unsetDefault()'>
 <!--
    Type: <select name='fileType'>
     <option value='Auto'>Auto</option>
     <option value='Text'>Text</option>
    </select>
 -->
-   <input type='file' name='theFile' size='30'>
+   <input type='file' id='theFile' name='theFile' size='30' onchange='updateFileName()'>
   </p>
   <p>
    <input type='submit' value='Save'>
