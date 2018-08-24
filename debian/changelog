@@ -3,6 +3,7 @@ tiqit (1.0.5-1) trusty; urgency=low
   * Fixes to the make_deb script.
   * Gracefully handle searches updating between 0 and 1 results.
   * Sort search fields by display name, rather than internal name.
+  * Don't clear the search box when changing condition from is to is not.
   * Set attachment titles to filenames by default.
   * Stop logical operators being changed when removing entries from
     a compound search.

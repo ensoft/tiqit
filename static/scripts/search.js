@@ -258,8 +258,8 @@ function updateVals(field, num) {
   var oldVal = document.getElementById('val' + num);
 
   // Save the contents if they are both text fields
-  if (vals.type == 'text' && oldVal.type == 'text') {
-    vals.value = oldVal.value;
+  if (vals.input.type == 'text' && oldVal.input.type == 'text') {
+    vals.input.value = oldVal.input.value;
   }
 
   oldVal.parentNode.replaceChild(vals, oldVal);
