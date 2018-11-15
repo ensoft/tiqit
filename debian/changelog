@@ -1,3 +1,9 @@
+tiqit (1.0.6-1) trusty; urgency=low
+
+  * Added missing code for config directories
+
+ -- Jonathan Loh <joloh@ensoft.co.uk> Thurs, 15 Nov 2018 15:30:00 +0100
+
 tiqit (1.0.5-1) trusty; urgency=low
 
   * Fixes to the make_deb script.
