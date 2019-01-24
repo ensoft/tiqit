@@ -230,7 +230,7 @@ def displayGeneral(hide=False):
 <div id='extraCopies'></div>
 <p>
  <input type='submit' value='Save Changes'>
- <input type='button' value='Reset Form' onclick='this.form.reset(); checkChildren(); checkFormValidity();'>
+ <input type='button' value='Reset Form' onclick='resetForm();'>
  <input type='button' onclick='if (!amEditing || confirm("You&apos;ve made changes to this bug. Cloning it will throw them away. Are you sure you want to continue?")) document.location = "newbug.py?bugid=%(Identifier)s";' value='Clone Bug'>
 </p>
 </form>""" % args
@@ -324,14 +324,14 @@ def displayNotes(hide=False):
  <form action='addfile.py' method='post' enctype='multipart/form-data'>
   <input type='hidden' name='bugid' value='%s'>
   <p>
-   Title: <input name='fileTitle' type='text' size='50'>
+   Title: <input id='fileTitle' name='fileTitle' type='text' size='50' value="" onchange='unsetDefault()'>
 <!--
    Type: <select name='fileType'>
     <option value='Auto'>Auto</option>
     <option value='Text'>Text</option>
    </select>
 -->
-   <input type='file' name='theFile' size='30'>
+   <input type='file' id='theFile' name='theFile' size='30' onchange='updateFileName()'>
   </p>
   <p>
    <input type='submit' value='Save'>
@@ -346,168 +346,129 @@ def displayNotes(hide=False):
 #
 # Histogram section
 #
+def displayGraph(status, numstates, changes, value, printCurrent=True, endtime=None, showTags=False, overrideBackground=True):
+    # Date range goes from Submitted-on until now by default
+    starttime = time.mktime(time.strptime(args['Submitted-onRaw'],
+                                          "%m/%d/%Y %H:%M:%S"))
+    nowtime = time.mktime(time.localtime())
+    if endtime is None:
+        endtime = nowtime
+    totaltime = endtime - starttime
+
+    print "<p>{}:</p>".format(status)
+    print "<div class='tiqitGraph' style='height: %dem'>" % (numstates + 1)
+    print "<div class='header'>"
+    # Print row headers
+    for i in range(len(changes)):
+        if showTags:
+            print "<div class='row' style='top: %dem;'>%s -&gt; %s</div>" % \
+                  (i, changes[i]['OldValue'], changes[i]['NewValue'])
+        else:
+            print "<div class='row' style='top: %dem;'><!--%s -&gt; %s --></div>" % \
+                  (i, changes[i]['OldValue'], changes[i]['NewValue'])
+
+    # Bonus row header for current value if required
+    if printCurrent:
+        i += 1
+        if showTags:
+            print "<div class='row' style='top: %dem;'>%s -&gt;</div>" % (i, value)
+        else:
+            print "<div class='row' style='top: %dem;'><!--%s -&gt;--></div>" % (i, value)
+
+    print "</div>"
+    print "<div class='graph' style='height: %dem'>" % numstates
+    sofar = 0
+    width = 0
+    currtime = starttime
+    for i in range(len(changes)):
+        width = (changes[i]['DateVal'] - currtime) / totaltime * 100
+        if overrideBackground:
+            print "<div title='Changed by %s' class='row %s' style='text-align: center; background-color: %s; top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (changes[i]['User'], changes[i]['OldValue'], stringToColour(changes[i]['OldValue']), i, sofar, width, changes[i]['OldValue'])
+        else:
+            print "<div title='Changed by %s' class='row %s' style='top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (changes[i]['User'], changes[i]['OldValue'], i, sofar, width, changes[i]['OldValue'])
+        currtime = changes[i]['DateVal']
+        sofar += width
+
+    # if required, print current value line
+    if printCurrent:
+        i += 1
+        width = (endtime - currtime) / totaltime * 100
+        if overrideBackground:
+            print "<div title='Currently %s' class='row %s' style='text-align: center; background-color: %s; top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (value, value, stringToColour(value), i, sofar, width, value)
+        else:
+            print "<div title='Currently %s' class='row %s' style='top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (value, value, i, sofar, width, value)
+
+    # Print a scale for the graph
+    section = (endtime - starttime) / 5
+    for s in range(6):
+        thistime = starttime + s * section
+        print "<div class='ruleline' style='left: %d%%'></div>" % (s * 20)
+        print "<div class='row scale' style='top: %dem; left: %d%%'>%s</div>" % (i + 1, s * 20, time.strftime("%d/%m/%Y", time.localtime(thistime)))
+
+    print "</div>"
+    print "</div>"
 
 def displayGraphs(hide=False):
     printSectionHeader("Graphs", hide=hide)
-
-    # Date range goes from Submitted-on until now
-    starttime = time.mktime(time.strptime(args['Submitted-onRaw'],
-                                          "%m/%d/%Y %H:%M:%S"))
-    endtime = time.mktime(time.localtime())
-    nowtime = endtime
-    totaltime = endtime - starttime
 
     # Go through history, looking for 'Status' changes
     statusChanges = [x for x in auditargs if x['Field'] == 'Status']
     statusChanges.reverse()
 
-    numstates = len(statusChanges)
-
-    # Unless current state is 'closed' in which case until last transition
-    if statusChanges and \
-       statusChanges[-1]['NewValue'] in ('R', 'V', 'C', 'D', 'J'):
-        endtime = statusChanges[-1]['DateVal']
-        totaltime = endtime - starttime
-        print "<p>Graphs cover %d days and are now closed.</p>" % \
-              (totaltime / 60 / 60 / 24)
-    else:
-        numstates += 1
-        print "<p>Graphs cover %d days and counting.</p>" % \
-              (totaltime / 60 / 60 / 24)
-
-    state = args['StatusRaw']
-    if statusChanges:
-        print "<p>Status:</p>"
-        print "<div class='tiqitGraph' style='height: %dem'>" % (numstates + 1)
-        print "<div class='header'>"
-        # Print row headers
-        for i in range(len(statusChanges)):
-            print "<div class='row' style='top: %dem;'>%s -&gt; %s</div>" % \
-                  (i, statusChanges[i]['OldValue'], statusChanges[i]['NewValue'])
-        # Bonus row header for current state if required
-        if endtime == nowtime:
-            i += 1
-            print "<div class='row' style='top: %dem;'>%s -&gt;</div>" % (i, state)
-        print "</div>"
-        print "<div class='graph' style='height: %dem'>" % numstates
-        sofar = 0
-        width = 0
-        currtime = starttime
-        for i in range(len(statusChanges)):
-            width = (statusChanges[i]['DateVal'] - currtime) / totaltime * 100
-            print "<div title='Changed by %s' class='row %s' style='top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (statusChanges[i]['User'], statusChanges[i]['OldValue'], i, sofar, width, statusChanges[i]['OldValue'])
-            currtime = statusChanges[i]['DateVal']
-            sofar += width
-
-        # if required, print current state line
-        if nowtime == endtime:
-            i += 1
-            width = (endtime - currtime) / totaltime * 100
-            print "<div title='Currently %s' class='row %s' style='top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (state, state, i, sofar, width, state)
-
-        # Print a scale for the graph
-        section = (endtime - starttime) / 5
-        for s in range(6):
-            thistime = starttime + s * section
-            print "<div class='ruleline' style='left: %d%%'></div>" % (s * 20)
-            print "<div class='row scale' style='top: %dem; left: %d%%'>%s</div>" % (i + 1, s * 20, time.strftime("%d/%m/%Y", time.localtime(thistime)))
-        
-        print "</div>"
-        print "</div>"
-    else:
-        print "<p><img src='images/warning-small.png' alt='/!\\'> No status history available.</p>"
-
     # Go through history, looking for 'Component' changes
     compChanges = [x for x in auditargs if x['Field'] == 'Component']
     compChanges.reverse()
-
-    numchanges = len(compChanges) + 1
-
-    comp = args['ComponentRaw']
-    if compChanges:
-        print "<p>Component:</p>"
-        print "<div class='tiqitGraph' style='height: %dem'>" % (numstates + 1)
-        print "<div class='header'>"
-        # Print row headers
-        for i in range(len(compChanges)):
-            print "<div class='row' style='top: %dem;'><!--%s -&gt; %s--></div>" % \
-                  (i, compChanges[i]['OldValue'], compChanges[i]['NewValue'])
-        # Bonus row header for current state
-        i += 1
-        print "<div class='row' style='top: %dem;'><!--%s -&gt;--></div>" % (i, comp)
-        print "</div>"
-        print "<div class='graph' style='height: %dem'>" % numchanges
-        sofar = 0
-        width = 0
-        currtime = starttime
-        for i in range(len(compChanges)):
-            width = (compChanges[i]['DateVal'] - currtime) / totaltime * 100
-            print "<div title='Changed by %s' class='row' style='text-align: center; background-color: %s; top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (compChanges[i]['User'], stringToColour(compChanges[i]['OldValue']), i, sofar, width, compChanges[i]['OldValue'])
-            currtime = compChanges[i]['DateVal']
-            sofar += width
-
-        # print current comp line
-        i += 1
-        width = (endtime - currtime) / totaltime * 100
-        print "<div title='Currently %s' class='row' style='text-align: center; background-color: %s; top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (comp, stringToColour(comp), i, sofar, width, comp)
-
-        # Print a scale for the graph
-        section = (endtime - starttime) / 5
-        for s in range(6):
-            thistime = starttime + s * section
-            print "<div class='ruleline' style='left: %d%%'></div>" % (s * 20)
-            print "<div class='row scale' style='top: %dem; left: %d%%'>%s</div>" % (i + 1, s * 20, time.strftime("%d/%m/%Y", time.localtime(thistime)))
-        
-        print "</div>"
-        print "</div>"
-    else:
-        print "<p><img src='images/warning-small.png' alt='/!\\'> No component history available.</p>"
 
     # Go through history, looking for 'Severity' changes
     sevChanges = [x for x in auditargs if x['Field'] == 'Severity-desc']
     sevChanges.reverse()
 
-    numchanges = len(sevChanges) + 1
+    starttime = time.mktime(time.strptime(args['Submitted-onRaw'],
+                                          "%m/%d/%Y %H:%M:%S"))
+    nowtime = time.mktime(time.localtime())
+    endtime = nowtime
+    # Unless current state is 'closed' in which case until last transition
+    if statusChanges and \
+       statusChanges[-1]['NewValue'] in ('R', 'V', 'C', 'D', 'J'):
+        endtimes = list()
+        if statusChanges:
+            endtimes.append(statusChanges[-1]['DateVal'])
+        if compChanges:
+            endtimes.append(compChanges[-1]['DateVal'])
+        if sevChanges:
+            endtimes.append(sevChanges[-1]['DateVal'])
+        endtimes.sort()
 
-    sev = args['SeverityRaw']
+        # Get the latest endtime
+        if endtimes:
+            endtime = endtimes[-1]
+        totaltime = endtime - starttime
+        print "<p>Graphs cover %d days and are now closed.</p>" % \
+              (totaltime / 60 / 60 / 24)
+    else:
+        totaltime = endtime - starttime
+        print "<p>Graphs cover %d days and counting.</p>" % \
+              (totaltime / 60 / 60 / 24)
+
+    # Draw status graph
+    if statusChanges:
+        # Only print the last column if the endtime is not the time of the
+        # last status change
+        printCurrent = (endtime != statusChanges[-1]['DateVal'])
+        displayGraph("Status", len(statusChanges) + int(printCurrent), statusChanges, args['StatusRaw'],
+                     printCurrent=printCurrent, endtime=endtime, showTags=True, overrideBackground=False)
+    else:
+        print "<p><img src='images/warning-small.png' alt='/!\\'> No status history available.</p>"
+
+    # Draw component graph
+    if compChanges:
+        displayGraph("Component", len(compChanges) + 1, compChanges, args['ComponentRaw'], endtime=endtime)
+    else:
+        print "<p><img src='images/warning-small.png' alt='/!\\'> No component history available.</p>"
+
+    # Draw severity graph
     if sevChanges:
-        print "<p>Severity:</p>"
-        print "<div class='tiqitGraph' style='height: %dem'>" % (numchanges + 1)
-        print "<div class='header'>"
-        # Print row headers
-        for i, change in enumerate(sevChanges):
-            print "<div class='row' style='top: %dem;'>%s -&gt; %s</div>" % \
-                  (i, change['OldValue'], change['NewValue'])
-        # Bonus row header for current state if required
-        if endtime == nowtime:
-            i += 1
-            print "<div class='row' style='top: %dem;'>%s -&gt;</div>" % (i, sev)
-        print "</div>"
-        print "<div class='graph' style='height: %dem'>" % numchanges
-        sofar = 0
-        width = 0
-        currtime = starttime
-        for i, change in enumerate(sevChanges):
-            width = (change['DateVal'] - currtime) / totaltime * 100
-            print "<div title='Changed by %s' class='row' style='text-align: center; background-color: %s; top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (change['User'], stringToColour(change['OldValue']), i, sofar, width, change['OldValue'])
-            currtime = change['DateVal']
-            sofar += width
-
-        # if required, print current state line
-        if nowtime == endtime:
-            i += 1
-            width = (endtime - currtime) / totaltime * 100
-            print "<div title='Currently %s' class='row' style='text-align: center; background-color: %s; top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (sev, stringToColour(sev), i, sofar, width, sev)
-
-        # Print a scale for the graph
-        section = (endtime - starttime) / 5
-        for s in range(6):
-            thistime = starttime + s * section
-            print "<div class='ruleline' style='left: %d%%'></div>" % (s * 20)
-            print "<div class='row scale' style='top: %dem; left: %d%%'>%s</div>" % (i + 1, s * 20, time.strftime("%d/%m/%Y", time.localtime(thistime)))
-        
-        print "</div>"
-        print "</div>"
+        displayGraph("Severity", len(sevChanges) + 1, sevChanges, args['SeverityRaw'], endtime=endtime)
     else:
         print "<p><img src='images/warning-small.png' alt='/!\\'> No severity history available.</p>"
 
@@ -588,7 +549,7 @@ def displayRelates(hide=False):
         bad = args['Previous-commit-idRaw']
         if bad:
             relates.append((bad, 'Bad Code Fix for', False))
-      
+
     # Now we have all the relates. Get their data, so we can print a nice table
     printSectionHeader('Relates', 'Related Bugs', hide=hide)
 

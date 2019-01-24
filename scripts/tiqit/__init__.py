@@ -32,6 +32,7 @@ __all__ = [
     'SITE_MAIN', 'SITE_META',
     'database', 'initialise',
     'errorPage',
+    'CFG_DIRS',
 ]
 
 times = [("start", time.time())]
@@ -44,7 +45,7 @@ times = [("start", time.time())]
 
 MAJ_VER   = 1
 MIN_VER   = 0
-PATCH_VER = 4
+PATCH_VER = 5
 DEV_VER   = 0
 
 VERSION = (MAJ_VER, MIN_VER, PATCH_VER)
@@ -312,6 +313,8 @@ if not DATA_PATH.endswith('/'):
     DATA_PATH = DATA_PATH + '/'
 PROFILE_PATH = DATA_PATH + 'profiles/'
 NEWS_PATH    = DATA_PATH + 'news/'
+CFG_DIRS = ["../",
+            "/etc/tiqit/"]
 
 
 #

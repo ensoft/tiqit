@@ -427,21 +427,19 @@ function processUpdatedBugList(bugs) {
       // table.
       var cell, span;
 
-      // Special case: if there were no bugs to start with, there will be
-      // no tables! Create one here
-      if (tables.length == 0) {
-        tables.push(document.createElement('table'));
-        tables[0].id = 'results';
-        tables[0].appendChild(document.createElement('thead'));
-        tables[0].appendChild(document.createElement('tbody'));
-        tables[0].tHead.insertRow(-1);
-        for (var j = 0; j < fields.length; j++) {
-          cell = document.createElement('th');
-          tables[0].tHead.rows[0].appendChild(cell);
+      // If there were no bugs previously then the table will have a placeholder
+      // row to ensure the table is still rendered. This placeholder is no
+      // longer needed as we now have bugs to show
+      // If the table contains a placeholder row, delete it
+      var placeholder = document.getElementById("resultsTablePlaceholderRow")
+      if (placeholder) {
+        placeholder.parentNode.removeChild(placeholder);
+      }
 
-          cell.appendChild(document.createTextNode(fields[j].getAttribute('name')));
-        }
-        document.getElementById('tiqitContent').appendChild(tables[0]);
+      // Similarly, remove the no results warning if it exists
+      var pNoResWarn = document.getElementById("noResultsWarning")
+      if (pNoResWarn) {
+          pNoResWarn.remove();
       }
 
       var row = tables[0].tBodies[0].insertRow(-1);
