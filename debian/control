@@ -2,8 +2,8 @@ Source: tiqit
 Maintainer: Tiqit developers at Ensoft <ensoft-tiqit@cisco.com>
 Uploaders:
  Matthew Hall <github@matthall.co.uk>,
- Jonathan Loh <jonathan.loh@ensoft.co.uk>,
- Kyle Sutherland-Cash <kyle.sutherland-cash@ensoft.co.uk>
+ Jonathan Loh <joloh@cisco.com>,
+ Kyle Sutherland-Cash <kysuther@cisco.com>
 Section: misc
 Priority: optional
 Build-Depends: debhelper (>= 9), dh-python, python (>= 2.7)
