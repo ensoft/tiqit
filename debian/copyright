@@ -1,7 +1,7 @@
 Format:  http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 
 Files: *
-Copyright: 2017 Ensoft Ltd <tiqit@ensoft.co.uk>
+Copyright: 2013-2019 Ensoft Ltd <ensoft-tiqit@cisco.com>
            2008-2013 Martin Morrison, Matthew Earl
 License: BSD-2-clause
  Redistribution and use in source and binary forms, with or without
