@@ -776,11 +776,128 @@ function checkFormValidity(event) {
   return valid;
 }
 
+
+var isWaitingOnAsyncCall = false;
+var hasShownSubmissionMessage = false;
+var isSubmittingChanges = false;
+
+function checkBugChange(bugid, lastMod, inMsg) {
+  var tiqitApi = new TiqitApi();
+  var msg = inMsg;
+
+  // Prepare the async event functions
+  bugChangeOnLoad = function(eventLoad) {
+    var submitChanges = true;
+
+    if (eventLoad.target.status == 200 && eventLoad.target.responseXML) {
+      // Check if the first date matches lastMod.
+      // If not, check with the user if bug changes
+      // should be submitted.
+      var history = historyDataFromXML(eventLoad.target.responseXML);
+      var lastModHistoryDate = new Date(history[0]['Date']);
+      var lastModDate = new Date(lastMod);
+      if (lastModHistoryDate > lastModDate) {
+        msg += "Your bug view is from " + lastModDate.toLocaleString();
+        msg += ", and the bug now contains changes from " + lastModHistoryDate.toLocaleString() + ".\n\n";
+        msg += "The following set of changes to this bug will likely be overwritten:\n\n";
+        for (i in history) {
+          var historyItem = history[i];
+          var historyItemDate = new Date(historyItem['Date']);
+          if (historyItemDate > lastModDate) {
+            if (historyItem['Operation'] == 'Delete') {
+              msg += "    Deleted '" + historyItem['Field'] + "', which was set to '" + historyItem['OldValue'] + "'\n";
+            } else if (historyItem['Operation'] == 'New Record') {
+              if (historyItem['NewValue'] == "") {
+                msg += "    Created " + historyItem['Field'] + "\n";
+              } else {
+                msg += "    Created '" + historyItem['Field'] + "' as '" + historyItem['NewValue'] + "'\n";
+              }
+            } else if (historyItem['Operation'] == 'Modify') {
+              if (historyItem['OldValue'] == "" && historyItem['NewValue'] == "") {
+                msg += "    Modified '" + historyItem['Field'] + "'\n";
+              } else if (historyItem['OldValue'] == "") {
+                msg += "    Set '" + historyItem['Field'] + "' as '" + historyItem['NewValue'] + "'\n";
+              } else {
+                msg += "    Set '" + historyItem['Field'] + "' from '" + historyItem['OldValue'] + "' to '" + historyItem['NewValue'] + "'\n";
+              }
+            } else {
+              msg += "    Performed '" + historyItem['Operation'] + "'\n";
+            }
+          }
+        }
+      }
+    } else {
+      // Failed to get the bug history.
+      // Let user still attempt submission.
+      msg += "Unable to retrieve bug history.\n";
+      msg += "Cannot confirm if past changes will be overwritten.\n";
+    }
+
+    if (msg != "") {
+      msg += "\nClick OK to overwrite previous modifications and submit new changes.";
+      msg += "\nOtherwise, press cancel and hit refresh to load previous modifications.";
+      submitChanges = confirm(msg);
+    }
+
+    if (submitChanges) {
+      isSubmittingChanges = true;
+      document.getElementById("tiqitBugEdit").submit();
+    }
+
+    isWaitingOnAsyncCall = false;
+    hasShownSubmissionMessage = false;
+  }
+
+  bugChangeError = function(eventErr) {
+    msg += "Unable to retrieve bug history.\n";
+    msg += "Cannot confirm if past changes will be overwritten.\n";
+
+    msg += "\n\nClick OK to overwrite previous modifications and submit new changes.";
+    msg += "\nOtherwise, press cancel and hit refresh to load previous modifications.";
+    submitChanges = confirm(msg);
+
+    if (submitChanges) {
+      isSubmittingChanges = true;
+      document.getElementById("tiqitBugEdit").submit();
+    }
+
+    isWaitingOnAsyncCall = false;
+    hasShownSubmissionMessage = false;
+  }
+
+  bugChangeTimeout = function(eventErr) {
+    msg += "Bug history fetch has timed out.\n";
+    msg += "Cannot confirm if past changes will be overwritten.\n";
+
+    msg += "\n\nClick OK to overwrite previous modifications and submit new changes.";
+    msg += "\nOtherwise, press cancel and hit refresh to load previous modifications.";
+    submitChanges = confirm(msg);
+
+    if (submitChanges) {
+      isSubmittingChanges = true;
+      document.getElementById("tiqitBugEdit").submit();
+    }
+
+    isWaitingOnAsyncCall = false;
+    hasShownSubmissionMessage = false;
+  }
+
+  if (!isWaitingOnAsyncCall && !isSubmittingChanges) {
+    isWaitingOnAsyncCall = true;
+    // Generously wait 25s for bug history to arrive.
+    tiqitApi.historyForBugs([bugid], bugChangeOnLoad, bugChangeError,
+                            25000, bugChangeTimeout);
+  } else if (!hasShownSubmissionMessage) {
+    sendMessage(1, "Bug submission in progress, please wait.");
+    hasShownSubmissionMessage = true;
+  }
+}
+
 //
 // Submitting Support
 //
 
-function prepareForm() {
+function prepareForm(bugid, lastMod) {
   var form = document.getElementById('tiqitBugEdit');
   var extra = document.getElementById('tiqitExtraFormData');
 
@@ -788,6 +905,7 @@ function prepareForm() {
   var selects = extra.getElementsByTagName('select');
 
   var extraDiv = document.getElementById('extraCopies');
+  var msg = "";
 
   while (extraDiv.childNodes.length) {
     extraDiv.removeChild(extraDiv.childNodes[0]);
@@ -837,8 +955,10 @@ function prepareForm() {
     extraDiv.appendChild(hidden);
   }
 
-  if (!checkFormValidity())
-    return confirm("Missing info in form. Submit anyway?");
-  else
-    return true;
+  // Determine what message to return to the caller
+  if (!checkFormValidity()) {
+    msg = "There is potential missing info in the bug. Please see fields highlighted in red.\n\n";
+  }
+
+  checkBugChange(bugid, lastMod, msg);
 }

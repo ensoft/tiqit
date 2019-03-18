@@ -44,7 +44,7 @@ times = [("start", time.time())]
 
 MAJ_VER   = 1
 MIN_VER   = 0
-PATCH_VER = 4
+PATCH_VER = 6
 DEV_VER   = 0
 
 VERSION = (MAJ_VER, MIN_VER, PATCH_VER)
@@ -1062,7 +1062,7 @@ pages = {
                            ['customevents', 'plugin', 'toolbar', 'fields', 'fielddata', 'defaults', 'view', 'userdropdown', 'calendar'],
                            ['toolbar', 'userdropdown', 'calendar'], SITE_MAIN),
     PAGE_VIEW:    PageInfo([LINK_HOME, LINK_NEW, LINK_SEARCH, LINK_PREFS, LINK_NEWS, LINK_META],
-                           ['customevents', 'plugin', 'toolbar', 'fields', 'fielddata', 'defaults', 'view', 'tableactions', 'userdropdown', 'filter', 'static', 'calendar'],
+                           ['customevents', 'plugin', 'toolbar', 'fields', 'fielddata', 'defaults', 'view', 'tableactions', 'userdropdown', 'filter', 'static', 'calendar', 'api', 'historydropdown'],
                            ['toolbar', 'userdropdown', 'graphs', 'calendar'], SITE_MAIN),
     PAGE_SEARCH:  PageInfo([LINK_HOME, LINK_NEW, LINK_PREFS, LINK_NEWS, LINK_META],
                            ['customevents', 'plugin', 'toolbar', 'fields', 'fielddata', 'defaults', 'userdropdown', 'search', 'calendar', 'selectfield'],

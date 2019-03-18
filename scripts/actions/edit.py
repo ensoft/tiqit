@@ -4,6 +4,7 @@ import time
 from backend import *
 from tiqit import *
 from frontend import *
+import sys
 
 args = Arguments()
 
@@ -14,12 +15,6 @@ args = Arguments()
 bugid = extractBugIds(args['Identifier'])[0]
 
 data = loadBugs([bugid])[0]
-
-lastupdate = time.strptime(args['Sys-Last-Updated'], "%m/%d/%Y %H:%M:%S")
-realupdate = time.strptime(data["Sys-Last-Updated"], "%m/%d/%Y %H:%M:%S")
-
-if realupdate > lastupdate:
-    raise TiqitWarning("The bug has been edited since you loaded the page. Saving would have overwritten any changes made in between time. Go back to the bug and reload the page to see what fields have been modified (pressing 'Back' and then 'F5' should result in no loss of your own changes - the other modifications will simply appear in blue, alongside your own changes. You may then confirm or revert the changes, as desired).")
 
 #
 # What type of bug is this
