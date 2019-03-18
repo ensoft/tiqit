@@ -4,7 +4,6 @@ import time
 from backend import *
 from tiqit import *
 from frontend import *
-import sys
 
 args = Arguments()
 
