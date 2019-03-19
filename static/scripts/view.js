@@ -520,6 +520,19 @@ function getFieldValueView(field) {
     }
 }
 
+function resetForm() {
+    // Want to reset both initial form and extras form.
+    document.getElementById("tiqitBugEdit").reset();
+    document.getElementById("tiqitExtraFormData").reset();
+
+    // Also clear the indicator on the Component name if it has been set - 
+    // not being reset in checkFormValidity().
+    element = document.getElementById("Component");
+    Tiqit.clearIndicator(element);
+
+    checkChildren();
+    checkFormValidity();
+}
 
 function checkChildren() {
     var ev = new Object();
@@ -961,4 +974,27 @@ function prepareForm(bugid, lastMod) {
   }
 
   checkBugChange(bugid, lastMod, msg);
+}
+
+//
+// Update the default file name when a file is entered
+//
+var default_being_used = true;
+
+function updateFileName() {
+  var encTitle = document.getElementById("fileTitle");
+  var fileInput = document.getElementById("theFile");
+
+  var fileName = fileInput.files.item(0).name.split('.', 1)[0];
+
+  //window.alert(fileName);
+
+  if (encTitle.value == "" || default_being_used) {
+      encTitle.value = fileName;
+      default_being_used = true;
+  }
+}
+
+function unsetDefault() {
+    default_being_used = false;
 }

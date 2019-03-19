@@ -5,6 +5,21 @@ tiqit (1.0.6-1) trusty; urgency=low
 
  -- Jonathan Loh <joloh@ensoft.co.uk>  Mon, 18 Mar 2019 18:36:00 +0000
 
+tiqit (1.0.5-1) trusty; urgency=low
+
+  * Fixes to the make_deb script.
+  * Gracefully handle searches updating between 0 and 1 results.
+  * Sort search fields by display name, rather than internal name.
+  * Stop severity graph overflow.
+  * Reset all forms on the bug page with the reset button.
+  * Don't clear the search box when changing condition from is to is not.
+  * Set attachment titles to filenames by default.
+  * Stop logical operators being changed when removing entries from
+    a compound search.
+  * Added missing code for config directories
+
+ -- Jonathan Loh <joloh@ensoft.co.uk> Thurs, 15 Nov 2018 15:30:00 +0100
+
 tiqit (1.0.4-1) trusty; urgency=low
 
   * Fixes to the make_deb script.

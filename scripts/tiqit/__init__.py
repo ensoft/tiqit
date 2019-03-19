@@ -32,6 +32,7 @@ __all__ = [
     'SITE_MAIN', 'SITE_META',
     'database', 'initialise',
     'errorPage',
+    'CFG_DIRS',
 ]
 
 times = [("start", time.time())]
@@ -312,6 +313,8 @@ if not DATA_PATH.endswith('/'):
     DATA_PATH = DATA_PATH + '/'
 PROFILE_PATH = DATA_PATH + 'profiles/'
 NEWS_PATH    = DATA_PATH + 'news/'
+CFG_DIRS = ["../",
+            "/etc/tiqit/"]
 
 
 #
