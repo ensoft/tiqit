@@ -23,7 +23,10 @@
 
 # Pretty stack traces but with 500 status codes
 import cgitb, sys
+
 def excHandler(*args):
+    print "Content-Type: text/html; charset=utf-8"
+    print "\r\n\r\n"
     print "<!--: spam"
     print "Status: 500"
     cgitb.handler(args)
