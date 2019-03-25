@@ -832,8 +832,8 @@ function checkBugChange(bugid, lastMod, inMsg) {
         for (i in history) {
           var historyItem = history[i];
           var historyItemDate = new Date(historyItem['Date']);
-          if (historyItem['Field'] != "File Name" ||
-              historyItem['Field'] != "Note Title") {
+          if (historyItem['Field'] == "File Name" ||
+              historyItem['Field'] == "Note Title") {
                 // Do not tell the user that their note or attachment
                 // may be overwritten. It won't be!
                 continue;
@@ -848,7 +848,7 @@ function checkBugChange(bugid, lastMod, inMsg) {
                 msg += "    Created '" + historyItem['Field'] + "' as '" + historyItem['NewValue'] + "'\n";
               }
             } else if (historyItem['Operation'] == 'Modify') {
-              if (historyItem['OldValue'] == "" && historyItem['NewValue'] == "") {
+c              if (historyItem['OldValue'] == "" && historyItem['NewValue'] == "") {
                 msg += "    Modified '" + historyItem['Field'] + "'\n";
               } else if (historyItem['OldValue'] == "") {
                 msg += "    Set '" + historyItem['Field'] + "' as '" + historyItem['NewValue'] + "'\n";
