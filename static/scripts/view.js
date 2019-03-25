@@ -848,7 +848,7 @@ function checkBugChange(bugid, lastMod, inMsg) {
                 msg += "    Created '" + historyItem['Field'] + "' as '" + historyItem['NewValue'] + "'\n";
               }
             } else if (historyItem['Operation'] == 'Modify') {
-c              if (historyItem['OldValue'] == "" && historyItem['NewValue'] == "") {
+              if (historyItem['OldValue'] == "" && historyItem['NewValue'] == "") {
                 msg += "    Modified '" + historyItem['Field'] + "'\n";
               } else if (historyItem['OldValue'] == "") {
                 msg += "    Set '" + historyItem['Field'] + "' as '" + historyItem['NewValue'] + "'\n";
