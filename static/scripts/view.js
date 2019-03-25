@@ -803,19 +803,41 @@ function checkBugChange(bugid, lastMod, inMsg) {
     var submitChanges = true;
 
     if (eventLoad.target.status == 200 && eventLoad.target.responseXML) {
-      // Check if the first date matches lastMod.
-      // If not, check with the user if bug changes
-      // should be submitted.
+      // Check if the first date predates lastMod and only Note or Attachment
+      // related changes were made.
+      // If not, we may have overwriteable changes. (See hasHistoryOverwriteableChanges).
+      // If this is the case, check with the user if bug changes should be submitted.
       var history = historyDataFromXML(eventLoad.target.responseXML);
       var lastModHistoryDate = new Date(history[0]['Date']);
       var lastModDate = new Date(lastMod);
+      var hasHistoryOverwriteableChanges = false;
+
+      // Checking for legitimate changes here
       if (lastModHistoryDate > lastModDate) {
+        for (i in history) {
+          var historyItem = history[i];
+          if (historyItem['Field'] != "File Name" &&
+              historyItem['Field'] != "Note Title") {
+                hasHistoryOverwriteableChanges = true;
+                break;
+          }
+        }
+      }
+
+      // Inform the user of changes that will be overwritten.
+      if (hasHistoryOverwriteableChanges) {
         msg += "Your bug view is from " + lastModDate.toLocaleString();
         msg += ", and the bug now contains changes from " + lastModHistoryDate.toLocaleString() + ".\n\n";
         msg += "The following set of changes to this bug will likely be overwritten:\n\n";
         for (i in history) {
           var historyItem = history[i];
           var historyItemDate = new Date(historyItem['Date']);
+          if (historyItem['Field'] != "File Name" ||
+              historyItem['Field'] != "Note Title") {
+                // Do not tell the user that their note or attachment
+                // may be overwritten. It won't be!
+                continue;
+          }
           if (historyItemDate > lastModDate) {
             if (historyItem['Operation'] == 'Delete') {
               msg += "    Deleted '" + historyItem['Field'] + "', which was set to '" + historyItem['OldValue'] + "'\n";
@@ -847,8 +869,8 @@ function checkBugChange(bugid, lastMod, inMsg) {
     }
 
     if (msg != "") {
-      msg += "\nClick OK to overwrite previous modifications and submit new changes.";
-      msg += "\nOtherwise, press cancel and hit refresh to load previous modifications.";
+      msg += "\nClick OK to submit new changes despite the above warnings.";
+      msg += "\nOtherwise, press cancel and hit refresh to update your bug view.";
       submitChanges = confirm(msg);
     }
 
