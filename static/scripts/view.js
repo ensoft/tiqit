@@ -816,8 +816,10 @@ function checkBugChange(bugid, lastMod, inMsg) {
       if (lastModHistoryDate > lastModDate) {
         for (i in history) {
           var historyItem = history[i];
+          var historyItemDate = new Date(historyItem['Date']);
           if (historyItem['Field'] != "File Name" &&
-              historyItem['Field'] != "Note Title") {
+              historyItem['Field'] != "Note Title" &&
+              historyItemDate > lastModDate) {
                 hasHistoryOverwriteableChanges = true;
                 break;
           }
