@@ -223,8 +223,8 @@ def displayGeneral(hide=False):
     primarytitle, primarytitleDetail, primaryformat = view_sections[0]
     printSectionHeader(primarytitle, primarytitleDetail, hide);
 
-    print "<form id='tiqitBugEdit' action='edit.py' method='post' onSubmit=''>";
-    print cls.getFormat(primaryformat) % args;
+    print "<form id='tiqitBugEdit' action='edit.py' method='post' onSubmit=''>"
+    print cls.getFormat(primaryformat) % args
 
     print """
 <div id='extraCopies'></div>
