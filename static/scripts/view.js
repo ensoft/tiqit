@@ -798,10 +798,29 @@ function checkBugChange(bugid, lastMod, inMsg) {
   var tiqitApi = new TiqitApi();
   var msg = inMsg;
 
+  function submitChanges(msg) {
+    // Perform the bug submission letting the user confirm a prompt if
+    // submission may not be smooth (msg != "")
+    // Also reset flags regarding waiting on an async call (checking history) and if 
+    // a submission message has been shown.
+    var doSubmit = true;
+    if (msg != "") {
+      msg += "\nClick OK to submit new changes despite the above warnings.";
+      msg += "\nOtherwise, press cancel and hit refresh to update your bug view.";
+      doSubmit = confirm(msg);
+    }
+
+    if (doSubmit) {
+      isSubmittingChanges = true;
+      document.getElementById("tiqitBugEdit").submit();
+    }
+
+    isWaitingOnAsyncCall = false;
+    hasShownSubmissionMessage = false;
+  }
+
   // Prepare the async event functions
   function bugChangeOnLoad(eventLoad) {
-    var submitChanges = true;
-
     if (eventLoad.target.status == 200 && eventLoad.target.responseXML) {
       // Check if the first date predates lastMod and only Note or Attachment
       // related changes were made.
@@ -811,12 +830,14 @@ function checkBugChange(bugid, lastMod, inMsg) {
       var lastModHistoryDate = new Date(history[0]['Date']);
       var lastModDate = new Date(lastMod);
       var hasHistoryOverwriteableChanges = false;
+      var historyItem;
+      var historyItemDate;
 
       // Checking for legitimate changes here
       if (lastModHistoryDate > lastModDate) {
         for (i in history) {
-          var historyItem = history[i];
-          var historyItemDate = new Date(historyItem['Date']);
+          historyItem = history[i];
+          historyItemDate = new Date(historyItem['Date']);
           if (historyItem['Field'] != "File Name" &&
               historyItem['Field'] != "Note Title" &&
               historyItemDate > lastModDate) {
@@ -832,8 +853,8 @@ function checkBugChange(bugid, lastMod, inMsg) {
         msg += ", and the bug now contains changes from " + lastModHistoryDate.toLocaleString() + ".\n\n";
         msg += "The following set of changes to this bug will likely be overwritten:\n\n";
         for (i in history) {
-          var historyItem = history[i];
-          var historyItemDate = new Date(historyItem['Date']);
+          historyItem = history[i];
+          historyItemDate = new Date(historyItem['Date']);
           if (historyItem['Field'] == "File Name" ||
               historyItem['Field'] == "Note Title") {
                 // Do not tell the user that their note or attachment
@@ -870,19 +891,7 @@ function checkBugChange(bugid, lastMod, inMsg) {
       msg += "Cannot confirm if past changes will be overwritten.\n";
     }
 
-    if (msg != "") {
-      msg += "\nClick OK to submit new changes despite the above warnings.";
-      msg += "\nOtherwise, press cancel and hit refresh to update your bug view.";
-      submitChanges = confirm(msg);
-    }
-
-    if (submitChanges) {
-      isSubmittingChanges = true;
-      document.getElementById("tiqitBugEdit").submit();
-    }
-
-    isWaitingOnAsyncCall = false;
-    hasShownSubmissionMessage = false;
+    submitChanges(msg);
   }
 
   function bugChangeError(eventErr) {
@@ -891,15 +900,8 @@ function checkBugChange(bugid, lastMod, inMsg) {
 
     msg += "\n\nClick OK to overwrite previous modifications and submit new changes.";
     msg += "\nOtherwise, press cancel and hit refresh to load previous modifications.";
-    submitChanges = confirm(msg);
 
-    if (submitChanges) {
-      isSubmittingChanges = true;
-      document.getElementById("tiqitBugEdit").submit();
-    }
-
-    isWaitingOnAsyncCall = false;
-    hasShownSubmissionMessage = false;
+    submitChanges(msg);
   }
 
   function bugChangeTimeout(eventErr) {
@@ -908,15 +910,8 @@ function checkBugChange(bugid, lastMod, inMsg) {
 
     msg += "\n\nClick OK to overwrite previous modifications and submit new changes.";
     msg += "\nOtherwise, press cancel and hit refresh to load previous modifications.";
-    submitChanges = confirm(msg);
 
-    if (submitChanges) {
-      isSubmittingChanges = true;
-      document.getElementById("tiqitBugEdit").submit();
-    }
-
-    isWaitingOnAsyncCall = false;
-    hasShownSubmissionMessage = false;
+    submitChanges(msg);
   }
 
   if (!isWaitingOnAsyncCall && !isSubmittingChanges) {
