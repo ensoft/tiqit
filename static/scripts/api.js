@@ -62,11 +62,15 @@ function TiqitApi(baseUrl) {
     }
 
     // Wrapper around XMLHttpRequest().
-    function fetchURL(url, onload, onerror) {
+    function fetchURL(url, onload, onerror, timeout = -1, ontimeout = null) {
         var req = new XMLHttpRequest();
         req.open("GET", url, true);
         req.onload = onload;
         req.onerror = onerror;
+        if (timeout > 0 && ontimeout != null) {
+          req.timeout = timeout;
+          req.ontimeout = ontimeout;
+        }
         req.send(null);
     }
 
@@ -164,7 +168,11 @@ function TiqitApi(baseUrl) {
     // onerror: An onerror function called when the search fails. This
     // function must be compatible with the onload function used with
     // XMLHttpRequest().
-    this.historyForBugs = function(bugs, onload, onerror) {
+    //
+    // timeout: ms before the function times out.
+    //
+    // ontimeout: function to call when history fetch times out.
+    this.historyForBugs = function(bugs, onload, onerror, timeout = -1, ontimeout = null) {
         var url = baseUrl + "/history.py?buglist=";
         for (var i = 0; i < bugs.length; i++) {
             url += encodeURIComponent(bugs[i]);
@@ -172,8 +180,8 @@ function TiqitApi(baseUrl) {
                 url += encodeURIComponent(",");
             }
         }
-        return fetchURL(url, onload, onerror);
-    } 
+        return fetchURL(url, onload, onerror, timeout, ontimeout);
+    }
 }
 
 
