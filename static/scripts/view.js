@@ -799,7 +799,7 @@ function checkBugChange(bugid, lastMod, inMsg) {
   var msg = inMsg;
 
   // Prepare the async event functions
-  bugChangeOnLoad = function(eventLoad) {
+  function bugChangeOnLoad(eventLoad) {
     var submitChanges = true;
 
     if (eventLoad.target.status == 200 && eventLoad.target.responseXML) {
@@ -885,7 +885,7 @@ function checkBugChange(bugid, lastMod, inMsg) {
     hasShownSubmissionMessage = false;
   }
 
-  bugChangeError = function(eventErr) {
+  function bugChangeError(eventErr) {
     msg += "Unable to retrieve bug history.\n";
     msg += "Cannot confirm if past changes will be overwritten.\n";
 
@@ -902,7 +902,7 @@ function checkBugChange(bugid, lastMod, inMsg) {
     hasShownSubmissionMessage = false;
   }
 
-  bugChangeTimeout = function(eventErr) {
+  function bugChangeTimeout(eventErr) {
     msg += "Bug history fetch has timed out.\n";
     msg += "Cannot confirm if past changes will be overwritten.\n";
 
