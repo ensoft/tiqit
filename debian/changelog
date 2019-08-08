@@ -2,6 +2,7 @@ tiqit (1.0.6-1) trusty; urgency=low
 
   * Improve reliability of checking external bug changes when saving changes.
     * Present user with the option of overwriting changes without page reloads.
+  * Move to use HTTPS
 
  -- Jonathan Loh <joloh@ensoft.co.uk>  Mon, 18 Mar 2019 18:36:00 +0000
 
