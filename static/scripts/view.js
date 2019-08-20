@@ -789,147 +789,11 @@ function checkFormValidity(event) {
   return valid;
 }
 
-
-var isWaitingOnAsyncCall = false;
-var hasShownSubmissionMessage = false;
-var isSubmittingChanges = false;
-
-function checkBugChange(bugid, lastMod, inMsg) {
-  var tiqitApi = new TiqitApi();
-  var msg = inMsg;
-
-  function submitChanges(msg) {
-    // Perform the bug submission letting the user confirm a prompt if
-    // submission may not be smooth (msg != "")
-    // Also reset flags regarding waiting on an async call (checking history) and if 
-    // a submission message has been shown.
-    var doSubmit = true;
-    if (msg != "") {
-      msg += "\nClick OK to submit new changes despite the above warnings.";
-      msg += "\nOtherwise, press cancel and hit refresh to update your bug view.";
-      doSubmit = confirm(msg);
-    }
-
-    if (doSubmit) {
-      isSubmittingChanges = true;
-      document.getElementById("tiqitBugEdit").submit();
-    }
-
-    isWaitingOnAsyncCall = false;
-    hasShownSubmissionMessage = false;
-  }
-
-  // Prepare the async event functions
-  function bugChangeOnLoad(eventLoad) {
-    if (eventLoad.target.status == 200 && eventLoad.target.responseXML) {
-      // Check if the first date predates lastMod and only Note or Attachment
-      // related changes were made.
-      // If not, we may have overwriteable changes. (See hasHistoryOverwriteableChanges).
-      // If this is the case, check with the user if bug changes should be submitted.
-      var history = historyDataFromXML(eventLoad.target.responseXML);
-      var lastModHistoryDate = new Date(history[0]['Date']);
-      var lastModDate = new Date(lastMod);
-      var hasHistoryOverwriteableChanges = false;
-      var historyItem;
-      var historyItemDate;
-
-      // Checking for legitimate changes here
-      if (lastModHistoryDate > lastModDate) {
-        for (i in history) {
-          historyItem = history[i];
-          historyItemDate = new Date(historyItem['Date']);
-          if (historyItem['Field'] != "File Name" &&
-              historyItem['Field'] != "Note Title" &&
-              historyItemDate > lastModDate) {
-                hasHistoryOverwriteableChanges = true;
-                break;
-          }
-        }
-      }
-
-      // Inform the user of changes that will be overwritten.
-      if (hasHistoryOverwriteableChanges) {
-        msg += "Your bug view is from " + lastModDate.toLocaleString();
-        msg += ", and the bug now contains changes from " + lastModHistoryDate.toLocaleString() + ".\n\n";
-        msg += "The following set of changes to this bug will likely be overwritten:\n\n";
-        for (i in history) {
-          historyItem = history[i];
-          historyItemDate = new Date(historyItem['Date']);
-          if (historyItem['Field'] == "File Name" ||
-              historyItem['Field'] == "Note Title") {
-                // Do not tell the user that their note or attachment
-                // may be overwritten. It won't be!
-                continue;
-          }
-          if (historyItemDate > lastModDate) {
-            if (historyItem['Operation'] == 'Delete') {
-              msg += "    Deleted '" + historyItem['Field'] + "', which was set to '" + historyItem['OldValue'] + "'\n";
-            } else if (historyItem['Operation'] == 'New Record') {
-              if (historyItem['NewValue'] == "") {
-                msg += "    Created " + historyItem['Field'] + "\n";
-              } else {
-                msg += "    Created '" + historyItem['Field'] + "' as '" + historyItem['NewValue'] + "'\n";
-              }
-            } else if (historyItem['Operation'] == 'Modify') {
-              if (historyItem['OldValue'] == "" && historyItem['NewValue'] == "") {
-                msg += "    Modified '" + historyItem['Field'] + "'\n";
-              } else if (historyItem['OldValue'] == "") {
-                msg += "    Set '" + historyItem['Field'] + "' as '" + historyItem['NewValue'] + "'\n";
-              } else {
-                msg += "    Set '" + historyItem['Field'] + "' from '" + historyItem['OldValue'] + "' to '" + historyItem['NewValue'] + "'\n";
-              }
-            } else {
-              msg += "    Performed '" + historyItem['Operation'] + "'\n";
-            }
-          }
-        }
-      }
-    } else {
-      // Failed to get the bug history.
-      // Let user still attempt submission.
-      msg += "Unable to retrieve bug history.\n";
-      msg += "Cannot confirm if past changes will be overwritten.\n";
-    }
-
-    submitChanges(msg);
-  }
-
-  function bugChangeError(eventErr) {
-    msg += "Unable to retrieve bug history.\n";
-    msg += "Cannot confirm if past changes will be overwritten.\n";
-
-    msg += "\n\nClick OK to overwrite previous modifications and submit new changes.";
-    msg += "\nOtherwise, press cancel and hit refresh to load previous modifications.";
-
-    submitChanges(msg);
-  }
-
-  function bugChangeTimeout(eventErr) {
-    msg += "Bug history fetch has timed out.\n";
-    msg += "Cannot confirm if past changes will be overwritten.\n";
-
-    msg += "\n\nClick OK to overwrite previous modifications and submit new changes.";
-    msg += "\nOtherwise, press cancel and hit refresh to load previous modifications.";
-
-    submitChanges(msg);
-  }
-
-  if (!isWaitingOnAsyncCall && !isSubmittingChanges) {
-    isWaitingOnAsyncCall = true;
-    // Generously wait 25s for bug history to arrive.
-    tiqitApi.historyForBugs([bugid], bugChangeOnLoad, bugChangeError,
-                            25000, bugChangeTimeout);
-  } else if (!hasShownSubmissionMessage) {
-    sendMessage(1, "Bug submission in progress, please wait.");
-    hasShownSubmissionMessage = true;
-  }
-}
-
 //
 // Submitting Support
 //
 
-function prepareForm(bugid, lastMod) {
+function prepareForm() {
   var form = document.getElementById('tiqitBugEdit');
   var extra = document.getElementById('tiqitExtraFormData');
 
@@ -937,7 +801,6 @@ function prepareForm(bugid, lastMod) {
   var selects = extra.getElementsByTagName('select');
 
   var extraDiv = document.getElementById('extraCopies');
-  var msg = "";
 
   while (extraDiv.childNodes.length) {
     extraDiv.removeChild(extraDiv.childNodes[0]);
@@ -987,12 +850,10 @@ function prepareForm(bugid, lastMod) {
     extraDiv.appendChild(hidden);
   }
 
-  // Determine what message to return to the caller
-  if (!checkFormValidity()) {
-    msg = "There is potential missing info in the bug. Please see fields highlighted in red.\n\n";
-  }
-
-  checkBugChange(bugid, lastMod, msg);
+  if (!checkFormValidity())
+    return confirm("Missing info in form. Submit anyway?");
+  else
+    return true;
 }
 
 //
