@@ -998,7 +998,7 @@ def getBasePath():
     return basepath
 
 def getBaseHost():
-    return 'http://%s%s' % (os.environ['HTTP_HOST'], getBasePath())
+    return 'https://%s%s' % (os.environ['HTTP_HOST'], getBasePath())
 
 def printMainGoto():
     return """
