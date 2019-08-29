@@ -1,4 +1,4 @@
-<VirtualHost *:80>
+<VirtualHost *:443>
 	ServerName # Fill in
 	ServerAlias # Fill in
 

@@ -48,7 +48,7 @@ div#tiqitContent {
 }
 
 /* External Links */
-a[href^="http://"] {
+a[href^="https://"] {
   background: url("../images/link.png") no-repeat left;
   padding-left: 20px;
 }
@@ -116,7 +116,7 @@ div#tiqitHeader a img {
   vertical-align: text-bottom;
 }
 
-div#tiqitHeader a[href^="http://"] {
+div#tiqitHeader a[href^="https://"] {
   background:   none;
   padding-left: 0;
 }
