@@ -45,7 +45,7 @@ times = [("start", time.time())]
 
 MAJ_VER   = 1
 MIN_VER   = 0
-PATCH_VER = 5
+PATCH_VER = 6
 DEV_VER   = 0
 
 VERSION = (MAJ_VER, MIN_VER, PATCH_VER)
@@ -211,7 +211,7 @@ class Config:
             'sitename': 'NIT',
             'sitetitle': 'Nameless Issue Tracker',
             'siteintro': 'This is an Issue Tracker with no name.',
-            'infourl': 'http://launchpad.net/tiqit',
+            'infourl': 'https://github.com/ensoft/tiqit',
             'administrators': '',
             'datapath': '/var/lib/tiqit/data/',
             'pluginpath': '/usr/share/tiqit/scripts/plugins/',
@@ -565,11 +565,11 @@ def printMessages():
             if (majorv, minorv) < (1, 5):
                 _printMsg(MSG_WARNING, "Your version of Firefox is not tested. You may encounter problems with some of the scripts on this page.")
         elif ua.find('Chrome') != -1:
-            _printMsg(MSG_INFO, "Chrome is not fully supported, but should work fine. There may be minor differences compared to <a href='http://getfirefox.com'>Firefox</a>, which is the main target browser.")
+            _printMsg(MSG_INFO, "Chrome is not fully supported, but should work fine. There may be minor differences compared to <a href='https://getfirefox.com'>Firefox</a>, which is the main target browser.")
         elif ua.find('Safari') != -1:
-            _printMsg(MSG_INFO, "Safari is not fully supported, but should work fine. There may be minor differences compared to <a href='http://getfirefox.com'>Firefox</a>, which is the main target browser.")
+            _printMsg(MSG_INFO, "Safari is not fully supported, but should work fine. There may be minor differences compared to <a href='https://getfirefox.com'>Firefox</a>, which is the main target browser.")
         else:
-            _printMsg(MSG_ERROR, "Your browser is not supported! This page is tested only in Firefox 1.5 and up. Things will likely not work for you as expected. Go and <a href='http://getfirefox.com'>get Firefox now</a>.")
+            _printMsg(MSG_ERROR, "Your browser is not supported! This page is tested only in Firefox 1.5 and up. Things will likely not work for you as expected. Go and <a href='https://getfirefox.com'>get Firefox now</a>.")
 
     # Let plugins print their own messages
     for typ, msg, cls in plugins.printExtraMessages():

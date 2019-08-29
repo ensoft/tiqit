@@ -1,6 +1,7 @@
 tiqit (1.0.6-1) trusty; urgency=low
 
   * Move to use HTTPS
+  * Fix HTTP response when displaying traceback
 
  -- Jonathan Loh <joloh@ensoft.co.uk>  Mon, 18 Mar 2019 18:36:00 +0000
 
