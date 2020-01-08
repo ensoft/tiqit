@@ -1,3 +1,10 @@
+tiqit (1.0.7-1) trusty; urgency=low
+
+  * Add an "Unknown-type" type of note. This allows plugins to display and
+    act on notes which have no known type.
+
+ -- Jonathan Loh <joloh@ensoft.co.uk>  Mon, 8 Jan 2020 16:40:00 +0000
+
 tiqit (1.0.6-1) trusty; urgency=low
 
   * Move to use HTTPS
