@@ -1,7 +1,7 @@
 #
 # Module for parsing Cookies, and printing Set-cookie lines
 #
-import re, Cookie
+import Cookie
 
 #
 # Parse a HTTP_COOKIE environment variable into a dict mapping cookie keys to values
