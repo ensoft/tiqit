@@ -1,9 +1,15 @@
-tiqit (1.0.7-1) trusty; urgency=low
+tiqit (1.0.8-1) trusty; urgency=low
 
   * Add an "Unknown-type" type of note. This allows plugins to display and
     act on notes which have no known type.
 
- -- Jonathan Loh <joloh@ensoft.co.uk>  Mon, 8 Jan 2020 16:40:00 +0000
+ -- Jonathan Loh <joloh@ensoft.co.uk>  Thurs, 13 Feb 2020 16:40:00 +0000
+
+tiqit (1.0.7-1) trusty; urgency=low
+
+  * Fix cookie parsing when cookie string includes cookies without "="
+
+ -- Olli Johnson <ollijohnson93@gmail.com>  Wed, 12 Feb 2020 16:10:00 +0000
 
 tiqit (1.0.6-1) trusty; urgency=low
 
