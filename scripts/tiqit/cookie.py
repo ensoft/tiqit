@@ -1,7 +1,7 @@
 #
 # Module for parsing Cookies, and printing Set-cookie lines
 #
-import re, Cookie
+import Cookie
 
 #
 # Parse a HTTP_COOKIE environment variable into a dict mapping cookie keys to values
@@ -13,14 +13,15 @@ import re, Cookie
 def parseCookie(cookie_string):
     cookie_string_in = cookie_string
 
-    # Split into an array of key-value pair strings. Cope with last element
-    # being terminated with a semi-colon.
-    pairs = re.split("; *", cookie_string)
-    if re.match("^ *$" , pairs[-1]):
-        pairs = pairs[:-1]
+    # Cookies are split on semi-colons.
+    # We're only interested in cookies with keys and values, anything without
+    # an equals is invalid although they do occur (for example "secure;" is
+    # sometimes set in the string).
+    valid_cookies = [c.strip()
+                     for c in cookie_string.split(";")
+                     if "=" in c]
 
-    # Split each string into a individual key and value, and return as an array.
-    return dict(map(lambda x: x.split("=", 1), pairs))
+    return dict([c.split("=", 1) for c in valid_cookies])
 
 #
 # Take a dict of key value pairs, and generate a series of "Set-Cookie:" headers.
