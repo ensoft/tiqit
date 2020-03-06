@@ -1,5 +1,3 @@
 # For all files in the development branch, reviews are required by one of:
 #  - Matthew Hall
-#  - Jonathan Loh
-#  - Olli Johnson
-*.* @matthewhall79 @joloh @ollij93
+*.* @matthewhall79
