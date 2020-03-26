@@ -81,7 +81,6 @@ while args.has_key('field%d' % i):
         while bracketLevel <= targetLevel:
             initSearch.append("Tiqit.search.bracketRightShift(document.getElementById('openBracket%d.%d').childNodes[1]);" % (i, bracketLevel))
             bracketLevel += 1
-
     i += 1
 
 i = 1
@@ -90,7 +89,6 @@ while args.has_key('field%d' % i):
           % (i, args['field%d' % i], args['rel%d' % i], args['val%d' % i],
              args['operation%d' % i]))
     i += 1
-
 
 if i == 1:
     if not args.has_key('modify'):
