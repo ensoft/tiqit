@@ -339,7 +339,7 @@ def displayNotes(hide=False):
   </p>
  </form>
 </div>
-""" % (bugid, "".join(["<option value='%s'>%s</option>" % (x, x) for x in noteTypes]), noteTypes[0], bugid)
+""" % (bugid, "".join(["<option value='%s'>%s</option>" % (x, x) for x in noteTypes if x != "Unknown-type"]), noteTypes[0], bugid)
 
     printSectionFooter()
 

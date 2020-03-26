@@ -52,8 +52,20 @@ if [ "$PACKAGEMODE" != true ]; then
 
     cd scripts
     ./loadclasses.py
+    if [ $? -ne 0 ]; then
+        echo "loadclasses has failed" >&2
+        exit 1
+    fi
     ./loadfields.py
+    if [ $? -ne 0 ]; then
+        echo "loadfields has failed" >&2
+        exit 1
+    fi
     ./generatejs.py
+    if [ $? -ne 0 ]; then
+        echo "generatejs has failed" >&2
+        exit 1
+    fi
     cd ..
 
     echo "Creating empty databases..."
