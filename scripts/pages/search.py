@@ -32,7 +32,7 @@ loadSavedSearch()
 args = Arguments()
 
 initSearch = ["Tiqit.search.rowsAdded = false;"]
-initSearch.append("function init() {");
+initSearch.append("function init() {")
 
 initSearch.append("""
 showSection("Searcher", true);
@@ -46,21 +46,23 @@ prefs = loadPrefs()
 
 #
 # The algorithm for regenerating a query is this:
-# - add a new row
-# - set values of new row
-# - move the row all the way to level 0
-# - move the row up to the correct level (a full set of opening brackets above it now)
-# - move the opening brackets above it to their correct level.
+# 1. Construct the format query. For each row:
+#   - add a new row
+#   - move the row all the way to level 0
+#   - move the row up to the correct level (a full set of opening brackets above it now)
+#   - move the opening brackets above it to their correct level.
+# 2. Set the content of the query. For each row:
+#   - set values of new row
+#
+# This two stage approach is required to ensure the values of query fields
+# and operators are not modified by the restructuring of the query format, so
+# they are set afterwards when all structure modifications are complete.
 #
 i = 1
 level = 0
 initSearch.append("if (!Tiqit.search.rowsAdded) {");
 while args.has_key('field%d' % i):
     initSearch.append("Tiqit.search.addRow(document.getElementById('adder' + %d));" % (i - 1))
-    initSearch.append("Tiqit.search.setRowValues(%d, '%s', '%s', '%s', '%s');" \
-          % (i, args['field%d' % i], args['rel%d' % i], args['val%d' % i],
-             args['operation%d' % i]))
-
     # Move in to level 0
     while level > 0:
         initSearch.append("Tiqit.search.shiftLeft(document.getElementById('leftShifter' + %d));" % i)
@@ -79,7 +81,13 @@ while args.has_key('field%d' % i):
         while bracketLevel <= targetLevel:
             initSearch.append("Tiqit.search.bracketRightShift(document.getElementById('openBracket%d.%d').childNodes[1]);" % (i, bracketLevel))
             bracketLevel += 1
-        
+    i += 1
+
+i = 1
+while args.has_key('field%d' % i):
+    initSearch.append("Tiqit.search.setRowValues(%d, '%s', '%s', '%s', '%s');" \
+          % (i, args['field%d' % i], args['rel%d' % i], args['val%d' % i],
+             args['operation%d' % i]))
     i += 1
 
 if i == 1:
