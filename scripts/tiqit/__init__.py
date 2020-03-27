@@ -1065,7 +1065,7 @@ pages = {
                            ['customevents', 'plugin', 'toolbar', 'fields', 'fielddata', 'defaults', 'view', 'userdropdown', 'calendar'],
                            ['toolbar', 'userdropdown', 'calendar'], SITE_MAIN),
     PAGE_VIEW:    PageInfo([LINK_HOME, LINK_NEW, LINK_SEARCH, LINK_PREFS, LINK_NEWS, LINK_META],
-                           ['customevents', 'plugin', 'toolbar', 'fields', 'fielddata', 'defaults', 'view', 'tableactions', 'userdropdown', 'filter', 'static', 'calendar'],
+                           ['customevents', 'plugin', 'toolbar', 'fields', 'fielddata', 'defaults', 'view', 'tableactions', 'userdropdown', 'filter', 'static', 'calendar', 'api', 'historydropdown'],
                            ['toolbar', 'userdropdown', 'graphs', 'calendar'], SITE_MAIN),
     PAGE_SEARCH:  PageInfo([LINK_HOME, LINK_NEW, LINK_PREFS, LINK_NEWS, LINK_META],
                            ['customevents', 'plugin', 'toolbar', 'fields', 'fielddata', 'defaults', 'userdropdown', 'search', 'calendar', 'selectfield'],

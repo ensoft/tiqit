@@ -223,17 +223,17 @@ def displayGeneral(hide=False):
     primarytitle, primarytitleDetail, primaryformat = view_sections[0]
     printSectionHeader(primarytitle, primarytitleDetail, hide);
 
-    print "<form id='tiqitBugEdit' action='edit.py' method='post' onSubmit='return prepareForm();'>"
+    print "<form id='tiqitBugEdit' action='edit.py' method='post' onSubmit=''>"
     print cls.getFormat(primaryformat) % args
 
     print """
 <div id='extraCopies'></div>
 <p>
- <input type='submit' value='Save Changes'>
+ <input type='button' value='Save Changes' onClick='prepareForm("%s","%s");'>
  <input type='button' value='Reset Form' onclick='resetForm();'>
- <input type='button' onclick='if (!amEditing || confirm("You&apos;ve made changes to this bug. Cloning it will throw them away. Are you sure you want to continue?")) document.location = "newbug.py?bugid=%(Identifier)s";' value='Clone Bug'>
+ <input type='button' onclick='if (!amEditing || confirm("You&apos;ve made changes to this bug. Cloning it will throw them away. Are you sure you want to continue?")) document.location = "newbug.py?bugid=%s";' value='Clone Bug'>
 </p>
-</form>""" % args
+</form>""" % (bugid, args["Sys-Last-Updated"], args["Identifier"])
 
     printSectionFooter()
 
@@ -244,8 +244,8 @@ def displayExtra(hide=False):
         print cls.getFormat(format) % args
         print """
 
-<p><input type='button' value='Save Changes' onClick='if (prepareForm()) document.getElementById("tiqitBugEdit").submit();'></p>
-"""
+<p><input type='button' value='Save Changes' onClick='prepareForm("%s", "%s")'></p>
+""" % (bugid, args["Sys-Last-Updated"])
 
         printSectionFooter()
     print "</form>"
@@ -582,9 +582,9 @@ def displayRelates(hide=False):
       </tr>
      </table>
     </p>
-    <p><input type='button' value='Save Changes' onClick='if (prepareForm()) document.getElementById("tiqitBugEdit").submit();'></p>
+    <p><input type='button' value='Save Changes' onClick='prepareForm("%s","%s");'></p>
     -->
-    """
+    """ % (bugid, args["Sys-Last-Updated"])
 
     printSectionFooter()
 
