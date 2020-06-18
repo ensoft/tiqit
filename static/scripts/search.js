@@ -305,6 +305,12 @@ function createFieldPicker(num) {
         newF.appendChild(opt);
     }
 
+    // If being added after an existing entry, copy that entries value
+    var previousF = document.getElementById('field' + (num - 1));
+    if (previousF) {
+        newF.value = previousF.value;
+    }
+
     return newF;
 }
 
@@ -320,6 +326,12 @@ function createRelPicker(num, field) {
         opt.appendChild(document.createTextNode(allFields[field].rels[i][0]));
 
         newRel.appendChild(opt);
+    }
+
+    // If being added after an existing entry, copy that entries value
+    var previousRel = document.getElementById('rel' + (num - 1));
+    if (previousRel) {
+        newRel.value = previousRel.value;
     }
 
     newRel.addEventListener("change", function()
@@ -352,6 +364,12 @@ function createOp(num, level) {
 
     newOp.appendChild(newAnd);
     newOp.appendChild(newOr);
+
+    // If being added after an existing entry, copy that entries value
+    var prevOp = document.getElementById('op' + (num - 1));
+    if (prevOp) {
+        newOp.value = prevOp.value;
+    }
 
     newDiv.appendChild(newLevel);
     newDiv.appendChild(newOp);
@@ -542,10 +560,18 @@ function addRow(event) {
     var theOp = document.getElementById('operation' + (num - 1));
     var theP = document.getElementById('row' + (num - 1));
     if (theOp && theOp.parentNode != theP) {
-        // Swap the select values
-        var theSelectValue = theOp.getElementsByTagName('select')[0].value;
-        theOp.getElementsByTagName('select')[0].value = newOp.getElementsByTagName('select')[0].value;
-        newOp.getElementsByTagName('select')[0].value = theSelectValue;
+        // Our new Op should now take on the value of the existing Op so the
+        // value between the brackets remains the same.
+        // The existing Op should then be updated to copy the operator of the
+        // line before it if there is one so ORs/ANDs within a set of brackets
+        // behave consistently
+        var theOpSelect = document.getElementById('op' + (num - 1));
+        var newOpSelect = document.getElementById('op' + num);
+        newOpSelect.value = theOpSelect.value;
+        var prevOpSelect = document.getElementById('op' + (num - 2));
+        if (prevOpSelect) {
+            theOpSelect.value = prevOpSelect.value;
+        }
 
         // Position the ops
         theOp.parentNode.appendChild(newOp);

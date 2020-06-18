@@ -4,6 +4,8 @@ tiqit (1.0.8-1) trusty; urgency=low
     existing query.
   * Add an "Unknown-type" type of note. This allows plugins to display and
     act on notes which have no known type.
+  * Improve search construction by defaulting new rows to the attributes of
+    the previous row
 
  -- Olli Johnson <ollijohnson93@gmail.com>  Wed, 25 Mar 2020 17:50:00 +0000
 
