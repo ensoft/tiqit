@@ -41,12 +41,14 @@ class Intern(object):
        prio.sort(reverse=True)
        print prio[:26]
        saved = 0
-       for v, key in prio:
-           self.interns[key] = self.keys.pop()
-           saved += v
-           print "Interning", key, "saving", v, "characters"
-           if not self.keys:
-               break
+       print "Writing interning information to 'interning.dat'..."
+       with open('interning.dat', 'ab') as file:
+          for v, key in prio:
+              self.interns[key] = self.keys.pop()
+              saved += v
+              file.write("Interning {} saving {} characters\n".format(key, v))
+              if not self.keys:
+                  break
        print "Failed to optimise", len(prio) - len(self.interns), "strings"
        print "But saved", saved, "characters"
 

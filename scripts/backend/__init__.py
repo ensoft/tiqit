@@ -82,6 +82,7 @@ noteTypes = ("A-comments",
              "Testplan",
              "U-comments",
              "Unit-test",
+             "Unknown-type",
              "V-comments",
              "W-comments",
              "Workaround");
