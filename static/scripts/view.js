@@ -490,27 +490,6 @@ function newNoteTitle(theSelect) {
 notbugFields = new Array('Triggers', 'Reason', 'Origin', 'Category',
 			 'Dev-escape-activity-display');
 
-function checkS1S2Downgrade() {
-  var sev = document.getElementById('Severity');
-
-  if (sev.defaultValue <= 2 && sev.value >= 3) {
-    var S1S2 = document.getElementById('S1S2-without-workaround');
-
-    if (!S1S2) {
-      S1S2 = document.createElement('input');
-      S1S2.setAttribute('type', 'hidden');
-      S1S2.setAttribute('id', 'S1S2-without-workaround');
-      S1S2.setAttribute('name', 'S1S2-without-workaround');
-
-      document.getElementById('tiqitBugEdit').appendChild(S1S2);
-    }
-
-    S1S2.value = confirm("If you are downgrading the Severity because there\n" +
-                         "is now a workaround for this S1/S2 Bug, press OK.");
-  }
-}
-
-
 function getFieldValueView(field) {
     var editor;
 
@@ -584,9 +563,6 @@ function updateChildrenView(event) {
             // to the dropdown
             editor.input.addEventListener('change', updateChildrenView, false);
             editor.input.addEventListener('change', checkFormValidity, false);
-            if (field.childfields[child] == "Severity") {
-                editor.input.addEventListener('change', checkS1S2Downgrade, false);
-            }
             if (field.childfields[child].nodeName == 'INPUT' && field.childfields[child].type == 'checkbox') {
                 editor.input.defaultChecked = old_editor.input.defaultChecked;
             } else {
@@ -610,6 +586,7 @@ function updateChildrenView(event) {
 }
 
 function checkFieldValue(editor) {
+
   var field = allFields[editor.id];
   var input = editor.input ? editor.input : editor;
   var value = input.value;
@@ -634,8 +611,11 @@ function checkFieldValue(editor) {
 }
 
 function checkFormValidity(event) {
-  // First things first: check if the changed field triggers any defaults
   var field = allFields[event ? event.target ? event.target.id : null : null];
+  // Check if there are any dictated by the plugin
+  pluginCheckFormValidity(field);
+
+  // Check if the changed field triggers any defaults
   if (field && field.reverseDefaultsWith && field.reverseDefaultsWith.length > 0) {
     // Pass around a set of already updated field names, to make sure a field
     // is not written twice in a chain of default value lookups.

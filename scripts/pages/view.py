@@ -56,7 +56,6 @@ inFields = extractFieldsFromFormat(cls, bugView.getViewBugSections(theDom))
 inFields += [allFields[x] for x in ['Related-bugs']]
 
 args = getFormatArguments(theDom, inFields=inFields)
-args['Severity'] = args['Severity'].replace('checkFormValidity(event)', 'checkS1S2Downgrade(); checkFormValidity(event)')
 args['Identifier'] = bugid
 
 #
