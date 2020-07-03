@@ -320,17 +320,19 @@ function createRelPicker(num, field) {
     newRel.setAttribute('id', 'rel' + num);
     newRel.setAttribute('name', 'rel' + num);
 
+    var allowedValues = [];
     for (var i in allFields[field].rels) {
         opt = document.createElement('option');
         opt.setAttribute('value', allFields[field].rels[i][1]);
         opt.appendChild(document.createTextNode(allFields[field].rels[i][0]));
+        allowedValues.push(allFields[field].rels[i][1]);
 
         newRel.appendChild(opt);
     }
 
     // If being added after an existing entry, copy that entries value
     var previousRel = document.getElementById('rel' + (num - 1));
-    if (previousRel) {
+    if (previousRel && allowedValues.includes(previousRel.value)) {
         newRel.value = previousRel.value;
     }
 
