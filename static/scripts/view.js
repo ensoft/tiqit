@@ -865,7 +865,7 @@ function updateFileName() {
   var encTitle = document.getElementById("fileTitle");
   var fileInput = document.getElementById("theFile");
 
-  var fileName = fileInput.files.item(0).name.split('.', 1)[0];
+  var fileName = fileInput.files.item(0).name.replace(/^\.+/g, '').split('.', 1)[0];
 
   //window.alert(fileName);
 
