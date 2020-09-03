@@ -45,7 +45,7 @@ times = [("start", time.time())]
 
 MAJ_VER   = 1
 MIN_VER   = 0
-PATCH_VER = 9
+PATCH_VER = 10
 DEV_VER   = 0
 
 VERSION = (MAJ_VER, MIN_VER, PATCH_VER)
@@ -1124,7 +1124,7 @@ def printPageHeader(pageName, pageTitle="", initScript=None, otherHeaders=[],
     if outgoingCookies:
         for c in outgoingCookies:
             print c
-        print "Set-Cookie: update=; expires=Sat, 01-Jan-2000 00:00:00 GMT; path=%s" % getBasePath()
+    print "Set-Cookie: update=; Max-Age=0; path=%s" % getBasePath()
     print "Content-Type: text/html; charset=utf-8"
     print """
 <html>

@@ -18,7 +18,7 @@ __all__ = [
     "filterDisplayUser",
 ]
 
-TEXT_TYPES = ('Component', 'AcmeComponent', 'Text', 'Number', 'ForeignID')
+TEXT_TYPES = ('Component', 'AcmeComponent', 'Text', 'Number', 'ForeignID', 'Character', 'Varchar')
 
 # This function calculates the cross product of 2 lists of tuples to give
 # another list of tuples as per the following example:
@@ -187,7 +187,7 @@ class TiqitField(object):
         elif self.type == 'Boolean':
             self._filterEditableHtml = filterDisplayEditableCheckbox
         else:
-            raise KeyError, "Unknown field type %s (type is %s)" % (self.name, self.type)
+            raise KeyError, "Unknown field type for field '%s' (type is %s)" % (self.name, self.type)
 
     def _getSaveName(self):
         return self.viewnames[0]

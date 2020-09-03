@@ -86,10 +86,10 @@ TiqitField = function(name, shortname, longname, ftype, maxlen, displaylen, req,
     } else if (this.ftype == 'Userid' && this.mvf) {
       this.rels = relUserMvf;
       this.values = null;
-    } else if (contains(['Text', 'Component', 'ForeignID'], this.ftype) && !this.mvf) {
+    } else if (contains(['Text', 'Component', 'ForeignID', 'Character', 'Varchar'], this.ftype) && !this.mvf) {
       this.rels = relText;
       this.values = null;
-    } else if (contains(['Text', 'Component', 'ForeignID'], this.ftype) && this.mvf) {
+    } else if (contains(['Text', 'Component', 'ForeignID', 'Character', 'Varchar'], this.ftype) && this.mvf) {
       this.rels = relTextMvf;
       this.values = null;
     } else if (this.ftype == 'Boolean') {

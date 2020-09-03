@@ -1,3 +1,12 @@
+tiqit (1.0.10-1) trusty; urgency=low
+
+  * Empty the "update" cookie to prevent alerts persisting unnecessarily.
+  * Add support for new field types.
+  * Fix adding dot-files creating attachments with empty names.
+  * Fix relationships getting cleared when editing search query types.
+
+ -- Jonathan Loh <Joloh@cisco.com> Wed, 14 August 2020 13:02:02 +0000
+
 tiqit (1.0.9-1) trusty; urgency=low
 
   * Account for plugins which do not provide outgoing cookies.
