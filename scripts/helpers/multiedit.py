@@ -35,7 +35,7 @@ else:
     is_get_changes_success = True
     for f in fields:
         if not is_get_changes_success:
-            continue
+            break
 
         try:
             changes[allFields[f].savename] = allFields[f].filterEdit(args, args[f])
