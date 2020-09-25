@@ -10,7 +10,7 @@ from backend import *
 args = Arguments()
 
 #
-# First check for scribbling
+# First check for changes the user is not aware of.
 #
 data = loadBugs([args['Identifier']])[0]
 
@@ -25,38 +25,54 @@ if realupdate > lastupdate:
 
 else:
     #
-    # Now build up arguments
+    # Determine the changes the user has requested. Convert each change to
+    # its backend format.
     #
 
     fields = args['fields'].split(',')
     changes = {}
 
+    is_get_changes_success = True
     for f in fields:
-        # The value should be really filterEdited. This logic is missing and
-        # should be added to fix changing the inability to save Component
-        # on the multiedit page.
-        changes[allFields[f].savename] = args[f]
+        if not is_get_changes_success:
+            break
 
-    try:
-        updateBug(args['Identifier'], changes)
+        try:
+            changes[allFields[f].savename] = allFields[f].filterEdit(args, args[f])
+        except Exception as err:
+            # There's an issue with the conversion to the backend format.
+            is_get_changes_success = False
+            queueMessage(MSG_ERROR,
+                         "Failed to save changes to {}. Unable to convert {} value '{}': {}".format(
+                             args['Identifier'], f, args[f], str(err)))
+            printXMLPageHeader(extraheaders=['Status: 500'])
+            printXMLMessages()
+            printXMLPageFooter()
 
-        data = loadBugs([args['Identifier']])[0]
+    if is_get_changes_success:
+        #
+        # Attempt to save the changes
+        #
+        try:
+            updateBug(args['Identifier'], changes)
 
-        printXMLPageHeader()
-        printXMLMessages()
-        printXMLSectionHeader("buglist")
-        print """
+            data = loadBugs([args['Identifier']])[0]
+
+            printXMLPageHeader()
+            printXMLMessages()
+            printXMLSectionHeader("buglist")
+            print """
   <bug identifier='%s' lastupdate='%s'>""" % (args['Identifier'], data['Sys-Last-Updated'])
 
-        for f in fields:
-            print "<field name='%s'><![CDATA[%s]]></field>" % (encodeHTML(f), encodeCDATA(args[f]))
+            for f in fields:
+                print "<field name='%s'><![CDATA[%s]]></field>" % (encodeHTML(f), encodeCDATA(args[f]))
 
-        print """  </bug>"""
-        printXMLSectionFooter("buglist")
-        printXMLPageFooter()
+            print """  </bug>"""
+            printXMLSectionFooter("buglist")
+            printXMLPageFooter()
 
-    except TiqitException, e:
-        queueMessage(e.type, "Backend Error: %s" % e.output)
-        printXMLPageHeader(extraheaders=['Status: 500'])
-        printXMLMessages()
-        printXMLPageFooter()
+        except TiqitException, e:
+            queueMessage(e.type, "Backend Error: %s" % e.output)
+            printXMLPageHeader(extraheaders=['Status: 500'])
+            printXMLMessages()
+            printXMLPageFooter()
