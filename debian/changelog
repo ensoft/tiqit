@@ -1,3 +1,10 @@
+tiqit (1.0.12-1) trusty: urgency=low
+
+  * Fix form entries being reset on page load. Let browser handle resetting
+    of values in the form.
+
+-- Olli Johnson <ollijohnson93@gmail.com>  Thur, 08 Jan 2021 16:54:00 +0000
+
 tiqit (1.0.11-1) trusty; urgency=high
 
   * Use filterEdit functionality to convert modified fields into their
