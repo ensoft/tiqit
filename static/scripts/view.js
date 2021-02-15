@@ -575,11 +575,6 @@ function updateChildrenView(event) {
                 old_editor.input = old_editor;
             }
 
-            // Go back to the default value if we are not a checkbox
-            if (!(field.childfields[child].nodeName == 'INPUT' && field.childfields[child].type == 'checkbox')) {
-                editor.input.value = old_editor.input.defaultValue;
-            }
-           
             // Add the event listener(s) updateChildrenView and checkFormValidity
             // to the dropdown
             editor.input.addEventListener('change', updateChildrenView, false);
