@@ -5,13 +5,11 @@
 
 from distutils.core import setup
 
-setup(name='tiqit',
+setup(name='tiqitlib',
       version="1.0.12",
-      description='Tiqit: The Intelligent Issue Tracker',
+      description='Python library for Tiqit: The Intelligent Issue Tracker',
       url='https://github.com/ensoft/tiqit',
       maintainer='Tiqit maintainers at Ensoft',
       maintainer_email='ensoft-tiqit@cisco.com',
-      packages=['', 'actions', 'backend', 'frontend', 'helpers', 'pages',
-                'tiqit', 'util'],
-      package_dir={'': 'scripts'},
+      py_modules=['tiqitlib'],
      )
