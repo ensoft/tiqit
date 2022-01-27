@@ -1,7 +1,7 @@
 #! /usr/bin/python
 
 import time
-from backend import * # allFields
+from backend import *
 from tiqit import *
 from frontend import *
 
