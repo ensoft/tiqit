@@ -1,7 +1,7 @@
 #! /usr/bin/python
 
 import time
-from backend import *
+from backend import * # allFields
 from tiqit import *
 from frontend import *
 
@@ -54,9 +54,16 @@ for field in [x for x in fieldsInUpdate if allFields[x].editable]:
     old = data[fieldObj.name]
     new = ''
     if args.has_key(field):
-        new = fieldObj.filterEdit(args, args[field])
+        new = args[field]
+
     if old != new:
         changes[fieldObj.name] = new
+
+# Convert any changed fields to the backend format
+changed_fields = [f for f in changes]
+for field in changed_fields:
+    fieldObj = allFields[field]
+    changes[field] = fieldObj.filterEdit(args, args[field])
 
 # Now fix multi value fields
 for field in changes.keys():
