@@ -270,7 +270,7 @@ def displayNotes(hide=False):
         print "<p>No Enclosures or Attachments.</p>"
     else:
         print """
-    <form action='editnote.py' method='post'>
+    <form action='editnote.py' onsubmit='onSubmitEnclosure()' method='post'>
     <input type='hidden' name='bugid' value='%s'>
     <input type='hidden' name='isUpdate' value='true'>
     <div id='encTableContainer'>
@@ -298,7 +298,7 @@ def displayNotes(hide=False):
 </p>
 <div id='newnote' class='note' style='display: none;'>
  <p>Add new Enclosure:</p>
- <form action='editnote.py' method='post'>
+ <form action='editnote.py' onsubmit='onSubmitEnclosure()' method='post'>
   <input type='hidden' name='bugid' value='%s'>
   <table>
    <tr>
