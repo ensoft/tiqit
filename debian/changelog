@@ -2,6 +2,8 @@ tiqit (1.0.13-1) trusty; urgency=low
 
   * Fix comparing backend and frontend values when editing a defect causing
     some fields to be submitted as changed despite no change being present.
+  * Replace newlines with unicode characters when communicating between the
+    front and backend to work around limitations in OIDC redirects.
 
  -- Olli Johnson <ollijohnson93@gmail.com>  Thu, 27 Jan 2021 12:23:00 +0000
 
