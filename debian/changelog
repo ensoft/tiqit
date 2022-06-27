@@ -1,9 +1,25 @@
+tiqit (1.0.13-1) trusty; urgency=low
+
+  * Fix comparing backend and frontend values when editing a defect causing
+    some fields to be submitted as changed despite no change being present.
+  * Fix issues with OIDC redirects causing newlines in enclosures to be
+    removed after session timeouts.
+
+ -- Olli Johnson <ollijohnson93@gmail.com>  Thu, 27 Jan 2021 12:23:00 +0000
+
+tiqit (1.0.12-1) trusty; urgency=low
+
+  * Fix form entries being reset on page load. Let browser handle resetting
+    of values in the form.
+
+ -- Olli Johnson <ollijohnson93@gmail.com>  Fri, 08 Jan 2021 16:54:00 +0000
+
 tiqit (1.0.11-1) trusty; urgency=high
 
   * Use filterEdit functionality to convert modified fields into their
     backend format during search result bug record modifications.
 
- -- Jonathan Loh <Joloh@cisco.com> Wed, 14 August 2020 13:02:02 +0000
+ -- Jonathan Loh <Joloh@cisco.com>  Wed, 14 Aug 2020 13:02:02 +0000
 
 tiqit (1.0.10-1) trusty; urgency=low
 
@@ -12,13 +28,13 @@ tiqit (1.0.10-1) trusty; urgency=low
   * Fix adding dot-files creating attachments with empty names.
   * Fix relationships getting cleared when editing search query types.
 
- -- Jonathan Loh <Joloh@cisco.com> Wed, 14 August 2020 13:02:02 +0000
+ -- Jonathan Loh <Joloh@cisco.com>  Wed, 14 Aug 2020 13:02:02 +0000
 
 tiqit (1.0.9-1) trusty; urgency=low
 
   * Account for plugins which do not provide outgoing cookies.
 
- -- Jonathan Loh <Joloh@cisco.com> Wed, 01 July 2020 18:02:02 +0000
+ -- Jonathan Loh <Joloh@cisco.com>  Wed, 01 Jul 2020 18:02:02 +0000
 
 tiqit (1.0.8-1) trusty; urgency=low
 
@@ -57,7 +73,7 @@ tiqit (1.0.5-1) trusty; urgency=low
     a compound search.
   * Added missing code for config directories
 
- -- Jonathan Loh <joloh@ensoft.co.uk> Thurs, 15 Nov 2018 15:30:00 +0100
+ -- Jonathan Loh <joloh@ensoft.co.uk>  Thu, 15 Nov 2018 15:30:00 +0100
 
 tiqit (1.0.4-1) trusty; urgency=low
 
@@ -95,4 +111,3 @@ tiqit (1.0.0-1) precise; urgency=low
   * Initial open source release.
 
  -- Martin Morrison <martin.morrison@gmail.com>  Thu, 09 Jan 2014 16:09:29 +0000
-

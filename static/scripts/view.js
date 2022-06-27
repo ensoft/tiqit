@@ -79,6 +79,7 @@ addCustomEventListener("FirstWindowLoad", calDropDownInit);
 
 // The object currently being edited.
 var amEditing = null;
+var amEditingTextarea = null;
 
 var editMsg = "You have already changed another section of this bug.\nYou may only edit one section at a time.\n\nPlease save those changes, or undo them, then try again."
 
@@ -178,6 +179,7 @@ function editEnclosure(button) {
   button.style.display = 'none';
 
   amEditing = row;
+  amEditingTextarea = textBox;
 }
 
 function cancelEnclosureEdit(button) {
@@ -213,6 +215,19 @@ function cancelEnclosureEdit(button) {
   button.style.display = 'inline';
 
   amEditing = null;
+  amEditingTextarea = null;
+}
+
+function onSubmitEnclosure() {
+  if (amEditingTextarea) {
+    /*
+     * Replace line endings with the unicode line-separator as this doesn't get
+     * interpreted and lost during urlencoding.
+     * This avoids an issue where urlencoded newliens get dropped during
+     * redirects through OIDC.
+     */
+    amEditingTextarea.value = amEditingTextarea.value.replace(/\r?\n/g, "\u2028")
+  }
 }
 
 function deleteEnclosure(button) {
@@ -575,11 +590,6 @@ function updateChildrenView(event) {
                 old_editor.input = old_editor;
             }
 
-            // Go back to the default value if we are not a checkbox
-            if (!(field.childfields[child].nodeName == 'INPUT' && field.childfields[child].type == 'checkbox')) {
-                editor.input.value = old_editor.input.defaultValue;
-            }
-           
             // Add the event listener(s) updateChildrenView and checkFormValidity
             // to the dropdown
             editor.input.addEventListener('change', updateChildrenView, false);

@@ -28,7 +28,13 @@ else:
         # Save the new name for the next step
         noteTitle = newTitle
 
+    # Replace unicode line-separator characters with standard newlines
+    # These are inserted by the JS to avoid newlines being urlencoded and lost
+    # during redirects through OIDC.
+    noteContent = args['noteContent']
+    noteContent = noteContent.replace(u'\u2028', '\n')
+
     # Now update/create the note
-    addNote(bugid, noteType, noteTitle, args['noteContent'], args.has_key('isUpdate'))
+    addNote(bugid, noteType, noteTitle, noteContent, args.has_key('isUpdate'))
 
 redirect('%s' % bugid)
