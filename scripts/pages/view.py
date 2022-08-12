@@ -86,7 +86,11 @@ class Note(object):
          </td>
         </tr>
         <tr class='note' style='display: none;'>
-         <td colspan='7'><pre>%(Note)s</pre></td>
+         <td colspan='7'>
+            <pre>%(Note)s</pre>
+            <textarea style='display: none;' class='edit'>%(Note)s</textarea>
+            <textarea style='display: none;' class='send'></textarea>
+         </td>
         </tr>
         """ % self.info
 
@@ -163,6 +167,8 @@ def showPage():
                     ('History', displayHistory),
                     ('Relates', displayRelates)]
 
+    # @@@ - Should likely be including the security section in this and removing
+    # the save changes button etc as part of that
     viewSections.extend(plugins.getViewSections())
 
     # Show/hide sections as requested by prefs
@@ -291,6 +297,13 @@ def displayNotes(hide=False):
         print "</table></div></form>"
 
     # And the 'new' section, for adding enclosures
+    # Note the textareas are split into "Edit" and a hidden "Send" to replace
+    # newlines with unicode characters when sending to the server to work
+    # around a known auth issue with OIDC.
+    # Having separate boxes avoids issues where the note fails submit, the user
+    # navigates back to edit the note again but now sees it with the unicode
+    # characters present instead of the newlines. Most browsers don't render
+    # the unicode characters at all.
     print """
 <p id='newencbuttons'>
  <input type='button' value='New Note' onclick='showNewNote();'>
@@ -309,7 +322,8 @@ def displayNotes(hide=False):
    </tr>
    <tr>
     <td colspan='4'>
-     <textarea id='newnotecontent' name='noteContent' style='width: 100%%' rows='18'></textarea>
+     <textarea class="edit" style='width: 100%%' rows='18'></textarea>
+     <textarea class="send" name='noteContent' style='display: none'></textarea>
     </td>
    </tr>
   </table>

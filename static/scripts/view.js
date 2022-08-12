@@ -77,11 +77,11 @@ addCustomEventListener("FirstWindowLoad", calDropDownInit);
 // Enclosure Handling
 //
 
-// The object currently being edited.
-var amEditing = null;
-var amEditingTextarea = null;
-
-var editMsg = "You have already changed another section of this bug.\nYou may only edit one section at a time.\n\nPlease save those changes, or undo them, then try again."
+var editMsg = (
+  "You have already changed another section of this bug.\n"
+  + "You may only edit one section at a time.\n\n"
+  + "Please save those changes, or undo them, then try again."
+)
 
 // Create a <select> with all the note types in it.
 function makeNoteTypeSelect() {
@@ -121,33 +121,37 @@ function hideEnclosure(row) {
   img.alt = '[+]';
   img.title = 'Show Enclosure';
 
-  if (amEditing == row) {
+  // If we're editing this row, cancel the edit
+  if (row.id == "editing") {
     cancelEnclosureEdit(row.cells[6].getElementsByTagName('input')[0]);
   }
 }
 
 function editEnclosure(button) {
-  if (amEditing) {
+  // Check if there's already a note being edited
+  if (document.getElementById("editing")) {
     alert(editMsg);
     return;
   }
 
   var row = button.parentNode.parentNode;
+  row.id = "editing";
   var table = row.parentNode.parentNode;
 
+  // Make sure the note is visible
   showEnclosure(row);
 
-  // Text box
-  var textBox = document.createElement('textarea');
-  textBox.setAttribute('name', 'noteContent');
-  textBox.setAttribute('rows', 20);
+  // Mark the textareas as being edited
+  var pre = table.rows[row.rowIndex + 1].cells[0].getElementsByTagName("pre")[0];
+  var textareaEdit = table.rows[row.rowIndex + 1].cells[0].getElementsByClassName("edit")[0];
+  textareaEdit.id = 'noteContentEdit';
+  var textareaSend = table.rows[row.rowIndex + 1].cells[0].getElementsByClassName("send")[0];
+  textareaSend.id = 'noteContentSend';
+  textareaSend.name = 'noteContent';
 
-  var pre = table.rows[row.rowIndex + 1].cells[0].firstChild;
-
-  textBox.appendChild(document.createTextNode(pre.textContent));
-
-  pre.parentNode.appendChild(textBox);
+  // Hide the <pre> and display the <textarea>
   pre.style.display = 'none';
+  textareaEdit.style.display = 'block';
 
   // Type select
   var types = makeNoteTypeSelect();
@@ -177,29 +181,30 @@ function editEnclosure(button) {
   button.nextSibling.nextSibling.style.display = 'inline';
   button.nextSibling.nextSibling.nextSibling.style.display = 'none';
   button.style.display = 'none';
-
-  amEditing = row;
-  amEditingTextarea = textBox;
 }
 
 function cancelEnclosureEdit(button) {
 
   var row = button.parentNode.parentNode;
   var table = row.parentNode.parentNode;
+  var cell = table.rows[row.rowIndex + 1].cells[0];
 
-  if (amEditing != row) {
+  if (row.id != "editing") {
     alert("How did you manage to cancel an edit you weren't performing?");
     return;
   }
+  row.id = '';
 
-  // Text box
-  var pre = document.createElement('textarea');
+  var pre = cell.getElementsByTagName("pre")[0];
+  var textareaEdit = document.getElementById("noteContentEdit");
+  textareaEdit.id = '';
+  var textareaSend = document.getElementById("noteContentSend");
+  textareaSend.id = '';
+  textareaSend.name = '';
 
-  var pre = table.rows[row.rowIndex + 1].cells[0].firstChild;
-  var textBox = table.rows[row.rowIndex + 1].cells[0].lastChild;
-
-  textBox.parentNode.removeChild(textBox);
+  // Hide the <textarea> and display the <pre>
   pre.style.display = 'block';
+  textareaEdit.style.display = 'none';
 
   // Note Type
   row.cells[1].replaceChild(document.createTextNode("'" + row.cells[1].firstChild.defaultValue + "' Note"), row.cells[1].firstChild);
@@ -213,31 +218,30 @@ function cancelEnclosureEdit(button) {
   button.nextSibling.nextSibling.style.display = 'none';
   button.nextSibling.nextSibling.nextSibling.style.display = 'inline';
   button.style.display = 'inline';
-
-  amEditing = null;
-  amEditingTextarea = null;
 }
 
 function onSubmitEnclosure() {
-  if (amEditingTextarea) {
-    /*
-     * Replace line endings with the unicode line-separator as this doesn't get
-     * interpreted and lost during urlencoding.
-     * This avoids an issue where urlencoded newliens get dropped during
-     * redirects through OIDC.
-     */
-    amEditingTextarea.value = amEditingTextarea.value.replace(/\r?\n/g, "\u2028")
+  /*
+   * Replace line endings with the unicode line-separator as this doesn't get
+   * interpreted and lost during urlencoding.
+   * This avoids an issue where urlencoded newliens get dropped during
+   * redirects through OIDC.
+   */
+  let noteContentEdit = document.getElementById("noteContentEdit");
+  let noteContentSend = document.getElementById("noteContentSend");
+  if (noteContentEdit && noteContentSend) {
+    noteContentSend.value = noteContentEdit.value.replace(/\r?\n/g, "\u2028");
   }
 }
 
 function deleteEnclosure(button) {
-  if (amEditing) {
+  if (document.getElementById("editing")) {
     alert(editMsg);
     return;
   }
 
   var row = button.parentNode.parentNode;
-  var table = row.parentNode.parentNode;
+  row.id = 'editing';
 
   // Note title
   var oldTitle = document.createElement('input');
@@ -246,19 +250,17 @@ function deleteEnclosure(button) {
   oldTitle.setAttribute('value', row.cells[0].lastChild.textContent);
   row.cells[2].appendChild(oldTitle);
 
-  amEditing = row;
-
   button.form.submit();
 }
 
 function renameAttachment(button) {
-  if (amEditing) {
+  if (document.getElementById("editing")) {
     alert(editMsg);
     return;
   }
 
   var row = button.parentNode.parentNode;
-  var table = row.parentNode.parentNode;
+  row.id = 'editing'
 
   // Title
   // First save old one
@@ -275,8 +277,6 @@ function renameAttachment(button) {
   title.setAttribute('size', 40);
   title.addEventListener('click', function(event) { event.stopPropagation(); }, true);
   row.cells[0].replaceChild(title, row.cells[0].lastChild);
-
-  amEditing = row;
 
   button.style.display = 'none';
   button.nextSibling.style.display = 'inline';
@@ -296,6 +296,7 @@ function saveAttachmentRename(button) {
 
 function cancelAttachmentRename(button) {
   var row = button.parentNode.parentNode;
+  row.id = '';
 
   var oldTitle = row.cells[2].lastChild;
   var fileTitle = oldTitle.value;
@@ -308,11 +309,10 @@ function cancelAttachmentRename(button) {
   button.style.display = 'none';
   button.nextSibling.style.display = 'inline';
 
-  amEditing = null;
 }
 
 function deleteAttachment(button) {
-  if (amEditing) {
+  if (document.getElementById("editing")) {
     alert(editMsg);
     return;
   }
@@ -408,63 +408,89 @@ function loadAttachments() {
 // New Note/File functions
 
 function showNewNote() {
-  if (amEditing) {
+  if (document.getElementById("editing")) {
     alert(editMsg);
     return false;
   }
 
+  // Show the new note form and hide the new note buttons
   var newNote = document.getElementById("newnote");
-  var theButton = document.getElementById("newencbuttons");
-
   newNote.style.display = "block";
-  theButton.style.display = "none";
+  var buttons = document.getElementById("newencbuttons");
+  buttons.style.display = "none";
 
-  amEditing = theButton;
+  // Mark the form as being edited
+  var form = newNote.getElementsByTagName("form")[0];
+  form.id = 'editing';
+
+  // Mark the textareas as being edited
+  var textareaEdit = form.getElementsByClassName("edit")[0];
+  textareaEdit.id = 'noteContentEdit';
+  var textareaSend = form.getElementsByClassName("send")[0];
+  textareaSend.id = 'noteContentSend';
+  textareaSend.name = 'noteContent';
 }
 
 function hideNewNote() {
   var newNote = document.getElementById("newnote");
-  var theButton = document.getElementById("newencbuttons");
+  var buttons = document.getElementById("newencbuttons");
 
-  if (theButton != amEditing) {
+  var editing = document.getElementById("editing");
+  if (!editing || !newNote.contains(editing)) {
     alert("You're not editing a new Note!");
     return false;
   }
 
+  // Hide the new note form and show the new note buttons
   newNote.style.display = "none";
-  theButton.style.display = "inline";
+  buttons.style.display = "inline";
 
-  amEditing = null;
+  // Mark the form as being edited
+  var form = newNote.getElementsByTagName("form")[0];
+  form.id = '';
+
+  // Mark the textareas as no longer being edited
+  var textareaEdit = form.getElementsByClassName("edit")[0];
+  textareaEdit.id = '';
+  var textareaSend = form.getElementsByClassName("send")[0];
+  textareaSend.id = '';
+  textareaSend.name = '';
 }
 
 function showNewFile() {
-  if (amEditing) {
+  if (document.getElementById("editing")) {
     alert(editMsg);
     return false;
   }
 
+  // Show the new file form and hide the new note buttons
   var newNote = document.getElementById("newfile");
-  var theButton = document.getElementById("newencbuttons");
-
   newNote.style.display = "block";
-  theButton.style.display = "none";
+  var buttons = document.getElementById("newencbuttons");
+  buttons.style.display = "none";
 
-  amEditing = theButton;
+  // Mark the form as being edited
+  var form = newNote.getElementsByTagName("form")[0];
+  form.id = 'editing';
 }
 
 function hideNewFile() {
   var newNote = document.getElementById("newfile");
-  var theButton = document.getElementById("newencbuttons");
+  var buttons = document.getElementById("newencbuttons");
 
-  if (theButton != amEditing) {
+  var editing = document.getElementById("editing");
+  if (!editing || !newNote.contains(editing)) {
     alert("You're not editing a new File!");
     return false;
   }
 
+  // Hide the new file form and show the new note buttons
   newNote.style.display = "none";
-  theButton.style.display = "inline";
+  buttons.style.display = "inline";
 
-  amEditing = null;
+  // Mark the form as no longer being edited
+  var form = newNote.getElementsByTagName("form")[0];
+  form.id = '';
 }
 
 function initNoteTitleChange() {
@@ -479,7 +505,7 @@ addCustomEventListener("FirstWindowLoad", initNoteTitleChange);
 
 function newNoteTitle(theSelect) {
   var theT = document.getElementById('newnotetitle');
-  var templ = document.getElementById('newnotecontent');
+  var templ = document.getElementById('noteContentEdit');
 
   if (!theT.value ||
       (theSelect.oldValue && theSelect.oldValue == theT.value)) {
@@ -766,6 +792,7 @@ function checkFormValidity(event) {
         valid = false;
       } else if (def != curr) {
         editing = true;
+        var amEditing = document.getElementById("editing");
         if (amEditing && amEditing != form) {
           if (f.nodeName == 'INPUT' && f.type == 'checkbox') {
             f.checked = f.defaultChecked;
@@ -785,15 +812,16 @@ function checkFormValidity(event) {
     }
   }
 
+  var amEditing = document.getElementById("editing");
   if (editing) {
     if (amEditing && amEditing != form) {
       alert(editMsg);
       return false;
     } else {
-      amEditing = form;
+      form.id = 'editing';
     }
   } else if (amEditing == form) {
-    amEditing = null;
+    form.id = '';
   }
 
   return valid;
