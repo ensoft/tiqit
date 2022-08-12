@@ -229,7 +229,7 @@ def displayGeneral(hide=False):
     primarytitle, primarytitleDetail, primaryformat = view_sections[0]
     printSectionHeader(primarytitle, primarytitleDetail, hide);
 
-    print "<form id='tiqitBugEdit' action='edit.py' method='post' onSubmit='return prepareForm();'>"
+    print "<form name='tiqitBugEdit' action='edit.py' method='post' onSubmit='return prepareForm();'>"
     print cls.getFormat(primaryformat) % args
 
     print """
@@ -250,7 +250,7 @@ def displayExtra(hide=False):
         print cls.getFormat(format) % args
         print """
 
-<p><input type='button' value='Save Changes' onClick='if (prepareForm()) document.getElementById("tiqitBugEdit").submit();'></p>
+<p><input type='button' value='Save Changes' onClick='if (prepareForm()) document.getElementsByName("tiqitBugEdit")[0].submit();'></p>
 """
 
         printSectionFooter()
@@ -596,7 +596,7 @@ def displayRelates(hide=False):
       </tr>
      </table>
     </p>
-    <p><input type='button' value='Save Changes' onClick='if (prepareForm()) document.getElementById("tiqitBugEdit").submit();'></p>
+    <p><input type='button' value='Save Changes' onClick='if (prepareForm()) document.getElementsByName("tiqitBugEdit")[0].submit();'></p>
     -->
     """
 

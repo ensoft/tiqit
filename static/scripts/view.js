@@ -220,18 +220,30 @@ function cancelEnclosureEdit(button) {
   button.style.display = 'inline';
 }
 
-function onSubmitEnclosure() {
+function onSubmitTextarea(editid, sendid) {
   /*
    * Replace line endings with the unicode line-separator as this doesn't get
    * interpreted and lost during urlencoding.
    * This avoids an issue where urlencoded newliens get dropped during
    * redirects through OIDC.
    */
-  let noteContentEdit = document.getElementById("noteContentEdit");
-  let noteContentSend = document.getElementById("noteContentSend");
-  if (noteContentEdit && noteContentSend) {
-    noteContentSend.value = noteContentEdit.value.replace(/\r?\n/g, "\u2028");
+  let editEle = document.getElementById(editid);
+  let sendEle = document.getElementById(sendid);
+  if (editEle && sendEle) {
+    sendEle.value = editEle.value.replace(/\r?\n/g, "\u2028");
   }
+}
+
+function onSubmitEnclosure() {
+  onSubmitTextarea("noteContentEdit", "noteContentSend");
+}
+
+var textareasToSubmit = [];
+
+function onSubmitPage() {
+  textareasToSubmit.forEach((v) => {
+    onSubmitTextarea(v[0], v[1]);
+  });
 }
 
 function deleteEnclosure(button) {
@@ -543,7 +555,7 @@ function checkS1S2Downgrade() {
       S1S2.setAttribute('id', 'S1S2-without-workaround');
       S1S2.setAttribute('name', 'S1S2-without-workaround');
 
-      document.getElementById('tiqitBugEdit').appendChild(S1S2);
+      document.getElementsByName('tiqitBugEdit')[0].appendChild(S1S2);
     }
 
     S1S2.value = confirm("If you are downgrading the Severity because there\n" +
@@ -563,7 +575,7 @@ function getFieldValueView(field) {
 
 function resetForm() {
     // Want to reset both initial form and extras form.
-    document.getElementById("tiqitBugEdit").reset();
+    document.getElementsByName("tiqitBugEdit")[0].reset();
     document.getElementById("tiqitExtraFormData").reset();
 
     // Also clear the indicator on the Component name if it has been set - 
@@ -713,7 +725,7 @@ function checkFormValidity(event) {
     }
   }
 
-  var form = document.getElementById('tiqitBugEdit');
+  var form = document.getElementsByName('tiqitBugEdit')[0];
   var f, l;
   var bannedif_field;
   var mandatoryif_field;
@@ -832,7 +844,8 @@ function checkFormValidity(event) {
 //
 
 function prepareForm() {
-  var form = document.getElementById('tiqitBugEdit');
+  onSubmitPage();
+  var form = document.getElementsByName('tiqitBugEdit')[0];
   var extra = document.getElementById('tiqitExtraFormData');
 
   var inputs = extra.getElementsByTagName('input');
