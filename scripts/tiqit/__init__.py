@@ -45,7 +45,7 @@ times = [("start", time.time())]
 
 MAJ_VER   = 1
 MIN_VER   = 0
-PATCH_VER = 13
+PATCH_VER = 14
 DEV_VER   = 0
 
 VERSION = (MAJ_VER, MIN_VER, PATCH_VER)
@@ -145,12 +145,15 @@ class Arguments(object):
         return string
 
     def __getitem__(self, key):
+        val = ''
         if self.overrides.has_key(key):
-            return self.overrides[key]
+            val = self.overrides[key]
         elif self.cgi.has_key(key):
-            return self.cgi[key].value.decode('utf-8')
-        else:
-            return ''
+            val = self.cgi[key].value.decode('utf-8')
+
+        # Replace unicode newlines with regular newlines
+        # in any argument values
+        return val.replace(u'\u2028', '\n')
 
     def __setitem__(self, key, val):
         self.overrides[key] = val

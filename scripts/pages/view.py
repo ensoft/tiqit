@@ -86,7 +86,11 @@ class Note(object):
          </td>
         </tr>
         <tr class='note' style='display: none;'>
-         <td colspan='7'><pre>%(Note)s</pre></td>
+         <td colspan='7'>
+            <pre>%(Note)s</pre>
+            <textarea style='display: none;' class='edit' rows='18'>%(Note)s</textarea>
+            <textarea style='display: none;' class='send'></textarea>
+         </td>
         </tr>
         """ % self.info
 
@@ -291,6 +295,16 @@ def displayNotes(hide=False):
         print "</table></div></form>"
 
     # And the 'new' section, for adding enclosures
+    # Note the textareas are split into "Edit", which is visible to the user
+    # but it's value isn't sent directly to the server, and a hidden "Send",
+    # which has its value sent to the server. When the form is submitted, the
+    # value of the "Edit" textarea has the newlines replaced with unicode
+    # characters and this new value is inserted into the "Send" textarea.
+    # This works around a known auth issue with OIDC.
+    # Having separate boxes avoids issues where the note fails submit, the user
+    # navigates back to edit the note again but now sees it with the unicode
+    # characters present instead of the newlines. Most browsers don't render
+    # the unicode characters at all.
     print """
 <p id='newencbuttons'>
  <input type='button' value='New Note' onclick='showNewNote();'>
@@ -309,7 +323,8 @@ def displayNotes(hide=False):
    </tr>
    <tr>
     <td colspan='4'>
-     <textarea id='newnotecontent' name='noteContent' style='width: 100%%' rows='18'></textarea>
+     <textarea class="edit" style='width: 100%%' rows='18'></textarea>
+     <textarea class="send" name='noteContent' style='display: none'></textarea>
     </td>
    </tr>
   </table>

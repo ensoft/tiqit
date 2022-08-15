@@ -60,8 +60,7 @@ for field in [x for x in fieldsInUpdate if allFields[x].editable]:
         changes[fieldObj.name] = new
 
 # Convert any changed fields to the backend format
-changed_fields = [f for f in changes]
-for field in changed_fields:
+for field in changes:
     fieldObj = allFields[field]
     changes[field] = fieldObj.filterEdit(args, args[field])
 

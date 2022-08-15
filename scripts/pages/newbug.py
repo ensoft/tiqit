@@ -82,7 +82,7 @@ print """
 <h1>
   %s
 </h1>
-<form id='tiqitNewBug' action='submit.py' method='post' onsubmit='if (!checkFormValidity()) return confirm("Missing info in form. Submit anyway?");'>""" % pageTitle
+<form id='tiqitNewBug' action='submit.py' method='post' onsubmit='onSubmitPage(); if (!checkFormValidity()) return confirm("Missing info in form. Submit anyway?");'>""" % pageTitle
 
 print "<p>Creating new "
 

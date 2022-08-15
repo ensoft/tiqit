@@ -79,9 +79,12 @@ addCustomEventListener("FirstWindowLoad", calDropDownInit);
 
 // The object currently being edited.
 var amEditing = null;
-var amEditingTextarea = null;
 
-var editMsg = "You have already changed another section of this bug.\nYou may only edit one section at a time.\n\nPlease save those changes, or undo them, then try again."
+var editMsg = (
+  "You have already changed another section of this bug.\n"
+  + "You may only edit one section at a time.\n\n"
+  + "Please save those changes, or undo them, then try again."
+)
 
 // Create a <select> with all the note types in it.
 function makeNoteTypeSelect() {
@@ -137,17 +140,23 @@ function editEnclosure(button) {
 
   showEnclosure(row);
 
-  // Text box
-  var textBox = document.createElement('textarea');
-  textBox.setAttribute('name', 'noteContent');
-  textBox.setAttribute('rows', 20);
+  /*
+   * Mark the textareas as being edited - see view.py for explanation of
+   * "edit" vs "send" areas.
+   */
+  var textareaEdit = table.rows[row.rowIndex + 1].cells[0].getElementsByClassName("edit")[0];
+  textareaEdit.id = 'noteContentEdit';
+  var textareaSend = table.rows[row.rowIndex + 1].cells[0].getElementsByClassName("send")[0];
+  textareaSend.id = 'noteContentSend';
+  textareaSend.name = 'noteContent';
 
-  var pre = table.rows[row.rowIndex + 1].cells[0].firstChild;
-
-  textBox.appendChild(document.createTextNode(pre.textContent));
-
-  pre.parentNode.appendChild(textBox);
+  /*
+   * Hide the <pre> and display the <textarea>
+   * The "pre" is the non-editable view of the note.
+   */
+  var pre = table.rows[row.rowIndex + 1].cells[0].getElementsByTagName("pre")[0];
   pre.style.display = 'none';
+  textareaEdit.style.display = 'block';
 
   // Type select
   var types = makeNoteTypeSelect();
@@ -179,27 +188,29 @@ function editEnclosure(button) {
   button.style.display = 'none';
 
   amEditing = row;
-  amEditingTextarea = textBox;
 }
 
 function cancelEnclosureEdit(button) {
 
   var row = button.parentNode.parentNode;
   var table = row.parentNode.parentNode;
+  var cell = table.rows[row.rowIndex + 1].cells[0];
 
   if (amEditing != row) {
     alert("How did you manage to cancel an edit you weren't performing?");
     return;
   }
 
-  // Text box
-  var pre = document.createElement('textarea');
+  var pre = cell.getElementsByTagName("pre")[0];
+  var textareaEdit = document.getElementById("noteContentEdit");
+  textareaEdit.id = '';
+  var textareaSend = document.getElementById("noteContentSend");
+  textareaSend.id = '';
+  textareaSend.name = '';
 
-  var pre = table.rows[row.rowIndex + 1].cells[0].firstChild;
-  var textBox = table.rows[row.rowIndex + 1].cells[0].lastChild;
-
-  textBox.parentNode.removeChild(textBox);
+  // Hide the <textarea> and display the <pre>
   pre.style.display = 'block';
+  textareaEdit.style.display = 'none';
 
   // Note Type
   row.cells[1].replaceChild(document.createTextNode("'" + row.cells[1].firstChild.defaultValue + "' Note"), row.cells[1].firstChild);
@@ -215,19 +226,32 @@ function cancelEnclosureEdit(button) {
   button.style.display = 'inline';
 
   amEditing = null;
-  amEditingTextarea = null;
+}
+
+function onSubmitTextarea(editid, sendid) {
+  /*
+   * Replace line endings with the unicode line-separator as this doesn't get
+   * interpreted and lost during urlencoding.
+   * This avoids an issue where urlencoded newlines get dropped during
+   * redirects through OIDC.
+   */
+  let editEle = document.getElementById(editid);
+  let sendEle = document.getElementById(sendid);
+  if (editEle && sendEle) {
+    sendEle.value = editEle.value.replace(/\r?\n/g, "\u2028");
+  }
 }
 
 function onSubmitEnclosure() {
-  if (amEditingTextarea) {
-    /*
-     * Replace line endings with the unicode line-separator as this doesn't get
-     * interpreted and lost during urlencoding.
-     * This avoids an issue where urlencoded newliens get dropped during
-     * redirects through OIDC.
-     */
-    amEditingTextarea.value = amEditingTextarea.value.replace(/\r?\n/g, "\u2028")
-  }
+  onSubmitTextarea("noteContentEdit", "noteContentSend");
+}
+
+var textareasToSubmit = [];
+
+function onSubmitPage() {
+  textareasToSubmit.forEach((v) => {
+    onSubmitTextarea(v[0], v[1]);
+  });
 }
 
 function deleteEnclosure(button) {
@@ -419,6 +443,18 @@ function showNewNote() {
   newNote.style.display = "block";
   theButton.style.display = "none";
 
+
+  /*
+   * Mark the textareas as being edited - see view.py for explanation of
+   * "edit" vs "send" areas.
+   */
+  var form = newNote.getElementsByTagName("form")[0];
+  var textareaEdit = form.getElementsByClassName("edit")[0];
+  textareaEdit.id = 'noteContentEdit';
+  var textareaSend = form.getElementsByClassName("send")[0];
+  textareaSend.id = 'noteContentSend';
+  textareaSend.name = 'noteContent';
+
   amEditing = theButton;
 }
 
@@ -433,6 +469,17 @@ function hideNewNote() {
 
   newNote.style.display = "none";
   theButton.style.display = "inline";
+
+  /*
+   * Mark the textareas as no longer being edited - see view.py for
+   * explanation of "edit" vs "send" areas.
+   */
+  var form = newNote.getElementsByTagName("form")[0];
+  var textareaEdit = form.getElementsByClassName("edit")[0];
+  textareaEdit.id = '';
+  var textareaSend = form.getElementsByClassName("send")[0];
+  textareaSend.id = '';
+  textareaSend.name = '';
 
   amEditing = null;
 }
@@ -479,7 +526,7 @@ addCustomEventListener("FirstWindowLoad", initNoteTitleChange);
 
 function newNoteTitle(theSelect) {
   var theT = document.getElementById('newnotetitle');
-  var templ = document.getElementById('newnotecontent');
+  var templ = document.getElementById('noteContentEdit');
 
   if (!theT.value ||
       (theSelect.oldValue && theSelect.oldValue == theT.value)) {
@@ -804,6 +851,7 @@ function checkFormValidity(event) {
 //
 
 function prepareForm() {
+  onSubmitPage();
   var form = document.getElementById('tiqitBugEdit');
   var extra = document.getElementById('tiqitExtraFormData');
 
