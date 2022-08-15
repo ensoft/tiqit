@@ -140,15 +140,21 @@ function editEnclosure(button) {
 
   showEnclosure(row);
 
-  // Mark the textareas as being edited
-  var pre = table.rows[row.rowIndex + 1].cells[0].getElementsByTagName("pre")[0];
+  /*
+   * Mark the textareas as being edited - see view.py for explanation of
+   * "edit" vs "send" areas.
+   */
   var textareaEdit = table.rows[row.rowIndex + 1].cells[0].getElementsByClassName("edit")[0];
   textareaEdit.id = 'noteContentEdit';
   var textareaSend = table.rows[row.rowIndex + 1].cells[0].getElementsByClassName("send")[0];
   textareaSend.id = 'noteContentSend';
   textareaSend.name = 'noteContent';
 
-  // Hide the <pre> and display the <textarea>
+  /*
+   * Hide the <pre> and display the <textarea>
+   * The "pre" is the non-editable view of the note.
+   */
+  var pre = table.rows[row.rowIndex + 1].cells[0].getElementsByTagName("pre")[0];
   pre.style.display = 'none';
   textareaEdit.style.display = 'block';
 
@@ -226,7 +232,7 @@ function onSubmitTextarea(editid, sendid) {
   /*
    * Replace line endings with the unicode line-separator as this doesn't get
    * interpreted and lost during urlencoding.
-   * This avoids an issue where urlencoded newliens get dropped during
+   * This avoids an issue where urlencoded newlines get dropped during
    * redirects through OIDC.
    */
   let editEle = document.getElementById(editid);
@@ -438,7 +444,10 @@ function showNewNote() {
   theButton.style.display = "none";
 
 
-  // Mark the textareas as being edited
+  /*
+   * Mark the textareas as being edited - see view.py for explanation of
+   * "edit" vs "send" areas.
+   */
   var form = newNote.getElementsByTagName("form")[0];
   var textareaEdit = form.getElementsByClassName("edit")[0];
   textareaEdit.id = 'noteContentEdit';
@@ -461,7 +470,10 @@ function hideNewNote() {
   newNote.style.display = "none";
   theButton.style.display = "inline";
 
-  // Mark the textareas as no longer being edited
+  /*
+   * Mark the textareas as no longer being edited - see view.py for
+   * explanation of "edit" vs "send" areas.
+   */
   var form = newNote.getElementsByTagName("form")[0];
   var textareaEdit = form.getElementsByClassName("edit")[0];
   textareaEdit.id = '';

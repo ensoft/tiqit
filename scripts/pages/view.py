@@ -295,9 +295,12 @@ def displayNotes(hide=False):
         print "</table></div></form>"
 
     # And the 'new' section, for adding enclosures
-    # Note the textareas are split into "Edit" and a hidden "Send" to replace
-    # newlines with unicode characters when sending to the server to work
-    # around a known auth issue with OIDC.
+    # Note the textareas are split into "Edit", which is visible to the user
+    # but it's value isn't sent directly to the server, and a hidden "Send",
+    # which has its value sent to the server. When the form is submitted, the
+    # value of the "Edit" textarea has the newlines replaced with unicode
+    # characters and this new value is inserted into the "Send" textarea.
+    # This works around a known auth issue with OIDC.
     # Having separate boxes avoids issues where the note fails submit, the user
     # navigates back to edit the note again but now sees it with the unicode
     # characters present instead of the newlines. Most browsers don't render
