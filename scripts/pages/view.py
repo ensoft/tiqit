@@ -88,7 +88,7 @@ class Note(object):
         <tr class='note' style='display: none;'>
          <td colspan='7'>
             <pre>%(Note)s</pre>
-            <textarea style='display: none;' class='edit'>%(Note)s</textarea>
+            <textarea style='display: none;' class='edit' rows='18'>%(Note)s</textarea>
             <textarea style='display: none;' class='send'></textarea>
          </td>
         </tr>
