@@ -77,6 +77,9 @@ addCustomEventListener("FirstWindowLoad", calDropDownInit);
 // Enclosure Handling
 //
 
+// The object currently being edited.
+var amEditing = null;
+
 var editMsg = (
   "You have already changed another section of this bug.\n"
   + "You may only edit one section at a time.\n\n"
@@ -121,24 +124,20 @@ function hideEnclosure(row) {
   img.alt = '[+]';
   img.title = 'Show Enclosure';
 
-  // If we're editing this row, cancel the edit
-  if (row.id == "editing") {
+  if (amEditing == row) {
     cancelEnclosureEdit(row.cells[6].getElementsByTagName('input')[0]);
   }
 }
 
 function editEnclosure(button) {
-  // Check if there's already a note being edited
-  if (document.getElementById("editing")) {
+  if (amEditing) {
     alert(editMsg);
     return;
   }
 
   var row = button.parentNode.parentNode;
-  row.id = "editing";
   var table = row.parentNode.parentNode;
 
-  // Make sure the note is visible
   showEnclosure(row);
 
   // Mark the textareas as being edited
@@ -181,6 +180,8 @@ function editEnclosure(button) {
   button.nextSibling.nextSibling.style.display = 'inline';
   button.nextSibling.nextSibling.nextSibling.style.display = 'none';
   button.style.display = 'none';
+
+  amEditing = row;
 }
 
 function cancelEnclosureEdit(button) {
@@ -189,11 +190,10 @@ function cancelEnclosureEdit(button) {
   var table = row.parentNode.parentNode;
   var cell = table.rows[row.rowIndex + 1].cells[0];
 
-  if (row.id != "editing") {
+  if (amEditing != row) {
     alert("How did you manage to cancel an edit you weren't performing?");
     return;
   }
-  row.id = '';
 
   var pre = cell.getElementsByTagName("pre")[0];
   var textareaEdit = document.getElementById("noteContentEdit");
@@ -218,6 +218,8 @@ function cancelEnclosureEdit(button) {
   button.nextSibling.nextSibling.style.display = 'none';
   button.nextSibling.nextSibling.nextSibling.style.display = 'inline';
   button.style.display = 'inline';
+
+  amEditing = null;
 }
 
 function onSubmitTextarea(editid, sendid) {
@@ -247,13 +249,13 @@ function onSubmitPage() {
 }
 
 function deleteEnclosure(button) {
-  if (document.getElementById("editing")) {
+  if (amEditing) {
     alert(editMsg);
     return;
   }
 
   var row = button.parentNode.parentNode;
-  row.id = 'editing';
+  var table = row.parentNode.parentNode;
 
   // Note title
   var oldTitle = document.createElement('input');
@@ -262,17 +264,19 @@ function deleteEnclosure(button) {
   oldTitle.setAttribute('value', row.cells[0].lastChild.textContent);
   row.cells[2].appendChild(oldTitle);
 
+  amEditing = row;
+
   button.form.submit();
 }
 
 function renameAttachment(button) {
-  if (document.getElementById("editing")) {
+  if (amEditing) {
     alert(editMsg);
     return;
   }
 
   var row = button.parentNode.parentNode;
-  row.id = 'editing'
+  var table = row.parentNode.parentNode;
 
   // Title
   // First save old one
@@ -289,6 +293,8 @@ function renameAttachment(button) {
   title.setAttribute('size', 40);
   title.addEventListener('click', function(event) { event.stopPropagation(); }, true);
   row.cells[0].replaceChild(title, row.cells[0].lastChild);
+
+  amEditing = row;
 
   button.style.display = 'none';
   button.nextSibling.style.display = 'inline';
@@ -308,7 +314,6 @@ function saveAttachmentRename(button) {
 
 function cancelAttachmentRename(button) {
   var row = button.parentNode.parentNode;
-  row.id = '';
 
   var oldTitle = row.cells[2].lastChild;
   var fileTitle = oldTitle.value;
@@ -321,10 +326,11 @@ function cancelAttachmentRename(button) {
   button.style.display = 'none';
   button.nextSibling.style.display = 'inline';
 
+  amEditing = null;
 }
 
 function deleteAttachment(button) {
-  if (document.getElementById("editing")) {
+  if (amEditing) {
     alert(editMsg);
     return;
   }
@@ -420,89 +426,80 @@ function loadAttachments() {
 // New Note/File functions
 
 function showNewNote() {
-  if (document.getElementById("editing")) {
+  if (amEditing) {
     alert(editMsg);
     return false;
   }
 
-  // Show the new note form and hide the new note buttons
   var newNote = document.getElementById("newnote");
-  newNote.style.display = "block";
-  var buttons = document.getElementById("newencbuttons");
-  buttons.style.display = "none";
+  var theButton = document.getElementById("newencbuttons");
 
-  // Mark the form as being edited
-  var form = newNote.getElementsByTagName("form")[0];
-  form.id = 'editing';
+  newNote.style.display = "block";
+  theButton.style.display = "none";
+
 
   // Mark the textareas as being edited
+  var form = newNote.getElementsByTagName("form")[0];
   var textareaEdit = form.getElementsByClassName("edit")[0];
   textareaEdit.id = 'noteContentEdit';
   var textareaSend = form.getElementsByClassName("send")[0];
   textareaSend.id = 'noteContentSend';
   textareaSend.name = 'noteContent';
+
+  amEditing = theButton;
 }
 
 function hideNewNote() {
   var newNote = document.getElementById("newnote");
-  var buttons = document.getElementById("newencbuttons");
+  var theButton = document.getElementById("newencbuttons");
 
-  var editing = document.getElementById("editing");
-  if (!editing || !newNote.contains(editing)) {
+  if (theButton != amEditing) {
     alert("You're not editing a new Note!");
     return false;
   }
 
-  // Hide the new note form and show the new note buttons
   newNote.style.display = "none";
-  buttons.style.display = "inline";
-
-  // Mark the form as being edited
-  var form = newNote.getElementsByTagName("form")[0];
-  form.id = '';
+  theButton.style.display = "inline";
 
   // Mark the textareas as no longer being edited
+  var form = newNote.getElementsByTagName("form")[0];
   var textareaEdit = form.getElementsByClassName("edit")[0];
   textareaEdit.id = '';
   var textareaSend = form.getElementsByClassName("send")[0];
   textareaSend.id = '';
   textareaSend.name = '';
+
+  amEditing = null;
 }
 
 function showNewFile() {
-  if (document.getElementById("editing")) {
+  if (amEditing) {
     alert(editMsg);
     return false;
   }
 
-  // Show the new file form and hide the new note buttons
   var newNote = document.getElementById("newfile");
-  newNote.style.display = "block";
-  var buttons = document.getElementById("newencbuttons");
-  buttons.style.display = "none";
+  var theButton = document.getElementById("newencbuttons");
 
-  // Mark the form as being edited
-  var form = newNote.getElementsByTagName("form")[0];
-  form.id = 'editing';
+  newNote.style.display = "block";
+  theButton.style.display = "none";
+
+  amEditing = theButton;
 }
 
 function hideNewFile() {
   var newNote = document.getElementById("newfile");
-  var buttons = document.getElementById("newencbuttons");
+  var theButton = document.getElementById("newencbuttons");
 
-  var editing = document.getElementById("editing");
-  if (!editing || !newNote.contains(editing)) {
+  if (theButton != amEditing) {
     alert("You're not editing a new File!");
     return false;
   }
 
-  // Hide the new file form and show the new note buttons
   newNote.style.display = "none";
-  buttons.style.display = "inline";
+  theButton.style.display = "inline";
 
-  // Mark the form as no longer being edited
-  var form = newNote.getElementsByTagName("form")[0];
-  form.id = '';
+  amEditing = null;
 }
 
 function initNoteTitleChange() {
@@ -555,7 +552,7 @@ function checkS1S2Downgrade() {
       S1S2.setAttribute('id', 'S1S2-without-workaround');
       S1S2.setAttribute('name', 'S1S2-without-workaround');
 
-      document.getElementsByName('tiqitBugEdit')[0].appendChild(S1S2);
+      document.getElementById('tiqitBugEdit').appendChild(S1S2);
     }
 
     S1S2.value = confirm("If you are downgrading the Severity because there\n" +
@@ -575,7 +572,7 @@ function getFieldValueView(field) {
 
 function resetForm() {
     // Want to reset both initial form and extras form.
-    document.getElementsByName("tiqitBugEdit")[0].reset();
+    document.getElementById("tiqitBugEdit").reset();
     document.getElementById("tiqitExtraFormData").reset();
 
     // Also clear the indicator on the Component name if it has been set - 
@@ -725,7 +722,7 @@ function checkFormValidity(event) {
     }
   }
 
-  var form = document.getElementsByName('tiqitBugEdit')[0];
+  var form = document.getElementById('tiqitBugEdit');
   var f, l;
   var bannedif_field;
   var mandatoryif_field;
@@ -804,7 +801,6 @@ function checkFormValidity(event) {
         valid = false;
       } else if (def != curr) {
         editing = true;
-        var amEditing = document.getElementById("editing");
         if (amEditing && amEditing != form) {
           if (f.nodeName == 'INPUT' && f.type == 'checkbox') {
             f.checked = f.defaultChecked;
@@ -824,16 +820,15 @@ function checkFormValidity(event) {
     }
   }
 
-  var amEditing = document.getElementById("editing");
   if (editing) {
     if (amEditing && amEditing != form) {
       alert(editMsg);
       return false;
     } else {
-      form.id = 'editing';
+      amEditing = form;
     }
   } else if (amEditing == form) {
-    form.id = '';
+    amEditing = null;
   }
 
   return valid;
@@ -845,7 +840,7 @@ function checkFormValidity(event) {
 
 function prepareForm() {
   onSubmitPage();
-  var form = document.getElementsByName('tiqitBugEdit')[0];
+  var form = document.getElementById('tiqitBugEdit');
   var extra = document.getElementById('tiqitExtraFormData');
 
   var inputs = extra.getElementsByTagName('input');
