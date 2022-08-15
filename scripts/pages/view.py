@@ -167,8 +167,6 @@ def showPage():
                     ('History', displayHistory),
                     ('Relates', displayRelates)]
 
-    # @@@ - Should likely be including the security section in this and removing
-    # the save changes button etc as part of that
     viewSections.extend(plugins.getViewSections())
 
     # Show/hide sections as requested by prefs
