@@ -7,10 +7,6 @@ from frontend import *
 
 args = Arguments()
 
-for x in args:
-    # Replace unicode newlines with regular newlines in all fields
-    args[x] = args[x].replace(u'\u2028', '\n')
-
 #
 # First thing we want to do is make sure we're not scribbling over any
 # changes made by someone else.
