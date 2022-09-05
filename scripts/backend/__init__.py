@@ -309,3 +309,6 @@ def renameAttachment(bugid, fileTitle, newTitle):
 
 def attachmentUrl(info):
     return _backends[info['Identifier'][:3]].attachmentUrl(info)
+
+def attachmentDownloadUrl(info):
+    return _backends[info['Identifier'][:3]].attachmentDownloadUrl(info)

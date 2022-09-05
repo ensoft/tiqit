@@ -98,11 +98,14 @@ class File(object):
     def __init__(self, info):
         self.info = info
         self.info['Url'] = encodeHTML(backend.attachmentUrl(info))
+        self.info['UrlDownload'] = encodeHTML(backend.attachmentDownloadUrl(info))
     def printLine(self):
         if self.info['Type'][1:7] != 'binary' and self.info['Size'] and int(loadPrefs()['miscMaxAutoloadSize']) >= int(self.info['Size']):
             self.info['Frame'] = "<iframe fileloc='%(Url)s'></iframe>" % self.info
+            self.info['FrameLink'] = self.info["Url"]
         else:
-            self.info['Frame'] = "<a href='%(Url)s'>Download attachment</a>" % self.info
+            self.info['Frame'] = "<a href='%(UrlDownload)s'>Download attachment</a>" % self.info
+            self.info['FrameLink'] = self.info["UrlDownload"]
         return """
         <tr>
          <td onclick='showEnclosure(this.parentNode);'>
@@ -114,7 +117,7 @@ class File(object):
          <td><a onclick='showUserDropDown(event);'>%(Updater)s</a></td>
          <td>%(Date)s</td><td>%(Size)s</td>
          <td>
-          <input type='button' onclick='renameAttachment(this);' value='Rename'><input style='display: none;' type='button' onclick='saveAttachmentRename(this);' value='Save'><input style='display: none;' type='button' onclick='cancelAttachmentRename(this);' value='Cancel'><input type='button' onclick='deleteAttachment(this);' value='Delete'><a href='%(Url)s'>Link</a>
+          <input type='button' onclick='renameAttachment(this);' value='Rename'><input style='display: none;' type='button' onclick='saveAttachmentRename(this);' value='Save'><input style='display: none;' type='button' onclick='cancelAttachmentRename(this);' value='Cancel'><input type='button' onclick='deleteAttachment(this);' value='Delete'><a href='%(FrameLink)s'>Link</a>
          </td>
         </tr>
         <tr class='file' style='display: none;'>
