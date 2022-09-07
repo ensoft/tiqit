@@ -112,6 +112,9 @@ def renameAttachment(bugid, fileTitle, newTitle):
 def attachmentUrl(info):
     raise TiqitError("Sorry. What on earth have you done?!")
 
+def attachmentDownloadUrl(info):
+    raise TiqitError("Sorry. What on earth is going on?!")
+
 #
 # Queries
 #

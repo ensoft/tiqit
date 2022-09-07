@@ -2,6 +2,7 @@ tiqit (1.0.14-1) trusty; urgency=low
 
   * Fix issues with OIDC redirects causing newlines in summaries and RNE
     fields and improve the same handling for enclosures.
+  * Add support for backends to provide a new URL to download attachments.
 
  -- Olli Johnson <ollijohnson93@gmail.com>  Mon, 15 Aug 2022 11:23:00 +0000
 
