@@ -467,7 +467,12 @@ def filterDisplayEditableText(field, data, val):
     return display
 
 def filterDisplayEditableSummary(field, data, val):
-    display = "<textarea id='%s' name='%s' rows='%d' cols='%d' onChange='checkFormValidity(event);'>%s</textarea>" % (field.name, field.name, field.rows, field.displaylen, val)
+    display = (
+        "<textarea id='{0}' rows='{1}' cols='{2}' "
+        "onChange='checkFormValidity(event);'>{3}</textarea>"
+        "<textarea id='{0}Send' name='{0}' style='display: none'></textarea>"
+        "<script type='text/javascript'>textareasToSubmit.push(['{0}', '{0}Send'])</script>"
+    ).format(field.name, field.rows, field.displaylen, val)
     return display
 
 def filterDisplayEditableDefect(field, data, val):
