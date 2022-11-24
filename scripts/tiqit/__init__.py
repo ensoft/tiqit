@@ -1141,8 +1141,8 @@ def printPageHeader(pageName, pageTitle="", initScript=None, otherHeaders=[],
         # The plugin may provide a version along with the script
         # in which case it is added to the tiqit version
         pluginVersion = ""
-        if isinstance(script, tuple):
-            script, plugin_version = script
+        if isinstance(style, tuple):
+            style, plugin_version = style
         print("<link rel='stylesheet' type='text/css' href='styles/%s.css?version=%s' media='screen'>" % (
             style,
             VERSION_STRING,
