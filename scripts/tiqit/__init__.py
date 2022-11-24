@@ -45,7 +45,7 @@ times = [("start", time.time())]
 
 MAJ_VER   = 1
 MIN_VER   = 1
-PATCH_VER = 1
+PATCH_VER = 2
 DEV_VER   = 1
 
 VERSION = (MAJ_VER, MIN_VER, PATCH_VER)
