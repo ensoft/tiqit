@@ -1,3 +1,9 @@
+tiqit (1.0.15-1) trusty; urgency=low
+
+  * Move to use the python2 package as a dependency (no version requirement).
+
+ -- Jonathan Loh <joloh@cisco.com>  Mon, 16 Jan 2023 15:23:00 +0000
+
 tiqit (1.0.14-1) trusty; urgency=low
 
   * Fix issues with OIDC redirects causing newlines in summaries and

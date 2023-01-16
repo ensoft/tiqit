@@ -6,7 +6,7 @@
 from distutils.core import setup
 
 setup(name='tiqit',
-      version="1.0.14",
+      version="1.0.15",
       description='Tiqit: The Intelligent Issue Tracker',
       url='https://github.com/ensoft/tiqit',
       maintainer='Tiqit maintainers at Ensoft',

@@ -129,7 +129,7 @@ Version: $PACKAGE_VERSION
 Section: misc
 Priority: optional
 Architecture: all
-Depends: python (>=2.6.5-0ubuntu1)
+Depends: python2
 Maintainer: Tiqit developers at Ensoft <ensoft-tiqit@cisco.com>
 Description: The Intelligent Issue Tracker
  A Bug Tracker with a twist. Focuses on user experience and flexibility,
