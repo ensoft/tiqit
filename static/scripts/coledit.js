@@ -4,9 +4,16 @@
 
 Tiqit.coledit = (function() {
 
-function tiqitColsCreateNewColMenuItem(existingFields) {
-  var li = document.createElement('li');
+function tiqitColsCreateNewColMenuItem(existingFields, eleType = 'li', withlabel=false) {
+  var li = document.createElement(eleType);
+  if (withlabel) {
+    var label = document.createElement('label');
+    label.for = "addnewcol-select";
+    label.appendChild(document.createTextNode("Add New Column "));
+    li.appendChild(label);
+  }
   var sel = document.createElement('select');
+  sel.id = 'addnewcol-select'
 
   var opt = document.createElement('option');
   opt.appendChild(document.createTextNode('Choose a field'));
@@ -89,10 +96,21 @@ function tiqitColsCreateMenus(tables) {
       existingCols.push(field);
     }
 
-    item = tiqitTableAddSubmenuItem(parent, 'Add New Column');
+    let existingnewcol = document.getElementById('addnewcol');
+    if (existingnewcol != null) {
+      // Clear any existing content
+      while (existingnewcol.hasChildNodes()) {
+        existingnewcol.removeChild(existingnewcol.firstChild);
+      }
+      item = tiqitColsCreateNewColMenuItem(existingCols, 'div', true);
+      item.style.float = "right";
+      existingnewcol.appendChild(item);
+    } else {
+      item = tiqitTableAddSubmenuItem(parent, 'Add New Column');
 
-    item = tiqitColsCreateNewColMenuItem(existingCols);
-    parent.appendChild(item);
+      item = tiqitColsCreateNewColMenuItem(existingCols);
+      parent.appendChild(item);
+    }
   }
 }
 

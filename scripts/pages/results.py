@@ -173,6 +173,11 @@ if outputType == FORMAT_NORMAL:
     if len(matches) == 0:
         print "<p id='noResultsWarning'><img src='images/warning-small.png' alt='/!\\'> No results returned.</p>"
 
+    # Since there's a bug in firefox, include the 'Add New Column' dropdown on
+    # the main page instead of its original location in the table dropdowns.
+    # This div is populated by the javascript in "coledit.js"
+    print "<div id='addnewcol'></div>"
+
     if not args.has_key('groupby'):
         groupby = ''
     else:
