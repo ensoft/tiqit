@@ -1,6 +1,6 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
-import os, urllib
+import os, urllib.request, urllib.parse, urllib.error
 from tiqit import *
 
 printPageHeader(PAGE_HOME, hideSavedSearches=True)
@@ -8,7 +8,7 @@ printMessages()
 
 cfg = Config().section('general')
 
-print """
+print("""
   <h1>%s</h1>
    <p><em>%s</em></p>
    <h3>BugBox</h3>
@@ -17,19 +17,19 @@ print """
    <textarea name='bugid' cols='60' rows='10'></textarea>
    <p><input type='submit' value='Go'></p>
    </form>
-""" % (cfg.get('sitetitle'), cfg.get('siteintro'))
+""" % (cfg.get('sitetitle'), cfg.get('siteintro')))
 
 savedSearches, needSave = getSavedSearches()
 
 if savedSearches:
-    print """
+    print("""
     <h3>Saved Searches</h3>
     <table>
-    """
+    """)
 
     for name, url in savedSearches:
-        ename = urllib.quote(name, '')
-        print """
+        ename = urllib.parse.quote(name, '')
+        print("""
         <tr>
          <td>%s:</td>
          <td>
@@ -38,21 +38,21 @@ if savedSearches:
           <a href='%s'>Publishable Link</a></td>
         </tr>""" % (name, 'results/%s/%s' % (os.environ['REMOTE_USER'], ename),
                     'search/%s' % ename,
-                    'results/%s/%s' % (os.environ['REMOTE_USER'], ename))
+                    'results/%s/%s' % (os.environ['REMOTE_USER'], ename)))
 
-    print "</table>"
+    print("</table>")
 else:
     sampleSearches = plugins.getSampleSearches()
     if sampleSearches:
         rows = "\n".join("<tr><td>%s:</td><td><a href='%s'>Run Query</a></td></tr>" %
-            (k, encodeHTML(v)) for k, v in sampleSearches.iteritems())
+            (k, encodeHTML(v)) for k, v in sampleSearches.items())
 
-        print """
+        print("""
         <h3>Sample Queries</h3>
         <p><em>Here are a couple of sample queries to get you started.</em></p>
         <table>
         %s
         </table>
-        """ % rows
+        """ % rows)
 
 printPageFooter()

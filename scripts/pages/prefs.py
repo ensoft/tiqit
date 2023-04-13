@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 #
 # Copyright (c) 2017 Ensoft Ltd, 2008-2010 Martin Morrison, Matthew Earl
 #
@@ -45,7 +45,7 @@ i = 1
 while i <= selectionCount and hasattr(prefs, 'selection%d' % i):
     initScript += "addFieldSelection('selection', 'edit');\n" 
     initScript += "setFieldSelection('selection', %d, '%s');\n" % (i, getattr(prefs, 'selection%d' % i))
-    if prefs.has_key('edit%d' % i):
+    if 'edit%d' % i in prefs:
         initScript += "setFieldEditing('edit', %d, %s);\n" % (i, prefs['edit%d' % i] and 'true' or 'false')
     i += 1
 
@@ -74,7 +74,7 @@ initScript += "}\n"
 printPageHeader(PAGE_PREFS, "User Preferences", initScript)
 printMessages()
 
-print """
+print("""
 <h1>User Preferences</h1>
 <p><em>Preferences fall into the following categories:</em></p>
 <ul>
@@ -82,39 +82,39 @@ print """
   <li><a href='prefs#anchorView'>View</a> - properties affecting the Bug View page</li>
   <li><a href='prefs#anchorSubmit'>Submit</a> - default field values when submitting new bugs</li>
   <li><a href='prefs#anchorSearches'>Searches</a> - properties affecting searches and the results page</li>
-""" % cfg.get('sitename')
+""" % cfg.get('sitename'))
 for title, anchor, desc, text in pluginSections:
-    print "<li><a href='prefs#anchor{}'>{}</a> - {}</li>".format(
-        anchor, title, desc)
-print """
+    print("<li><a href='prefs#anchor{}'>{}</a> - {}</li>".format(
+        anchor, title, desc))
+print("""
   <li><a href='prefs#anchorSearch'>Saved Searches</a> - rename and delete Saved Searches</li>
   <li><a href='prefs#anchorNamedBug'>Named Bugs</a> - rename and delete Named Bugs</li>
 </ul>
 <form method='post' action='saveprefs.py'>
-"""
+""")
 
 # General properties
 printSectionHeader('General')
 
-print """
+print("""
 <p><em>General options affecting all %s pages.</em></p>
 <table>
 <tr><td colspan='2'>On the toolbar, show: <select name='miscToolbar'><option value='both'%s>Text and Icons</option><option value='text'%s>Text only</option><option value='icons'%s>Icons only</option></select></td></tr>""" % \
   (cfg.get('sitename'),
    prefs.miscToolbar == 'both' and ' selected' or '',
    prefs.miscToolbar == 'text' and ' selected' or '',
-   prefs.miscToolbar == 'icons' and ' selected' or '')
+   prefs.miscToolbar == 'icons' and ' selected' or ''))
 
-print """<tr><td colspan='2'>Default Project for new bugs: """
+print("""<tr><td colspan='2'>Default Project for new bugs: """)
 writeOptions('miscDefaultProject', sorted(allFields['Project'].values), prefs.miscDefaultProject)
-print """</td></tr>"""
+print("""</td></tr>""")
 
-print """<tr><td colspan='2'>Default Project for searches: """
+print("""<tr><td colspan='2'>Default Project for searches: """)
 writeOptions('miscDefaultSearchProject', [("ALL", "All Projects")] +
         sorted(allFields['Project'].values), prefs.miscDefaultSearchProject)
-print """</td></tr>"""
+print("""</td></tr>""")
 
-print """</td></tr>
+print("""</td></tr>
 <tr><td><input type='checkbox' name='miscHideSavedSearches'%s></td><td>Hide Saved Search bar always.</td></tr>
 <tr><td><input type='checkbox' name='miscHideNamedBugs'%s></td><td>Hide Named Bug bar always.</td></tr>
 <tr><td><input type='checkbox' name='miscShowRecentBugs'%s></td><td>Show my recently visited in the toolbar.</td></tr>
@@ -126,21 +126,21 @@ print """</td></tr>
        prefs.miscHideNamedBugs != 'false' and ' checked' or '',
        prefs.miscShowRecentBugs != 'false' and ' checked' or '',
        prefs.miscHideWatermark != 'false' and ' checked' or '',
-       '\n'.join(plugins.printGeneralPrefs(prefs)))
+       '\n'.join(plugins.printGeneralPrefs(prefs))))
 
 printSectionFooter()
 
 # View page properties
 printSectionHeader('View')
 
-print """
+print("""
 <p><em>Configure section display order.</em></p>
 <table id='viewTable' class='tiqitTable'>
 <thead>
  <tr><th>Section Name</th><th>Show</th><th>Hide</th><th>Remove</th><th>Move</th></tr>
 </thead>
 <tbody>
-"""
+""")
 
 viewOrder = prefs.ofType('viewOrder')
 viewOrder = [(prefs[x], x[9:]) for x in viewOrder]
@@ -149,7 +149,7 @@ viewOrder.sort()
 for i, s in viewOrder:
     p = getattr(prefs, 'display%s' % s)
     
-    print """  <tr>
+    print("""  <tr>
     <td>%s</td>
     <td align='center'><input type='radio' name='display%s' value='show'%s></td>
     <td align='center'><input type='radio' name='display%s' value='hide'%s></td>
@@ -163,15 +163,15 @@ for i, s in viewOrder:
   </tr>
     """ % (s, s, p == 'show' and ' checked' or '',
            s, p == 'hide' and ' checked' or '',
-           s, p == 'remove' and ' checked' or '', s, i, s)
+           s, p == 'remove' and ' checked' or '', s, i, s))
 
-print """
+print("""
 </tbody>
 </table>
 <script>makeSortable()</script>
-"""
+""")
 
-print """
+print("""
 <p><em>Additional bug view options.</em></p>
 <table>
 <tr><td><input type='checkbox' name='miscAlwaysFullView'%s></td><td>Always show full view, no matter the type of bug.</td></tr>
@@ -183,58 +183,58 @@ print """
 """ % (prefs.miscAlwaysFullView != 'false' and ' checked' or '',
        encodeHTML(prefs.miscMaxAutoloadSize),
        prefs.miscGetDupedToRelates != 'false' and ' checked' or '',
-       '\n'.join(plugins.printViewPrefs(prefs)))
+       '\n'.join(plugins.printViewPrefs(prefs))))
 
 printSectionFooter()
 
 # Submit options
 printSectionHeader('Submit')
 
-print """
+print("""
 <table>
-<tr><td colspan='2'>Default type for new bugs: """
+<tr><td colspan='2'>Default type for new bugs: """)
 writeOptions('miscDefaultBugType', [(x.name, x.displayname) for x in allBugViews if x.submittable], prefs.miscDefaultBugType)
-print """</td></tr>
+print("""</td></tr>
 </table>
-"""
-print """
+""")
+print("""
 <p><em>Default field values when submitting new bugs (overridden by bug-type-specific defaults below, if present).</em></p>
 <table>
 %s
 </table>
-""" % ('\n'.join(plugins.printSubmitPrefs(prefs)))
+""" % ('\n'.join(plugins.printSubmitPrefs(prefs))))
 
 
 # New per-bug-view default values
 for bugView in allBugViews:
     if bugView.submittable:
-        print """
+        print("""
 <p><em>Default field values when submitting '%s' bugs.</em></p>
 <table>
 %s
 </table>
 """ % (bugView.displayname,
-       bugView.printDefaultValuesPrefsTable())
+       bugView.printDefaultValuesPrefsTable()))
 
 
-print """
+print("""
 <p><input type='submit' value='Save Prefs'></p>
-"""
+""")
 
 printSectionFooter()
 
 # Search options
 printSectionHeader('Searches')
 
-print """
+print("""
   <p><em>Select your default search fields, both for the search page, and BugBox lists.</em></p>
   <input type='hidden' name='selectionCount' value=%s id='selectionCount'>
   <div id='selectionSelector'>
   </div>
   <div style='clear: both'></div>
-""" % getattr(prefs, 'selectionCount')
+""" % getattr(prefs, 'selectionCount'))
 
-print """
+print("""
   <p><em>Select default sort order for queries, both from the search page, and for BugBox lists.</em></p>
   <p>
     <input type='button' onclick='Tiqit.search.addSortField("sort")' value='Add Field'>
@@ -243,38 +243,38 @@ print """
   <div id='sortSelector'>
   </span>
   </div>
-"""
+""")
 
-print """
+print("""
 <p><em>Miscellaneous options regarding searches.</em></p>
-<table>"""
+<table>""")
 
-print prefs.printBool("miscGroupByPrimaryKey",
-                      "Group By Primary Key by default on new searches."),
-print prefs.printBool("miscOneBugResults",
-                      "Display Results page for single bug (instead of redirecting to view page)."),
-print prefs.printBool("miscHideFortunes",
-                      "Hide Fortune Cookies while waiting for search results."),
-print prefs.printBool("miscShowSearchName",
-                      "Show Saved Search name as title of results page instead of result count."),
-print prefs.printBool("miscNeverAutoRefreshResults",
-                      "Suppress automatically refresh of search results every 30 minutes."),
-print prefs.printBool("miscHidePerRowAutoUpdateClear",
-                      "Don't allow marked changes to be cleared individually for each bug."),
-print prefs.printBool("miscDisableDblclkEdit",
-                      "Disable double-click-to-edit."),
-print '\n'.join(plugins.printSearchPrefs(prefs))
+print(prefs.printBool("miscGroupByPrimaryKey",
+                      "Group By Primary Key by default on new searches."), end=' ')
+print(prefs.printBool("miscOneBugResults",
+                      "Display Results page for single bug (instead of redirecting to view page)."), end=' ')
+print(prefs.printBool("miscHideFortunes",
+                      "Hide Fortune Cookies while waiting for search results."), end=' ')
+print(prefs.printBool("miscShowSearchName",
+                      "Show Saved Search name as title of results page instead of result count."), end=' ')
+print(prefs.printBool("miscNeverAutoRefreshResults",
+                      "Suppress automatically refresh of search results every 30 minutes."), end=' ')
+print(prefs.printBool("miscHidePerRowAutoUpdateClear",
+                      "Don't allow marked changes to be cleared individually for each bug."), end=' ')
+print(prefs.printBool("miscDisableDblclkEdit",
+                      "Disable double-click-to-edit."), end=' ')
+print('\n'.join(plugins.printSearchPrefs(prefs)))
 
-print """</table>
-<p><input type='submit' value='Save Prefs'></p>"""
+print("""</table>
+<p><input type='submit' value='Save Prefs'></p>""")
 
 printSectionFooter()
 
 # Allow plugins to insert their own sections.
 for sectionName, sectionAnchor, sectionDesc, sectionText in pluginSections:
     printSectionHeader(sectionAnchor, sectionName)
-    print sectionText
-    print """<p><input type='submit' value='Save Prefs'></p>"""
+    print(sectionText)
+    print("""<p><input type='submit' value='Save Prefs'></p>""")
     printSectionFooter()
 
 # saved searches
@@ -282,27 +282,27 @@ searches = prefs.ofType('search')
 
 if searches:
     printSectionHeader('Search', 'Saved Searches')
-    print """
+    print("""
     <p><em>Click on the name in the table to rename the Saved Search.</em></p>
     <table class='tiqitTable'>
     <tr><th>(Re)name</th><th>Delete?</th></tr>
-    """
+    """)
 
     for search in searches:
         url = getattr(prefs, search)
 
         search = search.replace("'", "&apos;")
 
-        print """
+        print("""
     <tr>
      <td><input id='%s' type='hidden' name='%s' value='%s'><input class='hidden' type='text' value='%s' size='30' onchange='document.getElementById(%s).name = "search" + this.value;'></td>
      <td><input type='checkbox' onchange='document.getElementById(%s).disabled = this.checked;'></td>
-    </tr>""" % (search, search, url, search[6:], encodeJS(search), encodeJS(search))
+    </tr>""" % (search, search, url, search[6:], encodeJS(search), encodeJS(search)))
 
-    print """
+    print("""
     </table>
     <p><input type='submit' value='Save Prefs'></p>
-    """
+    """)
 
     printSectionFooter()
 
@@ -311,31 +311,31 @@ bugs = prefs.ofType('namedBug')
 if bugs:
     printSectionHeader('NamedBug', 'Named Bugs')
     
-    print """
+    print("""
     <p><em>Click on the name in the table to rename the Named Bug.</em></p>
     <table class='tiqitTable'>
     <tr><th>Identifier</th><th>(Re)name</th><th>Delete?</th></tr>
-    """
+    """)
 
     for search in bugs:
         url = getattr(prefs, search)
 
         search = search.replace("'", "&apos;")
 
-        print """
+        print("""
     <tr>
      <td><a href='%s'>%s</td>
      <td><input id='%s' type='hidden' name='%s' value='%s'><input class='hidden' type='text' value='%s' size='30' onchange='document.getElementById(%s).name = "namedBug" + this.value;'></td>
      <td><input type='checkbox' onchange='document.getElementById(%s).disabled = this.checked;'></td>
-    </tr>""" % (url, url[14:], search, search, url, search[8:], encodeJS(search), encodeJS(search))
+    </tr>""" % (url, url[14:], search, search, url, search[8:], encodeJS(search), encodeJS(search)))
 
-    print """
+    print("""
     </table>
     <p><input type='submit' value='Save Prefs'></p>
-    """
+    """)
 
     printSectionFooter()
 
-print "</form>"
+print("</form>")
 
 printPageFooter()

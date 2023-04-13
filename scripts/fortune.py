@@ -1,6 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
-import signal, commands, time, sys, os
+import signal, subprocess, time, sys, os
 from tiqit import *
 
 __all__ = ['startFortunes', 'stopFortunes']
@@ -16,12 +16,12 @@ def doFortunes():
     signal.signal(signal.SIGTERM, handler)
 
     while keepgoing:
-        joke = commands.getoutput('/usr/games/fortune -s')
+        joke = subprocess.getoutput('/usr/games/fortune -s')
         if keepgoing:
-            print """
+            print("""
     <div id='tiqitFortuneNew' class='tiqitFortune'>
       <img src='images/fortune.gif' onload='nextFortune()' onclick='hideFortune(this);' title='Hide Fortune Cookie'>
-      <pre>%s</pre></div>""" % encodeHTML(joke)
+      <pre>%s</pre></div>""" % encodeHTML(joke))
             sys.stdout.flush()
             time.sleep(len(joke) < 100 and 10 or len(joke) / 10)
 

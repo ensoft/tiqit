@@ -61,17 +61,17 @@ else:
             printXMLPageHeader()
             printXMLMessages()
             printXMLSectionHeader("buglist")
-            print """
-  <bug identifier='%s' lastupdate='%s'>""" % (args['Identifier'], data['Sys-Last-Updated'])
+            print("""
+  <bug identifier='%s' lastupdate='%s'>""" % (args['Identifier'], data['Sys-Last-Updated']))
 
             for f in fields:
-                print "<field name='%s'><![CDATA[%s]]></field>" % (encodeHTML(f), encodeCDATA(args[f]))
+                print("<field name='%s'><![CDATA[%s]]></field>" % (encodeHTML(f), encodeCDATA(args[f])))
 
-            print """  </bug>"""
+            print("""  </bug>""")
             printXMLSectionFooter("buglist")
             printXMLPageFooter()
 
-        except TiqitException, e:
+        except TiqitException as e:
             queueMessage(e.type, "Backend Error: %s" % e.output)
             printXMLPageHeader(extraheaders=['Status: 500'])
             printXMLMessages()

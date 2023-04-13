@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 """
 Load field metadata and save it into a pickle DB, and Javascript.
@@ -14,6 +14,7 @@ import argparse
 import generatejs
 import tiqit
 import tiqit.database
+import sys
 
 
 def _save_fields(fields):
@@ -21,29 +22,29 @@ def _save_fields(fields):
     # reduce the size of tiqit.pickle.
     for f in fields:
         obj = fields[f]
-        fields[intern(f)] = obj
-        obj.name = intern(obj.name)
-        obj.viewnames = map(intern, obj.viewnames)
-        obj.longname = intern(obj.longname)
-        obj.shortname = intern(obj.shortname)
-        obj.type = intern(obj.type)
-        obj.values = map(intern, obj.values)
-        obj.descs = map(intern, obj.descs)
-        obj._parentFields = map(intern, obj._parentFields)
-        obj._childFields = map(intern, obj._childFields)
+        fields[sys.intern(f)] = obj
+        obj.name = sys.intern(obj.name)
+        obj.viewnames = list(map(sys.intern, obj.viewnames))
+        obj.longname = sys.intern(obj.longname)
+        obj.shortname = sys.intern(obj.shortname)
+        obj.type = sys.intern(obj.type)
+        obj.values = list(map(sys.intern, obj.values))
+        obj.descs = list(map(sys.intern, obj.descs))
+        obj._parentFields = list(map(sys.intern, obj._parentFields))
+        obj._childFields = list(map(sys.intern, obj._childFields))
         mi = {}
         for m in obj._mandatoryIf:
-            mi[intern(m)] = map(intern, obj._mandatoryIf[m])
+            mi[sys.intern(m)] = list(map(sys.intern, obj._mandatoryIf[m]))
         obj._mandatoryIf = mi
         bi = {}
         for b in obj._bannedIf:
-            bi[intern(b)] = map(intern, obj._bannedIf[b])
+            bi[sys.intern(b)] = list(map(sys.intern, obj._bannedIf[b]))
         obj._bannedIf = bi
-        obj.defaultsWith = tuple(map(intern, obj.defaultsWith))
-        obj.defaultsFor = map(intern, obj.defaultsFor)
+        obj.defaultsWith = tuple(map(sys.intern, obj.defaultsWith))
+        obj.defaultsFor = list(map(sys.intern, obj.defaultsFor))
         ppfv = {}
         for p in obj._perParentFieldValues:
-            ppfv[tuple(map(intern, p))] = map(intern, obj._perParentFieldValues[p])
+            ppfv[tuple(map(sys.intern, p))] = list(map(sys.intern, obj._perParentFieldValues[p]))
         obj._perParentFieldValues = ppfv
 
     tiqit.database.initialise()

@@ -38,15 +38,15 @@ class TiqitClass(object):
 
     def forName(cls, className):
         _projmap = database.get('tiqit.projmap')
-        className = _projmap.has_key(className) and _projmap[className] or className
-        if TiqitClass._classes.has_key(className):
+        className = className in _projmap and _projmap[className] or className
+        if className in TiqitClass._classes:
             return TiqitClass._classes[className]
         else:
             return TiqitClass._classes['default']
     forName = classmethod(forName)
 
     def getFormat(self, name):
-        if not self.formatCache.has_key(name):
+        if name not in self.formatCache:
             self._loadFormat(name)
             
         return self.formatCache[name]

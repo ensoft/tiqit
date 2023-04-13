@@ -22,8 +22,8 @@
 
 import os
 
-print "Content-Type: text/plain"
-print
+print("Content-Type: text/plain")
+print()
 
-for f in os.environ.keys():
-    print "%s = %s" % (f, os.environ[f])
+for f in list(os.environ.keys()):
+    print("%s = %s" % (f, os.environ[f]))

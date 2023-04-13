@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2017 Ensoft Ltd, 2008-2010 Martin Morrison, Matthew Earl
 #
@@ -30,26 +30,26 @@ __all__ = [
     ]
 
 def printXMLPageHeader(extraheaders=[]):
-    print """Content-type: text/xml; charset=utf-8"""
+    print("""Content-type: text/xml; charset=utf-8""")
     for hdr in extraheaders:
-        print hdr
-    print """
+        print(hdr)
+    print("""
 <?xml version='1.0' encoding='utf-8' ?>
-<tiqit>"""
+<tiqit>""")
 
 def printXMLPageFooter():
-    print "</tiqit>"
+    print("</tiqit>")
 
 def printXMLSectionHeader(name):
-    print " <%s>" % name
+    print(" <%s>" % name)
 
 def printXMLSectionFooter(name):
-    print " </%s>" % name
+    print(" </%s>" % name)
 
 def printJSONPageHeader(extraheaders=[]):
-    print """Content-type: text/json\n\n"""
+    print("""Content-type: text/json\n\n""")
     for hdr in extraheaders:
-        print hdr
+        print(hdr)
 
 def printJSONPageFooter():
     pass

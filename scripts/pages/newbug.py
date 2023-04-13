@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 #
 # Copyright (c) 2017 Ensoft Ltd, 2008-2010 Martin Morrison, Matthew Earl
 #
@@ -38,7 +38,7 @@ class EmptyBugData(DataCommon):
     def _getRawValue(self, key):
         return ''
 
-if fields.has_key('bugid'):
+if 'bugid' in fields:
     bugid = fields['bugid']
     bugdata = loadBugs([bugid])[0]
     bugView = getCloneBugViewFromBugData(bugdata, overrides=fields)
@@ -47,15 +47,15 @@ else:
     bugView = getBugViewFromArgs(fields)
 
 
-if fields.has_key('bugid'):
+if 'bugid' in fields:
     pageTitle = "Clone Bug %s" % bugid
 else:
     pageTitle = "Submit new %s" % bugView.displayname
 
 
-if fields.has_key('Project'):
+if 'Project' in fields:
     project = fields['Project']
-elif fields.has_key('bugid'):
+elif 'bugid' in fields:
     project = bugdata['Project']
 else:
     project = prefs['miscDefaultProject']
@@ -78,31 +78,31 @@ inFields = extractFieldsFromFormat(cls, bugView.getNewBugSections(project))
 
 args = getFormatArguments(bugdata, inFields=inFields)
 
-print """
+print("""
 <h1>
   %s
 </h1>
-<form id='tiqitNewBug' action='submit.py' method='post' onsubmit='onSubmitPage(); if (!checkFormValidity()) return confirm("Missing info in form. Submit anyway?");'>""" % pageTitle
+<form id='tiqitNewBug' action='submit.py' method='post' onsubmit='onSubmitPage(); if (!checkFormValidity()) return confirm("Missing info in form. Submit anyway?");'>""" % pageTitle)
 
-print "<p>Creating new "
+print("<p>Creating new ")
 
 writeOptions('bugtype', [(x.name, x.displayname) for x in allBugViews if x.submittable], bugView.name, onchange='changeBugType(this)')
 
-print " in project: "
+print(" in project: ")
 
 writeOptions('Project', sorted(allFields['Project'].values), project, onchange='changeProject(this)')
 
-print " Note that changing either will cause the page to reload.</p>"
+print(" Note that changing either will cause the page to reload.</p>")
 
 for title, detail, format in bugView.getNewBugSections(project):
     printSectionHeader(title, detail);
 
-    print cls.getFormat(format) % args
+    print(cls.getFormat(format) % args)
 
     printSectionFooter()
 
-print """<p><input type='submit' value='Submit Bug'></p>
+print("""<p><input type='submit' value='Submit Bug'></p>
 </form>
-"""
+""")
 
 printPageFooter()

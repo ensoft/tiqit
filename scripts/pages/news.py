@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 #
 # Copyright (c) 2017 Ensoft Ltd, 2008-2010 Martin Morrison, Matthew Earl
 #
@@ -28,7 +28,7 @@ args = Arguments()
 prefs = loadPrefs()
 cfg = Config().section('general')
 
-if os.environ['REMOTE_USER'] in getAdministrators() and args.has_key('news'):
+if os.environ['REMOTE_USER'] in getAdministrators() and 'news' in args:
     try:
         fd = open(NEWS_PATH + 'latest', 'rb')
         oldnews = pickle.load(fd)
@@ -50,19 +50,19 @@ savePrefs(prefs)
 
 printMessages()
 
-print "<h1>%s News</h1>" % cfg.get('sitename')
+print("<h1>%s News</h1>" % cfg.get('sitename'))
 
 if os.environ['REMOTE_USER'] in getAdministrators():
     printSectionHeader("NewNews", "New News")
 
-    print """
+    print("""
     <form action='news.py' method='post'>
       <table border='0' width='50%'>
         <tr><td><textarea cols='60' rows='5' name='news'></textarea></td></tr>
         <tr><td><input type='submit' value='Submit News'></td></tr>
       </table>
     </form>
-    """
+    """)
 
     printSectionFooter()
 
@@ -75,18 +75,18 @@ except:
 
 news.reverse()
 
-print "<dl>"
+print("<dl>")
 
 old_header_printed = False
 for when, what in news:
     if not old_header_printed and when < news_time_stamp:
-        print "</dl>"
+        print("</dl>")
         printSectionHeader("OldNews", "Old News")
-        print "<dl>"
+        print("<dl>")
         old_header_printed = True
-    print "<dt>%s</dt><dd>%s</dd>" % (time.strftime("%H:%M %d/%m/%Y", time.localtime(when)), what)
+    print("<dt>%s</dt><dd>%s</dd>" % (time.strftime("%H:%M %d/%m/%Y", time.localtime(when)), what))
 
-print "</dl>"
+print("</dl>")
 
 printSectionFooter()
 

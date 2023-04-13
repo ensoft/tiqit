@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
 import time
 from backend import *
@@ -38,12 +38,12 @@ cls = TiqitClass.forName(args['Project'])
 fieldsInUpdate = extractFieldsFromFormat(cls, bugView.getViewBugSections(data))
 fieldsInUpdate = [x.name for x in fieldsInUpdate if x.editable]
 
-if args.has_key('S1S2-without-workaround'):
+if 'S1S2-without-workaround' in args:
     fieldsInUpdate.append('S1S2-without-workaround')
 
 # Make checkboxes into Y's
 for field in [x for x in fieldsInUpdate if allFields[x].type == 'Boolean']:
-    if args.has_key(field) and args[field] and args[field] != 'false':
+    if field in args and args[field] and args[field] != 'false':
         args[field] = 'Y'
     else:
         args[field] = 'N'
@@ -53,7 +53,7 @@ for field in [x for x in fieldsInUpdate if allFields[x].editable]:
     fieldObj = allFields[field]
     old = data[fieldObj.name]
     new = ''
-    if args.has_key(field):
+    if field in args:
         new = args[field]
 
     if old != new:
@@ -65,7 +65,7 @@ for field in changes:
     changes[field] = fieldObj.filterEdit(args, args[field])
 
 # Now fix multi value fields
-for field in changes.keys():
+for field in list(changes.keys()):
     if field in [x for x in fieldsInUpdate if allFields[x].mvf]:
         changes[field] =  ",".join(changes[field].split(' '))
 
@@ -74,7 +74,7 @@ for field in changes.keys():
 # the browser but the backend will not let it be updated. This is true
 # for e.g. greyed out fields like forwarded to
 newData = OverriddenData(data, changes)
-for field in changes.keys():
+for field in list(changes.keys()):
     if not isValidField(allFields[field], newData):
         del changes[field]
 
@@ -88,7 +88,7 @@ for field in changes.keys():
 # In both of these cases ignore the change. Mandatory fields will be fixed up
 # in the next step.
 for fieldname in [x for x in fieldsInUpdate if allFields[x].type == 'Boolean']:
-    if changes.has_key(fieldname) and \
+    if fieldname in changes and \
         (changes[fieldname], data[fieldname]) in [('N', ''), ('', 'N')] and \
           fieldname != 'S1S2-without-workaround':
         # 'S1S2-without-workaround' is a special case: it was intentionally
@@ -103,14 +103,14 @@ for fieldname in [x for x in fieldsInUpdate if allFields[x].type == 'Boolean']:
         allFields[fieldname].isMandatory(OverriddenData(data, changes)):
         changes[fieldname] = 'N'
 
-if args.has_key('newRelates'):
+if 'newRelates' in args:
     changes['Related-bugs'] = extractBugIds(args['newRelates'])
     if not changes['Related-bugs']:
         del changes['Related-bugs']
 
 bugView.prepareUpdateBug(changes, fieldsInUpdate, data)
 
-changes_save = dict([(allFields[field].savename, changes[field]) for field in changes.keys()])
+changes_save = dict([(allFields[field].savename, changes[field]) for field in list(changes.keys())])
 
 updateBug(args['Identifier'], changes_save)
 redirect('%s' % args['Identifier'])

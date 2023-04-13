@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2017 Ensoft Ltd, 2008-2010 Martin Morrison, Matthew Earl
 #
@@ -25,28 +25,30 @@
 import cgitb, sys
 
 def excHandler(*args):
-    print "Content-Type: text/html; charset=utf-8"
-    print "\r\n\r\n"
-    print "<!--: spam"
-    print "Status: 500"
+    print("Content-Type: text/html; charset=utf-8")
+    print("\r\n\r\n")
+    print("<!--: spam")
+    print("Status: 500")
     cgitb.handler(args)
 sys.excepthook = excHandler
 sys.path.insert(0, 'tiqit.zip')
 
 from tiqit import *
-import os, re, sys, urllib, codecs, commands, locale
+import os, re, sys, urllib.request, urllib.parse, urllib.error, codecs, subprocess, locale
 
 # Set environment variables so that processes called by Tiqit interpret
 # decode/encode input/output as UTF-8.
-for envvar in ['LC_ALL', 'LANG', 'LANGUAGE']:
-    os.environ[envvar] = 'en_US.UTF-8'
+# @@@ JL: Need to stop output as bytes? 
+#for envvar in ['LC_ALL', 'LANG', 'LANGUAGE']:
+#    os.environ[envvar] = 'en_US.UTF-8'
 
 #
 # Force stdout to encode output as UTF-8. By default Python will try to
 # interpret unicode strings as ASCII and will fail when it encounters a byte 
 # greater than 127.
 # 
-sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+# @@@ JL: Need to stop output as bytes? 
+#sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 
 #
 # Functions
@@ -63,7 +65,7 @@ def addSlash():
 
     redirect(location, 302)
 
-if not os.environ.has_key('PATH_INFO'):
+if 'PATH_INFO' not in os.environ:
     addSlash()
 
 #
@@ -164,7 +166,7 @@ elif page[1]:
     # Resplit the path to to merge superfluous arguments, to allow for example
     # looking up a "TCP/IP" named search where the "/" is unencoded.
     path = os.environ['PATH_INFO'].lstrip('/').split('/', len(page[1]) - 1)
-    args = '&'.join(map('='.join, zip(page[1], path)))
+    args = '&'.join(map('='.join, list(zip(page[1], path))))
     if os.environ['QUERY_STRING']:
         os.environ['QUERY_STRING'] += '&%s' % args
     else:

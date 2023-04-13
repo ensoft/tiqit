@@ -22,7 +22,7 @@ def _encodeValue(field, data):
     return '&'.join(map(encodeHTML, vals))
 
 def _decodeValue(field, value):
-    return dict(zip(field.defaultsWith, map(decodeHTML, value.split('&'))))
+    return dict(list(zip(field.defaultsWith, list(map(decodeHTML, value.split('&'))))))
 
 def fetchDefaults(field, data, useDatabase=True, preCache=False):
     value = _encodeValue(field, data)
@@ -127,8 +127,8 @@ def _saveDefaultsInternal(field, data, defs, cu):
 
     # First throw out any defs that are already in the DB (or aren't in the DB
     # fo delete operations).
-    newdefs = dict((k, v) for k, v in defs.iteritems() if v)
-    for key, val in defs.items():
+    newdefs = dict((k, v) for k, v in defs.items() if v)
+    for key, val in list(defs.items()):
         cu.execute('SELECT defaultField, defaultValue FROM [tiqit#defaults] WHERE field = ? AND value = ? AND defaultField = ? AND defaultValue = ?', (field.name, value, key, val))
         rowcount = len(cu.fetchall())
         if rowcount > 0:
@@ -140,7 +140,7 @@ def _saveDefaultsInternal(field, data, defs, cu):
     defs = newdefs
                 
     # Do the update.
-    for key, val in defs.items():
+    for key, val in list(defs.items()):
         if val:
             cu.execute("INSERT INTO [tiqit#defaults] (field, value, defaultField, defaultValue) SELECT ?, ?, ?, ? WHERE ? NOT IN (SELECT field FROM [tiqit#defaults] WHERE field = ? AND value = ? AND defaultField = ?)", (field.name, value, key, val, field.name, field.name, value, key))
             cu.execute('UPDATE [tiqit#defaults] SET field = ?, value = ?, defaultField = ?, defaultValue = ? WHERE field = ? AND value = ? AND defaultField = ?', (field.name, value, key, val, field.name, value, key))

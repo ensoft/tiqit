@@ -42,7 +42,7 @@ bugNumbers = {}
 
 def getBugNumber(id):
     global bugNumber, bugNumbers
-    if not bugNumbers.has_key(id):
+    if id not in bugNumbers:
         bugNumbers[id] = bugNumber
         bugNumber += 1
 

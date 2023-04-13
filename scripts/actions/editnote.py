@@ -1,13 +1,13 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
-import cgi, traceback, commands, tempfile, os, stat, urllib, sys
+import cgi, traceback, subprocess, tempfile, os, stat, urllib.request, urllib.parse, urllib.error, sys
 from tiqit import *
 from backend import *
 
 args = Arguments()
 
-if not args.has_key('deleteTitle'):
-    if len(args['noteContent']) > 16 * 1024 and args.has_key('isUpdate'):
+if 'deleteTitle' not in args:
+    if len(args['noteContent']) > 16 * 1024 and 'isUpdate' in args:
         raise TiqitError("Note too large. Must be less than 16kb. Use Attachements instead. Your note is %d bytes long" % len(args['noteContent']))
 
 noteType = args['noteType']
@@ -17,7 +17,7 @@ newTitle = args['newNoteTitle'].strip()
 deleteTitle = args['deleteTitle'].strip()
 
 # If this is a delete, then delete it
-if args.has_key('deleteTitle'):
+if 'deleteTitle' in args:
     deleteNote(bugid, args['deleteTitle'].strip())
 else:
 
@@ -32,9 +32,9 @@ else:
     # These are inserted by the JS to avoid newlines being urlencoded and lost
     # during redirects through OIDC.
     noteContent = args['noteContent']
-    noteContent = noteContent.replace(u'\u2028', '\n')
+    noteContent = noteContent.replace('\u2028', '\n')
 
     # Now update/create the note
-    addNote(bugid, noteType, noteTitle, noteContent, args.has_key('isUpdate'))
+    addNote(bugid, noteType, noteTitle, noteContent, 'isUpdate' in args)
 
 redirect('%s' % bugid)

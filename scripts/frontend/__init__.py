@@ -9,5 +9,5 @@
 from tiqit import *
 
 # Import our sub-modules, which do all the work
-from classes import *
-from views import *
+from .classes import *
+from .views import *

@@ -44,8 +44,8 @@ def loadBugViews():
 	return [BaseView('bug', 'Bug')]
 
 def load_data_defaults(key):
-	print "Loading data defaults for", key
-	prefix = Config().section('backends').items()[0][0]
+	print("Loading data defaults for", key)
+	prefix = list(Config().section('backends').items())[0][0]
 	if key == 'tiqit.classes':
 		database.set('tiqit.classes', [prefix + '.default'])
 	elif key == 'tiqit.projmap':
