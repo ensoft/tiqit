@@ -32,7 +32,7 @@ usage() {
 # The package version can be specified as a command line argument (defaults to
 # 1).
 cd scripts
-PACKAGE_VERSION=$(python -c "import tiqit; print tiqit.VERSION_STRING")
+PACKAGE_VERSION=$(python3 -c "import tiqit; print(tiqit.VERSION_STRING)")
 CHANGELOG_FILE=debian/changelog
 cd ..
 if [ -z "$1" ]; then
@@ -58,8 +58,12 @@ DOC_DIR="$PACKAGE_DIR/usr/share/doc/tiqit"
 FAKEROOT_STATE="./fakeroot_state"
 
 # Run setup and compile tiqit.zip
+echo "Starting setup"
 ./setup pkg || die "Setup failed."
+echo "Setup complete"
+echo "Starting compilation"
 ./compile || die "Compile failed."
+echo "Compilation complete"
 
 # Cleanup ./package/ and (re)build the directory structure within.
 if [ -f "$FAKEROOT_STATE" ]; then
