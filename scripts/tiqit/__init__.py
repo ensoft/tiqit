@@ -44,9 +44,9 @@ times = [("start", time.time())]
 # Global Constants
 
 MAJ_VER   = 1
-MIN_VER   = 0
-PATCH_VER = 14
-DEV_VER   = 0
+MIN_VER   = 1
+PATCH_VER = 0
+DEV_VER   = 1
 
 VERSION = (MAJ_VER, MIN_VER, PATCH_VER)
 VERSION_STRING = '.'.join(map(str, VERSION)) + (DEV_VER < 0 and "b%d" % -DEV_VER or "")
