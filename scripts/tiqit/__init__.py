@@ -559,31 +559,9 @@ def sendMessage(msgType, msg):
 
 def printMessages():
     """
-    Prints all messages for this page. This includes compatibility
-    messages for browser version, messages passed on via cookie and
-    any queued messages.
+    Prints all messages for this page. This includes messages passed on via cookie 
+    and any queued messages.
     """
-
-    # First check for right browser
-    if 'HTTP_USER_AGENT' in os.environ:
-        ua = os.environ['HTTP_USER_AGENT']
-        firefox = ua.find('Firefox')
-        if firefox != -1:
-            version = re.compile('Firefox/(\d+?)\.(\d+?)').search(ua)
-            if version:
-                majorv = int(version.group(1))
-                minorv = int(version.group(2))
-            else:
-                majorv, minorv = (0, 0)
-            if (majorv, minorv) < (1, 5):
-                _printMsg(MSG_WARNING, "Your version of Firefox is not tested. You may encounter problems with some of the scripts on this page.")
-        elif ua.find('Chrome') != -1:
-            _printMsg(MSG_INFO, "Chrome is not fully supported, but should work fine. There may be minor differences compared to <a href='https://getfirefox.com'>Firefox</a>, which is the main target browser.")
-        elif ua.find('Safari') != -1:
-            _printMsg(MSG_INFO, "Safari is not fully supported, but should work fine. There may be minor differences compared to <a href='https://getfirefox.com'>Firefox</a>, which is the main target browser.")
-        else:
-            _printMsg(MSG_ERROR, "Your browser is not supported! This page is tested only in Firefox 1.5 and up. Things will likely not work for you as expected. Go and <a href='https://getfirefox.com'>get Firefox now</a>.")
-
     # Let plugins print their own messages
     for typ, msg, cls in plugins.printExtraMessages():
         _printMsg(typ, msg, cls)
