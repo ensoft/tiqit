@@ -61,9 +61,6 @@ FAKEROOT_STATE="./fakeroot_state"
 echo "Starting setup"
 ./setup pkg || die "Setup failed."
 echo "Setup complete"
-echo "Starting compilation"
-./compile || die "Compile failed."
-echo "Compilation complete"
 
 # Cleanup ./package/ and (re)build the directory structure within.
 if [ -f "$FAKEROOT_STATE" ]; then
@@ -92,8 +89,9 @@ mkdir_or_die "$DOC_DIR/examples"
 # Put files into $MAIN_DIR
 # Note this excludes tiqit.db, tiqit.pickle and fielddata.js: These will be
 # created by the post-install script (@@@ TBD).
-cp scripts/{index.py,loadfields.py,loadclasses.py,tiqit.zip} \
+cp scripts/{index.py,loadfields.py,loadclasses.py} \
     "$MAIN_DIR/scripts"
+find scripts/ -name "*.py" -exec rsync -R {} $MAIN_DIR \;
 cp static/scripts/*.js "$MAIN_DIR/static/scripts"
 rm "$MAIN_DIR/static/scripts"/fielddata.js
 cp static/images/*.{png,svg,gif} "$MAIN_DIR/static/images"
@@ -133,7 +131,7 @@ Version: $PACKAGE_VERSION
 Section: misc
 Priority: optional
 Architecture: all
-Depends: python (>=2.6.5-0ubuntu1)
+Depends: python3
 Maintainer: Tiqit developers at Ensoft <ensoft-tiqit@cisco.com>
 Description: The Intelligent Issue Tracker
  A Bug Tracker with a twist. Focuses on user experience and flexibility,
