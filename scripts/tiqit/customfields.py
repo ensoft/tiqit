@@ -29,7 +29,7 @@ __all__ = [
     ]
 
 def filterDisplayAge(field, data, val):
-    return val and str(int(time.time() - time.mktime(time.strptime(val.strip(), "%m/%d/%Y %H:%M:%S"))) / 86400)
+    return val and str(int((time.time() - time.mktime(time.strptime(val.strip(), "%m/%d/%Y %H:%M:%S"))) / 86400))
 
 def filterEditAge(field, data, val):
     return time.strftime("%m/%d/%Y %H:%M:%S", time.localtime(time.time() - (int(val) * 86400)))
