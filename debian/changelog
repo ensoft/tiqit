@@ -1,7 +1,8 @@
 tiqit (1.1.0-1) trusty; urgency=low
 
-  * Move to python3
-  * Remove browser check
+  * Migrate all scripts from using python2 to python3.
+  * Remove warning users that Firefox should be used because Tiqit works
+    on Chrome and other browsers.
 
  -- Jonathan Loh <joloh@cisco.com> Mon, 7 Jul 2023 16:31:00 +0000
 
