@@ -98,7 +98,7 @@ def writeToTempFile(contents, encoding="utf-8"):
 def memoize(f):
     cache = {}
     def memoized(*args, **kwargs):
-        key = (args, frozenset(list(kwargs.items())))
+        key = (args, frozenset(kwargs.items()))
         if not key in cache:
             cache[key] = f(*args, **kwargs)
         return cache[key]

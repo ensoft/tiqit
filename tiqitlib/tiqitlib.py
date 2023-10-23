@@ -144,7 +144,7 @@ def parse_args(siteurl):
 
 def process_cli_args(args):
     pp = pprint.PrettyPrinter(indent=4)
-    print("")
+    print()
     if args.subparser_name == "search":
         assert(args.user is not None)
         data = request_named_query(args.user, args.query)

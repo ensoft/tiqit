@@ -13,7 +13,7 @@ sets = {}
 # Map arguments into a set() of deletes, and a dict() of sets.
 # A deleted item has the form "key<N>=<prefName>".
 # A changed item has the form "key<N>=<prefName>&val<N>=<prefVal>"
-for kArg in [x for x in list(args.keys()) if x.startswith("key")]:
+for kArg in [x for x in args if x.startswith("key")]:
     vArg = kArg.replace("key", "val", 1)
     if vArg in args:
         sets[args[kArg]] = str(args[vArg])

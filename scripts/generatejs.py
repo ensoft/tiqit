@@ -37,7 +37,7 @@ class Intern(object):
        self.interns = {}
        self.counts = {}
    def intern(self):
-       prio = [(v, k) for k, v in list(self.counts.items())]
+       prio = [(v, k) for k, v in self.counts.items()]
        prio.sort(reverse=True)
        print(prio[:26])
        saved = 0
@@ -61,7 +61,7 @@ class Intern(object):
 I = Intern()
 
 def makeInterns(out):
-    for f in list(backend.allFields.values()):
+    for f in backend.allFields.values():
         I.count(utils.encodeJS(f.name))
         I.count(utils.encodeJS(f.shortname))
         I.count(utils.encodeJS(f.longname))
@@ -86,7 +86,7 @@ def makeInterns(out):
                 for d in f.descs:
                     I.count(utils.encodeJS(d))
         elif f._perParentFieldValues:
-            for key in list(f._perParentFieldValues.keys()):
+            for key in f._perParentFieldValues:
                 for k in key:
                     I.count(utils.encodeJS(k))
                 for v in f._perParentFieldValues[key]:
@@ -108,12 +108,12 @@ def makeInterns(out):
             for i in f.defaultsFor:
                 I.count(utils.encodeJS(i))
         if f._mandatoryIf:
-            for k, v in list(f._mandatoryIf.items()):
+            for k, v in f._mandatoryIf.items():
                 I.count(utils.encodeJS(k))
                 for i in v:
                     I.count(utils.encodeJS(i))
         if f._bannedIf:
-            for k, v in list(f._bannedIf.items()):
+            for k, v in f._bannedIf.items():
                 I.count(utils.encodeJS(k))
                 for i in v:
                     I.count(utils.encodeJS(i))
@@ -126,7 +126,7 @@ def makeInterns(out):
                     I.count(utils.encodeJS(i))
 
     I.intern()
-    for k, v in list(I.interns.items()):
+    for k, v in I.interns.items():
         out.write("const %s=%s;\n" % (v, k))
     out.write("\n")
 
@@ -140,7 +140,7 @@ def JSListOfListsFromSequence(arg):
     return "[%s]" % ",".join(map(JSListFromSequence, arg))
 
 def genFieldLists(out):
-    for f in list(backend.allFields.values()):
+    for f in backend.allFields.values():
         # Need to create the values if this has limited values
         out.write("""new T(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);\n""" % (encodeJS(f.name), encodeJS(f.shortname), encodeJS(f.longname), encodeJS(f.type), I[str(f.maxlen)], I[str(f.displaylen)], I[f.req and 'true' or 'false'], I[f.mvf and 'true' or 'false'], I[f.searchable and 'true' or 'false'], I[f.editable and 'true' or 'false'], I[f.viewable and 'true' or 'false'], I[f.filterable and 'true' or 'false'], I[f.volatile and 'true' or 'false']))
     out.write("""allEditableFields.sort();\n""");
@@ -150,12 +150,12 @@ def genFieldLists(out):
 def genRelationships(out):
     # Calculate reverseDefaultsWith first.
     reverseDefaultsWith = {}
-    for f in list(backend.allFields.values()):
+    for f in backend.allFields.values():
         for f2name in f.defaultsWith:
             reverseDefaultsWith.setdefault(f2name, set()).add(f.name)
 
     # Only generates rels and vals for ones with multiple options
-    for f in list(backend.allFields.values()):
+    for f in backend.allFields.values():
         out.write("I=F[%s];\n" % encodeJS(f.name))
         rewriterels = False
         def getOptions(values, descs):
@@ -169,7 +169,7 @@ def genRelationships(out):
             rewriterels = True
         elif f._perParentFieldValues:
             out.write("P=I.perparentvalues;\n")
-            for key in list(f._perParentFieldValues.keys()):
+            for key in f._perParentFieldValues:
                 if f._perParentFieldDescs:
                     vals = list(map(list, list(zip(f._perParentFieldValues[key], getOptions(f._perParentFieldValues[key], f._perParentFieldDescs[key])))))
                 else:
@@ -190,11 +190,11 @@ def genRelationships(out):
             out.write("""I.reverseDefaultsWith=%s;\n""" % JSListFromSequence(reverseDefaultsWith[f.name]))
         if f._mandatoryIf:
             out.write("M=I.mandatoryif;\n")
-        for key in list(f._mandatoryIf.keys()):
+        for key in f._mandatoryIf:
             out.write("""M[%s]=%s;\n""" % (encodeJS(key), JSListFromSequence(f._mandatoryIf[key])))
         if f._bannedIf:
             out.write("B=I.bannedif;\n")
-        for key in list(f._bannedIf.keys()):
+        for key in f._bannedIf:
             out.write("""B[%s]=%s;\n""" % (encodeJS(key), JSListFromSequence(f._bannedIf[key])))
 
         # Some of them have their own rels

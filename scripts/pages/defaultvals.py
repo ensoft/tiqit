@@ -30,7 +30,7 @@ def showFieldChoices():
     printPageHeader(PAGE_DEFVALS, "Default Field Values")
     printMessages()
 
-    fields = [f for f in list(allFields.values()) if f.defaultsWith]
+    fields = [f for f in allFields.values() if f.defaultsWith]
 
     print("""<h1>Default Field Values</h1>
 <form action='updatedefvals' method='POST'>

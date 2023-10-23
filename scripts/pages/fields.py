@@ -30,8 +30,7 @@ printMessages()
 
 print("<h1>Fields</h1>")
 
-fields = list(allFields.keys())
-fields.sort()
+fields = sorted(allFields.keys())
 
 filters = Filter('fields', ('Type', 'MVF', 'Sys', 'Desc', 'Requires'), clearbutton=True, allowMulti=True)
 
