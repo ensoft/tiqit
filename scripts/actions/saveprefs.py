@@ -10,7 +10,7 @@ fields = cgi.FieldStorage(keep_blank_values=True)
 
 defsPerBugView = copy.deepcopy(Prefs.defaults['miscDefaultsPerBugView'])
 
-for f in list(fields.keys()):
+for f in fields:
     # If this is a per-bug-view pref, extract the bug view and pref name
     if f.startswith('miscDefaultsPerBugView'):
         (junk, bugView, prefName) = f.split('.')

@@ -42,7 +42,7 @@ if 'phone2' in info and not info['phone']:
 printXMLPageHeader()
 printXMLSectionHeader("userdetails")
 
-for key, val in list(info.items()):
+for key, val in info.items():
     print("    <%s><![CDATA[%s]]></%s>" % (key, encodeCDATA(str(val)), key))
 
 printXMLSectionFooter("userdetails")

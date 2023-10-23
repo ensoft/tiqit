@@ -68,7 +68,7 @@ from tiqit import Prefs
 
 newPrefs = {}
 
-for p in list(oldPrefs.keys()):
+for p in oldPrefs:
   print("Copying profile for", p)
   newP = Prefs()
 

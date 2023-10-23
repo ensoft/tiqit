@@ -37,7 +37,7 @@ bugids = extractBugIds(args['bugid'])
 if len(bugids) == 0:
     # Look for a Named Bug name in the bugbox.
     match = []
-    for bug in list(prefs.ofType('namedBug').keys()):
+    for bug in prefs.ofType('namedBug'):
         if bug[8:].lower() == args['bugid'].lower():
             match.append(bug)
     if match:
@@ -53,7 +53,7 @@ if len(bugids) == 0:
         redirect('view/%s' % urllib.parse.quote(match[8:]))
 
     # Look for a named query
-    for search in list(prefs.ofType('search').keys()):
+    for search in prefs.ofType('search'):
         if search[6:].lower() == args['bugid'].lower():
             match.append(search)
     if match:

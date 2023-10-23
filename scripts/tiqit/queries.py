@@ -136,7 +136,7 @@ def parseQuery(args):
         # Check for special fields.
         # The only generic special field is dates (soon to be made even better!)
         if allFields[field].type == 'Date':
-            day, mon, year = list(map(int, val.split('/')))
+            day, mon, year = (int(x) for x in val.split('/'))
             val = '%02u/%02u/%02u' % (mon, day, year)
 
         # Do any filtering

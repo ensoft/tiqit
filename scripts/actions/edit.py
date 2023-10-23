@@ -43,7 +43,7 @@ if 'S1S2-without-workaround' in args:
 
 # Make checkboxes into Y's
 for field in [x for x in fieldsInUpdate if allFields[x].type == 'Boolean']:
-    if field in args and args[field] and args[field] != 'false':
+    if args.get(field) and args.get(field) != 'false':
         args[field] = 'Y'
     else:
         args[field] = 'N'
@@ -65,7 +65,7 @@ for field in changes:
     changes[field] = fieldObj.filterEdit(args, args[field])
 
 # Now fix multi value fields
-for field in list(changes.keys()):
+for field in changes:
     if field in [x for x in fieldsInUpdate if allFields[x].mvf]:
         changes[field] =  ",".join(changes[field].split(' '))
 
@@ -74,9 +74,11 @@ for field in list(changes.keys()):
 # the browser but the backend will not let it be updated. This is true
 # for e.g. greyed out fields like forwarded to
 newData = OverriddenData(data, changes)
-for field in list(changes.keys()):
-    if not isValidField(allFields[field], newData):
-        del changes[field]
+changes = {
+    field: value
+    for field, value in changes.items()
+    if isValidField(allFields[field], newData)
+}
 
 # Boolean values can change from '' to 'N' if the field was not previously set
 # in the bug data and the user has not ticked the text box.
@@ -110,7 +112,7 @@ if 'newRelates' in args:
 
 bugView.prepareUpdateBug(changes, fieldsInUpdate, data)
 
-changes_save = dict([(allFields[field].savename, changes[field]) for field in list(changes.keys())])
+changes_save = dict([(allFields[field].savename, changes[field]) for field in changes])
 
 updateBug(args['Identifier'], changes_save)
 redirect('%s' % args['Identifier'])

@@ -37,7 +37,7 @@ def _main():
     tiqit.database.initialise()
     tiqit.database.set('tiqit.classes', classes)
     tiqit.database.set('tiqit.projmap', projmap)
-    for key, val in list(other.items()):
+    for key, val in other.items():
         tiqit.database.set(key, val)
     tiqit.database.commit()
 

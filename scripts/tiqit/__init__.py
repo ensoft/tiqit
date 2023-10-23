@@ -87,7 +87,7 @@ def extractBugIds(string):
     normalise tqtSd12345 into TQTsd12345).
     """
 
-    backends = (k for k, v in list(Config().section('backends').items()))
+    backends = (k for k, v in Config().section('backends').items())
     match = re.findall(r"(?:_|\b)((?:%s)?[A-Z][A-Z]\d\d\d\d\d)(?:_|\b)" %
                            "|".join(backends),
                        string,
@@ -264,7 +264,7 @@ class Config:
         def items(self, raw=False):
             items = self.cfg.items(self.name, raw)
             opts = self.name in Config.cfg_defaults and Config.cfg_defaults[self.name] or {}
-            items.extend([(x, opts[x]) for x in list(opts.keys()) if not self.cfg.has_option(self.name, x)])
+            items.extend([(x, opts[x]) for x in opts if not self.cfg.has_option(self.name, x)])
             return items
         def has_key(self, key):
             return self.cfg.has_option(self.name, key) or key in Config.cfg_defaults[self.name]
@@ -295,7 +295,7 @@ class Config:
                     'locations: %s' % ', '.join(CFG_PATHS))
 
         self.cfg = configparser.ConfigParser()
-        [self.cfg.add_section(sect) for sect in list(Config.cfg_defaults.keys())]
+        [self.cfg.add_section(sect) for sect in Config.cfg_defaults]
         self.cfg.optionxform = str
 
         if os.path.exists(path):
@@ -357,7 +357,7 @@ def generateToken():
     return token
 
 def authenticate():
-    if 'REMOTE_USER' not in os.environ or not os.environ['REMOTE_USER']:
+    if not os.environ.get('REMOTE_USER'):
         raise TiqitError("User is not logged in.")
     elif os.environ['REMOTE_USER'] == 'tiqit-api':
         # Should be a custom header with the auto token
@@ -573,8 +573,7 @@ def printMessages():
     try:
         if 'HTTP_COOKIE' in os.environ:
             for cookie in os.environ['HTTP_COOKIE'].split(';'):
-                name, update = list(map(urllib.parse.unquote,
-                                   cookie.strip().split('=', 1)))
+                name, update = (urllib.parse.unquote(x) for x in cookie.strip().split('=', 1))
                 if name == 'update':
                     # Get the relevant icon
                     msgType = msgText[update[:3]]

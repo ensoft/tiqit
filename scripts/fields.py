@@ -264,7 +264,7 @@ class TiqitField(object):
     def getAllValues(self):
         if self.hasParentDependency():
             vals = []
-            for more in list(self._perParentFieldValues.values()):
+            for more in self._perParentFieldValues.values():
                 vals.extend(more)
             vals = list(dict.fromkeys(vals))
             vals.sort()
@@ -316,7 +316,7 @@ class TiqitField(object):
                     return ["%s - %s" % (v, d) if v != "" and d != "" else "" for v, d in zip(vals, descs)]
                 a = dict((k, getOptions(self._perParentFieldValues[k],
                                         self._perParentFieldDescs[k])) for k in
-                                list(self._perParentFieldDescs.keys()))
+                               self._perParentFieldDescs.keys())
                 return self._lookupParentArray(a, data)
             else:
                 return self.getValues(data)

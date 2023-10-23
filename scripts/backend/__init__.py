@@ -37,7 +37,7 @@ def initialise():
     allFields = fields.load()
 
     # Import all the configured backends
-    for prefix, mod in list(Config().section('backends').items()):
+    for prefix, mod in Config().section('backends').items():
         # Should probably check prefix is valid here
         __import__(mod)
         _backends[prefix] = sys.modules[mod]

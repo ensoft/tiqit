@@ -32,7 +32,7 @@ Currently, there are two sources for the data:
 
 import tiqit
 import sqlite3 as sqlite, os.path
-import pickle as pickle
+import pickle
 
 __all__ = [
     'initialise',

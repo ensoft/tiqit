@@ -73,7 +73,7 @@ for field in selection:
     for parent in field._parentFields:
         parents.add(allFields[parent])
 
-    for bannedIf in list(field._bannedIf.keys()):
+    for bannedIf in field._bannedIf:
         parents.add(allFields[bannedIf])
 
     for defWith in field.defaultsWith:
@@ -241,7 +241,7 @@ if outputType == FORMAT_NORMAL:
         # attributes whether their values are empty or not
         #
         attr_values = ["'%s'" % encodeHTML(bug[x.name]) for x in parents]
-        attributes = list(map("=".join, list(zip(attr_names, attr_values))))
+        attributes = [f"{name}={val}" for name,val in zip(attr_names, attr_values)]
 
         pretty_vals = [bug.getSanitisedValue(x.name, outputType == FORMAT_NORMAL) for x in selection]
 

@@ -31,7 +31,7 @@ for field in [x for x in fieldsInUpdate if allFields[x].type == 'Boolean']:
         args[field] = 'N'
 
 # Convert values if appropriate
-for arg in list(args.keys()):
+for arg in args:
     if arg in allFields:
         args[arg] = allFields[arg].filterEdit(args, args[arg])
 

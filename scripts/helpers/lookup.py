@@ -46,7 +46,7 @@ for key in revs:
     print("<defaultfrom name='%s'>" % key.replace("'", "&apos;"))
     for entry in revs[key]:
         print("<entry>")
-        for k, v in list(entry.items()):
+        for k, v in entry.items():
             print("<field name='%s'><![CDATA[%s]]></field>" % (k.replace("'", '&apos;'), encodeCDATA(v)))
         print("</entry>")
     print("</defaultfrom>")
