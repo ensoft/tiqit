@@ -35,20 +35,6 @@ sys.excepthook = excHandler
 from tiqit import *
 import os, re, sys, urllib.request, urllib.parse, urllib.error, codecs, subprocess, locale
 
-# Set environment variables so that processes called by Tiqit interpret
-# decode/encode input/output as UTF-8.
-# @@@ JL: Need to stop output as bytes? 
-#for envvar in ['LC_ALL', 'LANG', 'LANGUAGE']:
-#    os.environ[envvar] = 'en_US.UTF-8'
-
-#
-# Force stdout to encode output as UTF-8. By default Python will try to
-# interpret unicode strings as ASCII and will fail when it encounters a byte 
-# greater than 127.
-# 
-# @@@ JL: Need to stop output as bytes? 
-#sys.stdout = codecs.getwriter('utf8')(sys.stdout)
-
 #
 # Functions
 #

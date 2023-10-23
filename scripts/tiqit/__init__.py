@@ -146,14 +146,10 @@ class Arguments(object):
 
     def __getitem__(self, key):
         if key in self.overrides:
-            #val = self.overrides[key].encode('utf-8')
             val = self.overrides[key]
         elif key in self.cgi:
-            # @@@ JL: Need to stop output as bytes? 
-            #val = self.cgi[key].value.encode('utf-8')
             val = self.cgi[key].value
         else:
-            #val = ''.encode('utf-8')
             val = ''
 
         # Replace unicode newlines with regular newlines
@@ -1173,7 +1169,7 @@ def printPageHeader(pageName, pageTitle="", initScript=None, otherHeaders=[],
         elif type(prefs[p]) == list:
             print("    Tiqit.prefs['%s'] = new Array('%s');" % (encodeHTML(p), "','".join(map(encodeHTML, prefs[p]))))
         elif type(prefs[p]) == dict:
-            # Don't include it @@@ if dict prefs ever needed in JS, add this
+            # Don't include it, if dict prefs ever needed in JS, add this
             None
         else:
             raise ValueError("Don't support prefs of type %s" % type(prefs[p]))
