@@ -30,7 +30,7 @@ query = num and '%s=%d' % (mapnames['unum'], num) or '%s=%s' % (mapnames['uname'
 l = ldap.open(cfg.get('ldap_server'))
 r = l.search(base, scope, query, results)
 
-info = dict(list(zip(props, (name, num, 'Unknown', 'Unknown', '', '', '', '', 0))))
+info = {k:v for k,v in zip(props, (name, num, 'Unknown', 'Unknown', '', '', '', '', 0))}
 rtype, rdata = l.result(r, 0)
 if rtype == ldap.RES_SEARCH_ENTRY:
     for cn, res in rdata:
