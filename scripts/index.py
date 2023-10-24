@@ -152,7 +152,7 @@ elif page[1]:
     # Resplit the path to to merge superfluous arguments, to allow for example
     # looking up a "TCP/IP" named search where the "/" is unencoded.
     path = os.environ['PATH_INFO'].lstrip('/').split('/', len(page[1]) - 1)
-    args = '&'.join(map('='.join, list(zip(page[1], path))))
+    args = '&'.join(f"{k}={v}" for k,v in zip(page[1], path))
     if os.environ['QUERY_STRING']:
         os.environ['QUERY_STRING'] += '&%s' % args
     else:
