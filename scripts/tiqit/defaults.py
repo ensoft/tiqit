@@ -22,7 +22,7 @@ def _encodeValue(field, data):
     return '&'.join(map(encodeHTML, vals))
 
 def _decodeValue(field, value):
-    return dict(list(zip(field.defaultsWith, list(map(decodeHTML, value.split('&'))))))
+    return {k:v for k,v in zip(field.defaultsWith, [decodeHTML(item) for item in value.split("&")])}
 
 def fetchDefaults(field, data, useDatabase=True, preCache=False):
     value = _encodeValue(field, data)
