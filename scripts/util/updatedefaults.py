@@ -19,28 +19,28 @@ def time_now():
 print("Initializing")
 tiqit.initialise()
 
-print(("{}: Reading old defaults".format(time_now())))
+print("{}: Reading old defaults".format(time_now()))
 before = tiqit.defaults.getDict()
-print(("{}: Updating defaults".format(time_now())))
+print("{}: Updating defaults".format(time_now()))
 tiqit.defaults.loadDefaultsFromBackend()
-print(("{}: Reading new defaults".format(time_now())))
+print("{}: Reading new defaults".format(time_now()))
 after = tiqit.defaults.getDict()
 
-print(("{}: Calculating differences".format(time_now())))
+print("{}: Calculating differences".format(time_now()))
 
 diff = list(utils.dictDiff(before, after))
 print("Added:")
 for k, v in ((k, v[1]) for k, v in diff if v[0] is None):
-    print(("    {}".format(((k, v),))))
+    print("    {}".format(((k, v),)))
 
 print("Modified:")
 for k, v in ((k, v) for k, v in diff if v[0] is not None and v[1] is not None):
-    print(("    Old: {}".format(((k, v[0]),))))
-    print(("    New: {}".format(((k, v[1]),))))
+    print("    Old: {}".format(((k, v[0]),)))
+    print("    New: {}".format(((k, v[1]),)))
 
 print("Removed:")
 for k, v in ((k, v[0]) for k, v in diff if v[1] is None):
-    print(("    {}".format(((k, v),))))
+    print("    {}".format(((k, v),)))
 
-print(("{}: Done".format(time_now())))
+print("{}: Done".format(time_now()))
 

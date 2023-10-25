@@ -1136,8 +1136,8 @@ def printPageHeader(pageName, pageTitle="", initScript=None, otherHeaders=[],
     cfg_section = Config().section('general')
     if 'customstyles' in cfg_section:
         for style in cfg_section.getlist('customstyles'):
-            print(("<link rel='stylesheet' type='text/css' " + 
-                   "href='%s' media='screen'>") % style)
+            print("<link rel='stylesheet' type='text/css' " + 
+                   "href='%s' media='screen'>") % style
 
     print("<script type='text/javascript' src='scripts/tiqit.js'></script>")
     print("<script type='text/javascript' src='scripts/Sortable.js'></script>")
