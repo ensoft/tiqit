@@ -324,7 +324,7 @@ class TiqitField(object):
             if self.descs == self.values:
                 return self.values
             else:
-                return list(map(" - ".join, list(zip(self.values, self.descs))))
+                return [" - ".join(entry) for entry in zip(self.values, self.descs)]
 
     def filterView(self, data, *val):
         """ 

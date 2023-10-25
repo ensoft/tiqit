@@ -162,18 +162,18 @@ def genRelationships(out):
             return ("%s - %s" % (v,d) if v else v for v,d in zip(values,descs))
         if f.values:
             if f.descs != f.values:
-                vals = list(map(list, list(zip(f.values, getOptions(f.values, f.descs)))))
+                vals = [list(item) for item in zip(f.values, getOptions(f.values, f.descs))]
             else:
-                vals = list(map(list, list(zip(f.values, f.descs))))
+                vals = [list(item) for item in zip(f.values, f.descs)]
             out.write("""I.values=%s;\n""" % JSListOfListsFromSequence(vals))
             rewriterels = True
         elif f._perParentFieldValues:
             out.write("P=I.perparentvalues;\n")
             for key in f._perParentFieldValues:
                 if f._perParentFieldDescs:
-                    vals = list(map(list, list(zip(f._perParentFieldValues[key], getOptions(f._perParentFieldValues[key], f._perParentFieldDescs[key])))))
+                    vals = [list(item) for item in zip(f._perParentFieldValues[key], getOptions(f._perParentFieldValues[key], f._perParentFieldDescs[key]))]
                 else:
-                    vals = list(map(list, list(zip(f._perParentFieldValues[key], f._perParentFieldValues[key]))))
+                    vals = [list(item) for item in zip(f._perParentFieldValues[key], f._perParentFieldValues[key])]
                 out.write("""P[%s]=%s;\n""" % (JSListFromSequence(key), JSListOfListsFromSequence(vals)))
                 rewriterels = True
 
