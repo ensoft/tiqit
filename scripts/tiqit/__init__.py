@@ -829,8 +829,7 @@ def _loadNamedPage(ofType):
             break
         if not arg.find('=') >= 0:
             break
-        key, val = arg.split('=', 1)
-        key, val = list(map(urllib.parse.unquote, (key, val)))
+        key, val = [urllib.parse.unquote(elem) for elem in arg.split('=', 1)]
         if key == 'byname':
             searchName = val
         elif key == 'fromuser':
