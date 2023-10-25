@@ -18,35 +18,6 @@ import sys
 
 
 def _save_fields(fields):
-    # Before saving, we want to intern all the strings we can! This is to
-    # reduce the size of tiqit.pickle.
-    for f in fields:
-        obj = fields[f]
-        fields[sys.intern(f)] = obj
-        obj.name = sys.intern(obj.name)
-        obj.viewnames = list(map(sys.intern, obj.viewnames))
-        obj.longname = sys.intern(obj.longname)
-        obj.shortname = sys.intern(obj.shortname)
-        obj.type = sys.intern(obj.type)
-        obj.values = list(map(sys.intern, obj.values))
-        obj.descs = list(map(sys.intern, obj.descs))
-        obj._parentFields = list(map(sys.intern, obj._parentFields))
-        obj._childFields = list(map(sys.intern, obj._childFields))
-        mi = {}
-        for m in obj._mandatoryIf:
-            mi[sys.intern(m)] = list(map(sys.intern, obj._mandatoryIf[m]))
-        obj._mandatoryIf = mi
-        bi = {}
-        for b in obj._bannedIf:
-            bi[sys.intern(b)] = list(map(sys.intern, obj._bannedIf[b]))
-        obj._bannedIf = bi
-        obj.defaultsWith = tuple(map(sys.intern, obj.defaultsWith))
-        obj.defaultsFor = list(map(sys.intern, obj.defaultsFor))
-        ppfv = {}
-        for p in obj._perParentFieldValues:
-            ppfv[tuple(map(sys.intern, p))] = list(map(sys.intern, obj._perParentFieldValues[p]))
-        obj._perParentFieldValues = ppfv
-
     tiqit.database.initialise()
     tiqit.database.set('tiqit.fields', fields)
     tiqit.database.commit()
