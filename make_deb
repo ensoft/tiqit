@@ -32,7 +32,7 @@ usage() {
 # The package version can be specified as a command line argument (defaults to
 # 1).
 cd scripts
-PACKAGE_VERSION=$(python -c "import tiqit; print tiqit.VERSION_STRING")
+PACKAGE_VERSION=$(python3 -c "import tiqit; print(tiqit.VERSION_STRING)")
 CHANGELOG_FILE=debian/changelog
 cd ..
 if [ -z "$1" ]; then
@@ -58,8 +58,9 @@ DOC_DIR="$PACKAGE_DIR/usr/share/doc/tiqit"
 FAKEROOT_STATE="./fakeroot_state"
 
 # Run setup and compile tiqit.zip
+echo "Starting setup"
 ./setup pkg || die "Setup failed."
-./compile || die "Compile failed."
+echo "Setup complete"
 
 # Cleanup ./package/ and (re)build the directory structure within.
 if [ -f "$FAKEROOT_STATE" ]; then
@@ -87,9 +88,13 @@ mkdir_or_die "$DOC_DIR/examples"
 
 # Put files into $MAIN_DIR
 # Note this excludes tiqit.db, tiqit.pickle and fielddata.js: These will be
-# created by the post-install script (@@@ TBD).
-cp scripts/{index.py,loadfields.py,loadclasses.py,tiqit.zip} \
+# need to be manually updated once the .deb has been installed to
+# /var/lib/tiqit/data/tiqit.db, /usr/share/tiqit/static/scripts/fielddata.js
+# and /var/lib/tiqit/data/tiqit.pickle respectively.
+
+cp scripts/{index.py,loadfields.py,loadclasses.py} \
     "$MAIN_DIR/scripts"
+find scripts/ -name "*.py" -exec rsync -R {} $MAIN_DIR \;
 cp static/scripts/*.js "$MAIN_DIR/static/scripts"
 rm "$MAIN_DIR/static/scripts"/fielddata.js
 cp static/images/*.{png,svg,gif} "$MAIN_DIR/static/images"
@@ -129,7 +134,7 @@ Version: $PACKAGE_VERSION
 Section: misc
 Priority: optional
 Architecture: all
-Depends: python (>=2.6.5-0ubuntu1)
+Depends: python3
 Maintainer: Tiqit developers at Ensoft <ensoft-tiqit@cisco.com>
 Description: The Intelligent Issue Tracker
  A Bug Tracker with a twist. Focuses on user experience and flexibility,

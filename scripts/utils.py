@@ -88,9 +88,9 @@ def stringToColour(string):
     """
     return "#%06x" % (abs(hash(str(hash(str(hash(string)))))) & 0xffffff)
 
-def writeToTempFile(contents):
+def writeToTempFile(contents, encoding="utf-8"):
     fileObj, filename = tempfile.mkstemp()
-    os.write(fileObj, contents.encode('utf8'))
+    os.write(fileObj, contents.encode(encoding))
     os.close(fileObj)
 
     return filename

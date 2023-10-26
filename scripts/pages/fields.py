@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2017 Ensoft Ltd, 2010 Martin Morrison
 #
@@ -28,10 +28,9 @@ from tableFilter import *
 printPageHeader(PAGE_FIELDS, hideSavedSearches=True, hideNamedBugs=True)
 printMessages()
 
-print "<h1>Fields</h1>"
+print("<h1>Fields</h1>")
 
-fields = allFields.keys()
-fields.sort()
+fields = sorted(allFields.keys())
 
 filters = Filter('fields', ('Type', 'MVF', 'Sys', 'Desc', 'Requires'), clearbutton=True, allowMulti=True)
 
@@ -42,23 +41,23 @@ for f in fields:
 
 filters.write()
 
-print "<table class='tiqitTable' width='75%' id='fields'>"
-print "<thead>"
-print "<tr><th>%s</th></tr>" % "</th><th>".join(["Name", "Type", "Len", "MVF", "Sys", "States", "Allow", "Desc", "Requires", "Values"])
-print "</thead><tbody>"
+print("<table class='tiqitTable' width='75%' id='fields'>")
+print("<thead>")
+print("<tr><th>%s</th></tr>" % "</th><th>".join(["Name", "Type", "Len", "MVF", "Sys", "States", "Allow", "Desc", "Requires", "Values"]))
+print("</thead><tbody>")
 for f in fields:
     f = allFields[f]
-    print "<tr><td>%s</td><td>%s</td><td>%d</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>" % (f.name, f.type, f.flen, f.mvf and "*" or '', f.editable and "*" or '', f.descripted and '*' or '', ' '.join(map(str, f.requires)))
+    print("<tr><td>%s</td><td>%s</td><td>%d</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>" % (f.name, f.type, f.flen, f.mvf and "*" or '', f.editable and "*" or '', f.descripted and '*' or '', ' '.join(map(str, f.requires))))
     if f.values:
-        print "<select>"
+        print("<select>")
         for v, d in zip(f.values, f.descs):
             if d != v:
-                print "<option>%s - %s</option>" % (v, d)
+                print("<option>%s - %s</option>" % (v, d))
             else:
-                print "<option>%s</option>" % v
-        print "</select></td></tr>"
+                print("<option>%s</option>" % v)
+        print("</select></td></tr>")
     else:
-        print "</td></tr>"
-print "</tbody></table>"
+        print("</td></tr>")
+print("</tbody></table>")
 
 printPageFooter()

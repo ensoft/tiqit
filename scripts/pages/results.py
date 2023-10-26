@@ -1,6 +1,6 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
-import re, time, os, urllib, json
+import re, time, os, urllib.request, urllib.parse, urllib.error, json
 from backend import *
 from tiqit import *
 from tiqit import PageLink
@@ -39,7 +39,7 @@ FORMAT_XML = 4
 FORMAT_JSON = 5
 
 outputType = FORMAT_NORMAL
-if args.has_key("format"):
+if "format" in args:
     if args["format"] == "csv":
         outputType = FORMAT_CSV
     elif args['format'] == 'rss':
@@ -73,7 +73,7 @@ for field in selection:
     for parent in field._parentFields:
         parents.add(allFields[parent])
 
-    for bannedIf in field._bannedIf.keys():
+    for bannedIf in field._bannedIf:
         parents.add(allFields[bannedIf])
 
     for defWith in field.defaultsWith:
@@ -144,7 +144,7 @@ if outputType == FORMAT_NORMAL:
     printMessages()
 
     # Add a place for menus to add themselves
-    print "<div id='tiqitMenus'></div>"
+    print("<div id='tiqitMenus'></div>")
 
     # Print some other links
     otherlinks = [('results.py?%s&amp;format=csv' % re.sub('&?format=\w+', '', encodeHTML(os.environ['QUERY_STRING'])),
@@ -154,26 +154,26 @@ if outputType == FORMAT_NORMAL:
                    ('images/excel-small.png', '[Excel]'))]
 
     if searchName and not searchUser:
-        otherlinks.insert(0, ('results/%s/%s' % (os.environ['REMOTE_USER'], urllib.quote(searchName)),
+        otherlinks.insert(0, ('results/%s/%s' % (os.environ['REMOTE_USER'], urllib.parse.quote(searchName)),
                               '',
                               'Publishable Link',
                               'Link to this named query usable by anyone',
                               ('images/publish-small.png', '[Publish]')))
 
-    print "        <div id='tiqitOtherLinks'>"
+    print("        <div id='tiqitOtherLinks'>")
 
     for url, onclick, string, title, image in otherlinks:
-        print """
-         <div><a href='%s' onclick='%s' title='%s'><img src='%s' alt='%s'>%s</a></div>""" % (url, onclick, title, image[0], image[1], string)
+        print("""
+         <div><a href='%s' onclick='%s' title='%s'><img src='%s' alt='%s'>%s</a></div>""" % (url, onclick, title, image[0], image[1], string))
 
-    print "        </div>"
+    print("        </div>")
 
-    print "<h1>Search Results - <span id='resultsFilterCount'>%s matching entr%s</span></h1>" % (numres, numres == "1" and 'y' or 'ies')
+    print("<h1>Search Results - <span id='resultsFilterCount'>%s matching entr%s</span></h1>" % (numres, numres == "1" and 'y' or 'ies'))
 
     if len(matches) == 0:
-        print "<p id='noResultsWarning'><img src='images/warning-small.png' alt='/!\\'> No results returned.</p>"
+        print("<p id='noResultsWarning'><img src='images/warning-small.png' alt='/!\\'> No results returned.</p>")
 
-    if not args.has_key('groupby'):
+    if 'groupby' not in args:
         groupby = ''
     else:
         groupby = sort[0].field.name
@@ -196,33 +196,33 @@ if outputType == FORMAT_NORMAL:
     tableNameCounter = 1
     def printTableHeader(caption, num):
         tabid = 'results'
-        if args.has_key('groupby'):
+        if 'groupby' in args:
             tabid = 'results%d' % num
-        print "<table id='%s' style='margin-bottom: 2em; width: 100%%;' class='tiqitTable'>" % tabid
-        if caption and args.has_key('groupby'):
-            print "<caption><span class='tiqitTableCount'></span>%s: %s</caption>" % (prikeytype.name, caption)
+        print("<table id='%s' style='margin-bottom: 2em; width: 100%%;' class='tiqitTable'>" % tabid)
+        if caption and 'groupby' in args:
+            print("<caption><span class='tiqitTableCount'></span>%s: %s</caption>" % (prikeytype.name, caption))
         else:
-            print "<caption><span class='tiqitTableCount'></span></caption>"
-        print "<colgroup span='%d'></colgroup>" % len(selection)
-        print "<colgroup></colgroup>"
-        print "<thead>"
-        print "<tr>%s</tr>" % "".join(["<th field='%s'><a onclick='sortResults(event);'>%s</a></th>" % (encodeHTML(f.name), encodeHTML(f.shortname)) for f in selection])
-        print "</thead>"
-        print "<tbody>"
+            print("<caption><span class='tiqitTableCount'></span></caption>")
+        print("<colgroup span='%d'></colgroup>" % len(selection))
+        print("<colgroup></colgroup>")
+        print("<thead>")
+        print("<tr>%s</tr>" % "".join(["<th field='%s'><a onclick='sortResults(event);'>%s</a></th>" % (encodeHTML(f.name), encodeHTML(f.shortname)) for f in selection]))
+        print("</thead>")
+        print("<tbody>")
 
     def printTableFooter():
-        print "</tbody>\n</table>"
+        print("</tbody>\n</table>")
 
     # Get the first primary key and start the first table
     prikey = ""
-    print "<div id='resultsTableContainer'>"
+    print("<div id='resultsTableContainer'>")
     if len(matches) > 0:
         prikey = matches[0][prikeytype.name]
         printTableHeader(prikey, tableNameCounter)
     else:
         printTableHeader(prikey, tableNameCounter)
         # Insert an empty table row to keep the table rendered
-        print "<tr id='resultsTablePlaceholderRow'>%s</tr>" % "".join(["<td></td>" for f in selection])
+        print("<tr id='resultsTablePlaceholderRow'>%s</tr>" % "".join(["<td></td>" for f in selection]))
 
     # We'll be adding attributes to each row, so get the names once
     attr_names = [x.name for x in parents]
@@ -230,7 +230,7 @@ if outputType == FORMAT_NORMAL:
     for bug in matches:
         # Check whether we need to start a new table
         newprikey = bug[prikeytype.name]
-        if prikey != newprikey and args.has_key('groupby'):
+        if prikey != newprikey and 'groupby' in args:
             printTableFooter()
             prikey = newprikey
             tableNameCounter += 1
@@ -241,29 +241,29 @@ if outputType == FORMAT_NORMAL:
         # attributes whether their values are empty or not
         #
         attr_values = ["'%s'" % encodeHTML(bug[x.name]) for x in parents]
-        attributes = map("=".join, zip(attr_names, attr_values))
+        attributes = [f"{name}={val}" for name,val in zip(attr_names, attr_values)]
 
         pretty_vals = [bug.getSanitisedValue(x.name, outputType == FORMAT_NORMAL) for x in selection]
 
-        print "<tr id='%s' lastupdate='%s'%s><td>%s</td></tr>" % (bug['Identifier'], bug['Sys-Last-Updated'], " ".join(attributes), "</td><td>".join(pretty_vals))
+        print("<tr id='%s' lastupdate='%s'%s><td>%s</td></tr>" % (bug['Identifier'], bug['Sys-Last-Updated'], " ".join(attributes), "</td><td>".join(pretty_vals)))
 
     printTableFooter()
-    print "</div>"
+    print("</div>")
 
     printPageFooter()
 
 elif outputType == FORMAT_CSV:
-    print "Content-Disposition: attachment; filename=results.csv"
-    print "Content-Type: text/csv\n"
+    print("Content-Disposition: attachment; filename=results.csv")
+    print("Content-Type: text/csv\n")
 
     # Print header
-    print "%s" % ','.join([x.shortname for x in selection])
+    print("%s" % ','.join([x.shortname for x in selection]))
 
     for bug in matches:
-        print '"%s"' % '","'.join([bug[x.name] for x in selection])
+        print('"%s"' % '","'.join([bug[x.name] for x in selection]))
 
 elif outputType == FORMAT_RSS:
-    print """Content-Type: application/xml
+    print("""Content-Type: application/xml
 
 <?xml version='1.0' encoding='utf-8' ?>
 <rss version='2.0'>
@@ -274,12 +274,12 @@ elif outputType == FORMAT_RSS:
   <language>en-gb</language>
   <lastBuildDate>%s</lastBuildDate>
   <generator>%s v%s</generator>
-  <ttl>30</ttl>""" % (Config().section('general').get('sitetitle'), os.environ['REQUEST_URI'].replace('&', '&amp;').replace('format=rss', 'format=normal'), time.strftime("%a, %d %b %Y %H:%M:%S GMT"), Config().section('general').get('sitename'), VERSION_STRING)
+  <ttl>30</ttl>""" % (Config().section('general').get('sitetitle'), os.environ['REQUEST_URI'].replace('&', '&amp;').replace('format=rss', 'format=normal'), time.strftime("%a, %d %b %Y %H:%M:%S GMT"), Config().section('general').get('sitename'), VERSION_STRING))
 
     # Summary is in the output, so there could be more newlines than just the
     # ones between rows. So split more cleverly.
     for bug in matches:
-        print """
+        print("""
   <item>
    <title><![CDATA[%s - %s]]></title>
    <link>%s%s</link>
@@ -287,27 +287,27 @@ elif outputType == FORMAT_RSS:
    <author>%s</author>
    <guid permaLink='false'>%s</guid>
    <pubDate>%s</pubDate>
-  </item>""" % (bug['Identifier'], encodeCDATA(bug['Headline']), getBaseHost(), bug['Identifier'], encodeCDATA(bug['Summary']), bug['Submitter'], bug['Identifier'], time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.strptime(bug['Submitted-on'], "%m/%d/%Y %H:%M:%S")))
+  </item>""" % (bug['Identifier'], encodeCDATA(bug['Headline']), getBaseHost(), bug['Identifier'], encodeCDATA(bug['Summary']), bug['Submitter'], bug['Identifier'], time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.strptime(bug['Submitted-on'], "%m/%d/%Y %H:%M:%S"))))
 
-    print """
+    print("""
  </channel>
-</rss>"""
+</rss>""")
 
 elif outputType == FORMAT_XML:
     printXMLPageHeader()
     printXMLMessages()
 
-    print "\n".join(plugins.printXMLSection(PAGE_RESULTS))
+    print("\n".join(plugins.printXMLSection(PAGE_RESULTS)))
 
     printXMLSectionHeader("buglist")
 
     for bug in matches:
-        print "  <bug identifier='%s' lastupdate='%s'>" % (bug['Identifier'], bug['Sys-Last-Updated'])
+        print("  <bug identifier='%s' lastupdate='%s'>" % (bug['Identifier'], bug['Sys-Last-Updated']))
 
         for i in range(len(requested)):
-            print "   <field name='%s'><![CDATA[%s]]></field>" % (requested[i].name.replace("'", "&apos;"), encodeCDATA(bug[requested[i].name]))
+            print("   <field name='%s'><![CDATA[%s]]></field>" % (requested[i].name.replace("'", "&apos;"), encodeCDATA(bug[requested[i].name])))
 
-        print "  </bug>"
+        print("  </bug>")
 
     printXMLSectionFooter("buglist")
     printXMLPageFooter()
@@ -322,4 +322,4 @@ elif outputType == FORMAT_JSON:
             json_obj[requested[i].name] = bug[requested[i].name]
         json_list.append(json_obj)
 
-    print json.dumps(json_list)
+    print(json.dumps(json_list))

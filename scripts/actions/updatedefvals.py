@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from tiqit.defaults import *
 from tiqit import *

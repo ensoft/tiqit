@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
 import cgi, os
 from tiqit import *
@@ -16,7 +16,7 @@ else:
     saveType = ('namedBug', 'bug', 'view.py')
 
 if hasattr(prefs, saveType[0] + fields['name'].value) and \
-       not fields.has_key('overwrite'):
+       'overwrite' not in fields:
     # Item exists and "overwrite" has not been specified, so just set the
     # response vars.
     existsNum = 1
@@ -39,6 +39,6 @@ else:
 
 # Send the response XML
 printXMLPageHeader()
-print """<saveSearchResponse exists="%d" saved="%d" />""" % (existsNum, savedNum)
+print("""<saveSearchResponse exists="%d" saved="%d" />""" % (existsNum, savedNum))
 printXMLPageFooter()
 

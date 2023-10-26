@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2017 Ensoft Ltd, 2008-2010 Martin Morrison, Matthew Earl
 #
@@ -28,7 +28,7 @@ cfg = Config().section('helpfields')
 labelre = re.compile('(<label.*?>)(.*)(:</label>)')
 
 def updateLabel(field, label):
-    if cfg.has_key(field.name):
+    if field.name in cfg:
         match = labelre.match(label.getvalue())
         if match:
             label.seek(0)

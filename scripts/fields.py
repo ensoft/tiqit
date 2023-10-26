@@ -3,7 +3,7 @@
 #
 
 import time, re
-from StringIO import StringIO
+from io import StringIO
 from utils import writeOptions, encodeHTML
 from tiqit import *
 
@@ -187,7 +187,7 @@ class TiqitField(object):
         elif self.type == 'Boolean':
             self._filterEditableHtml = filterDisplayEditableCheckbox
         else:
-            raise KeyError, "Unknown field type for field '%s' (type is %s)" % (self.name, self.type)
+            raise KeyError("Unknown field type for field '%s' (type is %s)" % (self.name, self.type))
 
     def _getSaveName(self):
         return self.viewnames[0]
@@ -255,7 +255,7 @@ class TiqitField(object):
         self._initStatics()
 
         for attr in VARFIELDS:
-            if state.has_key(attr):
+            if attr in state:
                 setattr(self, attr, state[attr])
 
     def hasParentDependency(self):
@@ -316,7 +316,7 @@ class TiqitField(object):
                     return ["%s - %s" % (v, d) if v != "" and d != "" else "" for v, d in zip(vals, descs)]
                 a = dict((k, getOptions(self._perParentFieldValues[k],
                                         self._perParentFieldDescs[k])) for k in
-                                self._perParentFieldDescs.keys())
+                               self._perParentFieldDescs.keys())
                 return self._lookupParentArray(a, data)
             else:
                 return self.getValues(data)
@@ -324,7 +324,7 @@ class TiqitField(object):
             if self.descs == self.values:
                 return self.values
             else:
-                return map(" - ".join, zip(self.values, self.descs))
+                return [" - ".join(entry) for entry in zip(self.values, self.descs)]
 
     def filterView(self, data, *val):
         """ 
@@ -339,7 +339,7 @@ class TiqitField(object):
         """
         if self._projFilterView:
             className = data['Project']
-            if self._projFilterView.has_key(className):
+            if className in self._projFilterView:
                 return self._projFilterView[className](self, data, *val)
             else:
                 return self._filterView(self, data, *val)
@@ -359,7 +359,7 @@ class TiqitField(object):
         """
         if self._projFilterHtml:
             className = data['Project']
-            if self._projFilterHtml.has_key(className):
+            if className in self._projFilterHtml:
                 return self._projFilterHtml[className](self, data, *val)
             else:
                 return self._filterHtml(self, data, *val)
@@ -380,7 +380,7 @@ class TiqitField(object):
         """
         if self._projFilterEdit:
             className = data['Project']
-            if self._projFilterEdit.has_key(className):
+            if className in self._projFilterEdit:
                 return self._projFilterEdit[className](self, data, val)
             else:
                 return self._filterEdit(self, data, val)
@@ -401,7 +401,7 @@ class TiqitField(object):
         """
         if self._projFilterEditableHtml:
             className = data['Project']
-            if self._projFilterEditableHtml.has_key(className):
+            if className in self._projFilterEditableHtml:
                 return self._projFilterEditableHtml[className](self, data, val)
             else:
                 return self._filterEditableHtml(self, data, val)
@@ -409,14 +409,41 @@ class TiqitField(object):
             return self._filterEditableHtml(self, data, val)
 
     def __eq__(self, other):
-        return self.name == other.name and self.mvf == other.mvf and self.editable == other.editable and self.maxlen == other.maxlen and self.values == other.values and self._parentFields == other._parentFields and self._perParentFieldValues == other._perParentFieldValues and self._perParentFieldDescs == other._perParentFieldDescs and self._childFields == other._childFields and self._mandatoryIf == other._mandatoryIf and self._bannedIf == other._bannedIf
+        return (self.name == other.name and 
+            self.mvf == other.mvf and 
+            self.editable == other.editable and 
+            self.maxlen == other.maxlen and 
+            self.values == other.values and 
+            self._parentFields == other._parentFields and 
+            self._perParentFieldValues == other._perParentFieldValues and 
+            self._perParentFieldDescs == other._perParentFieldDescs and 
+            self._childFields == other._childFields and 
+            self._mandatoryIf == other._mandatoryIf and 
+            self._bannedIf == other._bannedIf)
+
+    def __hash__(self):
+        # Create a unique string to represent each TiqitField instance
+        # and then hash it.        
+        return hash(self.name + 
+            " ".join(self.viewnames) + 
+            " " + self.longname + " " + 
+            self.shortname)
+
+    def __lt__(self, other):
+        if self.name != other.name:
+            return self.name < other.name
+        elif self.longname != other.longname:
+            return self.longname < other.longname
+        elif self.shortname != other.shortname:
+            return self.shortname < other.shortname
+        raise NotImplementedError
 
     def __repr__(self):
         return "TiqitField(%s)" % self.name
 
     def isMandatory(self, data):
         return all(data[fname] in vals for fname, vals in
-                    self._mandatoryIf.iteritems()) if self._mandatoryIf else False
+                    self._mandatoryIf.items()) if self._mandatoryIf else False
 
 
 #
@@ -458,7 +485,7 @@ def filterDisplayEditableText(field, data, val):
 
     else:
         descs = field.getDisplayValues(data)
-        values = zip(vals, descs)
+        values = list(zip(vals, descs))
 
         display = StringIO()
         writeOptions(field.name, values, val, 'updateChildrenView(event); checkFormValidity(event);', display)

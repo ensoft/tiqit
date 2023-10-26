@@ -29,7 +29,7 @@
 
 from tiqit import *
 import fields, sys, re, utils
-from StringIO import StringIO
+from io import StringIO
 
 _backends = {}
 def initialise():
@@ -113,10 +113,10 @@ class DataCommon(object):
         # name(s) under which the value in the data is to be found
         indexNames = allFields[name].viewnames
         # Now get the values
-        vals = map(self._getRawValue, indexNames)
+        vals = list(map(self._getRawValue, indexNames))
         # Now convert the values according to the arguments
         if pretty:
-            value = allFields[name].filterHtml(self, *map(encodeHTML, vals))
+            value = allFields[name].filterHtml(self, *list(map(encodeHTML, vals)))
         else:
             value = allFields[name].filterView(self, *vals)
         return value
@@ -216,7 +216,7 @@ def extractFieldsFromFormat(cls, formats):
 
 def getFormatArguments(data, inFields=None):
     if not inFields:
-        inFields = allFields.values()
+        inFields = list(allFields.values())
     args = {}
 
     for field in inFields:

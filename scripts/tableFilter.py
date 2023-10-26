@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
 from utils import *
 
@@ -55,40 +55,40 @@ class Filter(dict):
         the default in filter.js if the function was not specified.
         """
         args = {'name': self.name, 'func': self.filterfunc, 'args': self.filterArgs}
-        print "<div id='%(name)sFilters' name='%(name)s'>" % args
+        print("<div id='%(name)sFilters' name='%(name)s'>" % args)
 
         # Write header
-        print "<div>Filter on: <span>"
+        print("<div>Filter on: <span>")
 
         for f in self.columns:
             args['field'] = f
             self[f].sort()
             
             self[f].insert(0, ("NOFILTER", f))
-            print """ <select name='%(field)s' id='%(name)sFilter%(field)s' onchange='%(func)s(%(args)s);'>""" % args
+            print(""" <select name='%(field)s' id='%(name)sFilter%(field)s' onchange='%(func)s(%(args)s);'>""" % args)
 
             for t in self[f]:
-                print '<option value="%s">%s</option>' % (t[0].replace('"', '&quot;'), t[1])
+                print('<option value="%s">%s</option>' % (t[0].replace('"', '&quot;'), t[1]))
 
-            print "</select>"
+            print("</select>")
 
-        print "</span>"
+        print("</span>")
 
         if self.allowMulti:
-            print """<input id='%sFilterAddRow' type='button' value=' + ' onclick='tiqitFilterAddRow(%s);'> """ % (self.name, encodeJS(self.name))
+            print("""<input id='%sFilterAddRow' type='button' value=' + ' onclick='tiqitFilterAddRow(%s);'> """ % (self.name, encodeJS(self.name)))
 
         if self.clearbutton:
-            print """<input type='button' value='Clear Filters' onclick='tiqitFilterClear("%s");'> """ % self.name
+            print("""<input type='button' value='Clear Filters' onclick='tiqitFilterClear("%s");'> """ % self.name)
 
         if self.allowGroupBy:
-            print """Group by: <select id='%(name)sGroupBy' onchange='filterGroupBy("%(name)s", this);'><option value='NOFILTER'></option>""" % args
+            print("""Group by: <select id='%(name)sGroupBy' onchange='filterGroupBy("%(name)s", this);'><option value='NOFILTER'></option>""" % args)
             for f in self.columns:
-                print '<option value="%s"%s>%s</option>' % (f.replace('"', '&quot;'), f == self.initialGroupBy and ' selected' or '', f)
-            print "</select> "
+                print('<option value="%s"%s>%s</option>' % (f.replace('"', '&quot;'), f == self.initialGroupBy and ' selected' or '', f))
+            print("</select> ")
 
         if self.allowInvert:
-            print "<label for='%(name)sFilterNeg'>Invert Filter:</label>" % args
-            print "<input type='checkbox' title='Invert Filter' id='%(name)sFilterNeg' name='%(name)sFilterNeg' onchange='%(func)s(%(args)s)'>" % args
+            print("<label for='%(name)sFilterNeg'>Invert Filter:</label>" % args)
+            print("<input type='checkbox' title='Invert Filter' id='%(name)sFilterNeg' name='%(name)sFilterNeg' onchange='%(func)s(%(args)s)'>" % args)
 
-        print "</div>"
-        print "</div>"
+        print("</div>")
+        print("</div>")

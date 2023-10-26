@@ -1,10 +1,10 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
 #
 # Create a nice form to view the content of a bug.
 #
 
-import os, cgi, commands, sys, urllib, time
+import os, cgi, subprocess, sys, urllib.request, urllib.parse, urllib.error, time
 from backend import *
 from tiqit import *
 from tableFilter import *
@@ -23,7 +23,7 @@ loadNamedBug()
 
 fields = Arguments()
 
-if not fields.has_key('bugid'):
+if 'bugid' not in fields:
     raise TiqitError("You must specify a Bug ID")
 
 bugid = extractBugIds(fields['bugid'])
@@ -197,24 +197,24 @@ def showPage():
     printMessages()
 
     # Other links section
-    print """ <div id='tiqitOtherLinks'>"""
+    print(""" <div id='tiqitOtherLinks'>""")
 
     # View links first
     otherlinks = Config().section('otherlinks')
     viewlinks = ["<a href='%s'>%s</a>" % (encodeHTML(v % args), o) for o, v in otherlinks.items(raw=True)]
 
     if viewlinks:
-        print "  <div>View in %s</div>" % ', '.join(viewlinks)
+        print("  <div>View in %s</div>" % ', '.join(viewlinks))
 
     # Now let any plugins do their thing
-    print """
+    print("""
 %s
  </div>
 <h1>
  %s %s
 </h1>
 """ % ('\n'.join(plugins.printOtherLinks(PAGE_VIEW, fields, prefs)),
-       bugView.displayname, args['Identifier'])
+       bugView.displayname, args['Identifier']))
 
     sections = [(prefs['viewOrder%s' % x[0]], x) for x in viewSections]
     sections.sort()
@@ -230,32 +230,32 @@ def displayGeneral(hide=False):
     primarytitle, primarytitleDetail, primaryformat = view_sections[0]
     printSectionHeader(primarytitle, primarytitleDetail, hide);
 
-    print "<form id='tiqitBugEdit' action='edit.py' method='post' onSubmit='return prepareForm();'>"
-    print cls.getFormat(primaryformat) % args
+    print("<form id='tiqitBugEdit' action='edit.py' method='post' onSubmit='return prepareForm();'>")
+    print(cls.getFormat(primaryformat) % args)
 
-    print """
+    print("""
 <div id='extraCopies'></div>
 <p>
  <input type='submit' value='Save Changes'>
  <input type='button' value='Reset Form' onclick='resetForm();'>
  <input type='button' onclick='if (!amEditing || confirm("You&apos;ve made changes to this bug. Cloning it will throw them away. Are you sure you want to continue?")) document.location = "newbug.py?bugid=%(Identifier)s";' value='Clone Bug'>
 </p>
-</form>""" % args
+</form>""" % args)
 
     printSectionFooter()
 
 def displayExtra(hide=False):
-    print "<form onsubmit='return false;' id='tiqitExtraFormData'>"
+    print("<form onsubmit='return false;' id='tiqitExtraFormData'>")
     for title, titleDetail, format in view_sections[1:]:
         printSectionHeader(title, titleDetail, hide)
-        print cls.getFormat(format) % args
-        print """
+        print(cls.getFormat(format) % args)
+        print("""
 
 <p><input type='button' value='Save Changes' onClick='if (prepareForm()) document.getElementById("tiqitBugEdit").submit();'></p>
-"""
+""")
 
         printSectionFooter()
-    print "</form>"
+    print("</form>")
 #
 # Text Notes and File Attachments are printed in the same section.
 #
@@ -265,18 +265,18 @@ def displayNotes(hide=False):
 
     # Write out the filter line
     if len(encs) > 1:
-        print "<p>"
+        print("<p>")
         encFilters.write()
-        print """
+        print("""
         <input type='button' value='Show All' onclick='showAllEnclosures();'>
         <input type='button' value='Hide All' onclick='hideAllEnclosures();'>
-        </p>"""
+        </p>""")
 
     # Now the main table
     if not encs:
-        print "<p>No Enclosures or Attachments.</p>"
+        print("<p>No Enclosures or Attachments.</p>")
     else:
-        print """
+        print("""
     <form action='editnote.py' onsubmit='onSubmitEnclosure()' method='post'>
     <input type='hidden' name='bugid' value='%s'>
     <input type='hidden' name='isUpdate' value='true'>
@@ -290,12 +290,12 @@ def displayNotes(hide=False):
       <th>Updated-on</th>
       <th>Size</th>
       <th>Action</th>
-     </tr>""" % bugid
+     </tr>""" % bugid)
 
         for enc in encs:
-            print enc.printLine()
+            print(enc.printLine())
 
-        print "</table></div></form>"
+        print("</table></div></form>")
 
     # And the 'new' section, for adding enclosures
     # Note the textareas are split into "Edit", which is visible to the user
@@ -308,7 +308,7 @@ def displayNotes(hide=False):
     # navigates back to edit the note again but now sees it with the unicode
     # characters present instead of the newlines. Most browsers don't render
     # the unicode characters at all.
-    print """
+    print("""
 <p id='newencbuttons'>
  <input type='button' value='New Note' onclick='showNewNote();'>
  <input type='button' value='Attach File' onclick='showNewFile();'>
@@ -357,7 +357,7 @@ def displayNotes(hide=False):
   </p>
  </form>
 </div>
-""" % (bugid, "".join(["<option value='%s'>%s</option>" % (x, x) for x in noteTypes if x != "Unknown-type"]), noteTypes[0], bugid)
+""" % (bugid, "".join(["<option value='%s'>%s</option>" % (x, x) for x in noteTypes if x != "Unknown-type"]), noteTypes[0], bugid))
 
     printSectionFooter()
 
@@ -373,37 +373,37 @@ def displayGraph(status, numstates, changes, value, printCurrent=True, endtime=N
         endtime = nowtime
     totaltime = endtime - starttime
 
-    print "<p>{}:</p>".format(status)
-    print "<div class='tiqitGraph' style='height: %dem'>" % (numstates + 1)
-    print "<div class='header'>"
+    print("<p>{}:</p>".format(status))
+    print("<div class='tiqitGraph' style='height: %dem'>" % (numstates + 1))
+    print("<div class='header'>")
     # Print row headers
     for i in range(len(changes)):
         if showTags:
-            print "<div class='row' style='top: %dem;'>%s -&gt; %s</div>" % \
-                  (i, changes[i]['OldValue'], changes[i]['NewValue'])
+            print("<div class='row' style='top: %dem;'>%s -&gt; %s</div>" % \
+                  (i, changes[i]['OldValue'], changes[i]['NewValue']))
         else:
-            print "<div class='row' style='top: %dem;'><!--%s -&gt; %s --></div>" % \
-                  (i, changes[i]['OldValue'], changes[i]['NewValue'])
+            print("<div class='row' style='top: %dem;'><!--%s -&gt; %s --></div>" % \
+                  (i, changes[i]['OldValue'], changes[i]['NewValue']))
 
     # Bonus row header for current value if required
     if printCurrent:
         i += 1
         if showTags:
-            print "<div class='row' style='top: %dem;'>%s -&gt;</div>" % (i, value)
+            print("<div class='row' style='top: %dem;'>%s -&gt;</div>" % (i, value))
         else:
-            print "<div class='row' style='top: %dem;'><!--%s -&gt;--></div>" % (i, value)
+            print("<div class='row' style='top: %dem;'><!--%s -&gt;--></div>" % (i, value))
 
-    print "</div>"
-    print "<div class='graph' style='height: %dem'>" % numstates
+    print("</div>")
+    print("<div class='graph' style='height: %dem'>" % numstates)
     sofar = 0
     width = 0
     currtime = starttime
     for i in range(len(changes)):
         width = (changes[i]['DateVal'] - currtime) / totaltime * 100
         if overrideBackground:
-            print "<div title='Changed by %s' class='row %s' style='text-align: center; background-color: %s; top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (changes[i]['User'], changes[i]['OldValue'], stringToColour(changes[i]['OldValue']), i, sofar, width, changes[i]['OldValue'])
+            print("<div title='Changed by %s' class='row %s' style='text-align: center; background-color: %s; top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (changes[i]['User'], changes[i]['OldValue'], stringToColour(changes[i]['OldValue']), i, sofar, width, changes[i]['OldValue']))
         else:
-            print "<div title='Changed by %s' class='row %s' style='top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (changes[i]['User'], changes[i]['OldValue'], i, sofar, width, changes[i]['OldValue'])
+            print("<div title='Changed by %s' class='row %s' style='top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (changes[i]['User'], changes[i]['OldValue'], i, sofar, width, changes[i]['OldValue']))
         currtime = changes[i]['DateVal']
         sofar += width
 
@@ -412,19 +412,19 @@ def displayGraph(status, numstates, changes, value, printCurrent=True, endtime=N
         i += 1
         width = (endtime - currtime) / totaltime * 100
         if overrideBackground:
-            print "<div title='Currently %s' class='row %s' style='text-align: center; background-color: %s; top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (value, value, stringToColour(value), i, sofar, width, value)
+            print("<div title='Currently %s' class='row %s' style='text-align: center; background-color: %s; top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (value, value, stringToColour(value), i, sofar, width, value))
         else:
-            print "<div title='Currently %s' class='row %s' style='top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (value, value, i, sofar, width, value)
+            print("<div title='Currently %s' class='row %s' style='top: %dem; left: %.2f%%; width: %.2f%%;'>%s</div>" % (value, value, i, sofar, width, value))
 
     # Print a scale for the graph
     section = (endtime - starttime) / 5
     for s in range(6):
         thistime = starttime + s * section
-        print "<div class='ruleline' style='left: %d%%'></div>" % (s * 20)
-        print "<div class='row scale' style='top: %dem; left: %d%%'>%s</div>" % (i + 1, s * 20, time.strftime("%d/%m/%Y", time.localtime(thistime)))
+        print("<div class='ruleline' style='left: %d%%'></div>" % (s * 20))
+        print("<div class='row scale' style='top: %dem; left: %d%%'>%s</div>" % (i + 1, s * 20, time.strftime("%d/%m/%Y", time.localtime(thistime))))
 
-    print "</div>"
-    print "</div>"
+    print("</div>")
+    print("</div>")
 
 def displayGraphs(hide=False):
     printSectionHeader("Graphs", hide=hide)
@@ -461,12 +461,12 @@ def displayGraphs(hide=False):
         if endtimes:
             endtime = endtimes[-1]
         totaltime = endtime - starttime
-        print "<p>Graphs cover %d days and are now closed.</p>" % \
-              (totaltime / 60 / 60 / 24)
+        print("<p>Graphs cover %d days and are now closed.</p>" % \
+              (totaltime / 60 / 60 / 24))
     else:
         totaltime = endtime - starttime
-        print "<p>Graphs cover %d days and counting.</p>" % \
-              (totaltime / 60 / 60 / 24)
+        print("<p>Graphs cover %d days and counting.</p>" % \
+              (totaltime / 60 / 60 / 24))
 
     # Draw status graph
     if statusChanges:
@@ -476,19 +476,19 @@ def displayGraphs(hide=False):
         displayGraph("Status", len(statusChanges) + int(printCurrent), statusChanges, args['StatusRaw'],
                      printCurrent=printCurrent, endtime=endtime, showTags=True, overrideBackground=False)
     else:
-        print "<p><img src='images/warning-small.png' alt='/!\\'> No status history available.</p>"
+        print("<p><img src='images/warning-small.png' alt='/!\\'> No status history available.</p>")
 
     # Draw component graph
     if compChanges:
         displayGraph("Component", len(compChanges) + 1, compChanges, args['ComponentRaw'], endtime=endtime)
     else:
-        print "<p><img src='images/warning-small.png' alt='/!\\'> No component history available.</p>"
+        print("<p><img src='images/warning-small.png' alt='/!\\'> No component history available.</p>")
 
     # Draw severity graph
     if sevChanges:
         displayGraph("Severity", len(sevChanges) + 1, sevChanges, args['SeverityRaw'], endtime=endtime)
     else:
-        print "<p><img src='images/warning-small.png' alt='/!\\'> No severity history available.</p>"
+        print("<p><img src='images/warning-small.png' alt='/!\\'> No severity history available.</p>")
 
     printSectionFooter()
 
@@ -503,7 +503,7 @@ def displayHistory(hide=False):
     hisFilters.write()
 
     # The table itself
-    print """
+    print("""
 <div id='historyTableContainer'>
 <table id='history' class='tiqitTable' style='width: 90%;'>
  <thead>
@@ -516,10 +516,10 @@ def displayHistory(hide=False):
    <th field='Date'>Date</th>
   </tr>
  </thead>
- <tbody>"""
+ <tbody>""")
 
     for args in auditargs:
-        print """
+        print("""
     <tr>
      <td><a onclick='showUserDropDown(event);'>%(User)s</a></td>
      <td>%(Operation)s</td>
@@ -527,13 +527,13 @@ def displayHistory(hide=False):
      <td>%(OldValue)s</td>
      <td>%(NewValue)s</td>
      <td>%(Date)s</td>
-    </tr>""" % args
+    </tr>""" % args)
 
-    print """
+    print("""
  </tbody>
 </table>
 </div>
-"""
+""")
 
     printSectionFooter()
 
@@ -574,24 +574,24 @@ def displayRelates(hide=False):
     if relates:
         doms = loadBugs([x[0] for x in relates])
 
-        print """
+        print("""
     <table id='tiqitRelatesTable' class='tiqitTable' style='width: 90%;'>
-    <tr><th>Del?</th><th>Identifier</th><th>Relationship</th><th>St</th><th>Headline</th></tr>"""
+    <tr><th>Del?</th><th>Identifier</th><th>Relationship</th><th>St</th><th>Headline</th></tr>""")
 
         for bug in doms:
             identifier = bug['Identifier']
             (rel, editable) = [(x[1],x[2]) for x in relates if x[0] == identifier][0]
-            print "<tr><td><input type='checkbox'%s></td><td><a href='%s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>" % \
+            print("<tr><td><input type='checkbox'%s></td><td><a href='%s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>" % \
                   ('' if editable else ' disabled', identifier,
                    identifier, rel, bug['Status'],
-                   encodeHTML(bug['Headline']))
+                   encodeHTML(bug['Headline'])))
 
-        print "</table>"
+        print("</table>")
     else:
-        print "<p>No related bugs.</p>"
+        print("<p>No related bugs.</p>")
 
     # Adding new related bugs disabled until backends support it.
-    print """<!--
+    print("""<!--
     <p>
      <table>
       <tr>
@@ -602,7 +602,7 @@ def displayRelates(hide=False):
     </p>
     <p><input type='button' value='Save Changes' onClick='if (prepareForm()) document.getElementById("tiqitBugEdit").submit();'></p>
     -->
-    """
+    """)
 
     printSectionFooter()
 

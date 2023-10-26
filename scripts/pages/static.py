@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2017 Ensoft Ltd, 2014 Matthew Earl
 #
@@ -68,7 +68,7 @@ def _get_mime_type(path):
     for regex, mimetype in _MIME_TYPES:
         if re.search(regex, path):
             return mimetype
-    raise _MimeTypeNotKnown
+    raise _MimeTypeNotKnown(path)
 
 
 # Any of the internal functions can (in theory) raise any of the exceptions,
@@ -78,7 +78,11 @@ try:
 
     # Write directly to the file-descriptor to circument the wrapper that
     # encodes output in UTF-8. (The wrapper is setup in index.py.)
-    os.write(1, "Content-type: {}\n".format(_get_mime_type(abspath)))
+    try:
+        content_type = "Content-type: {}\n".format(_get_mime_type(abspath))
+        os.write(1, content_type.encode("utf-8"))
+    except _MimeTypeNotKnown:
+        raise Exception(subpath, abspath)
 
     # Set the last-modified header to allow caching: The client will send
     # subsequent requests with the If-modified-since header, which we compare
@@ -87,7 +91,7 @@ try:
     # the timestamps match, and any document body we send here will be
     # dropped.)
     lastmodified = wsgiref.handlers.format_date_time(os.stat(abspath).st_mtime)
-    os.write(1, "Last-modified: {}\n\n".format(lastmodified))
+    os.write(1, "Last-modified: {}\n\n".format(lastmodified).encode("utf-8"))
 
     if os.environ.get('HTTP_IF_MODIFIED_SINCE') != lastmodified:
         # Open the file and write it to stdout. Do it in chunks, whose size is

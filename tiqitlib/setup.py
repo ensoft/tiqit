@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Tiqit setup file
 #
@@ -6,7 +6,7 @@
 from distutils.core import setup
 
 setup(name='tiqitlib',
-      version="1.0.14",
+      version="1.1.0",
       description='Python library for Tiqit: The Intelligent Issue Tracker',
       url='https://github.com/ensoft/tiqit',
       maintainer='Tiqit maintainers at Ensoft',
