@@ -133,7 +133,7 @@ class Arguments(object):
     def keys(self):
         return list(self.cgi.keys()) + list(self.overrides.keys())
 
-    def has_key(self, key):
+    def __contains__(self, key):
         return key in self.cgi or key in self.overrides
 
     def __repr__(self):

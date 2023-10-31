@@ -43,7 +43,7 @@ if 'S1S2-without-workaround' in args:
 
 # Make checkboxes into Y's
 for field in [x for x in fieldsInUpdate if allFields[x].type == 'Boolean']:
-    if args.get(field) and args.get(field) != 'false':
+    if field in args and args[field] and args[field] != 'false':
         args[field] = 'Y'
     else:
         args[field] = 'N'
