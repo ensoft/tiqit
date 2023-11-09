@@ -1,13 +1,18 @@
-import os, getpass, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, json
-from configparser import ConfigParser
+import getpass
+import json
+import os
 import pprint
+import urllib
 from argparse import ArgumentParser
+from configparser import ConfigParser
 from urllib.parse import urlparse
+
 
 datadir = None
 tokenfile = None
 conffile = None
 config = None
+
 
 def initialise(default_siteurl, datadir_l, conffile_l=None, tokenfile_l=None):
     global datadir
@@ -27,7 +32,7 @@ def initialise(default_siteurl, datadir_l, conffile_l=None, tokenfile_l=None):
 
     if tokenfile_l:
         tokenfile = tokenfile_l
-    
+
 
 def get_token():
     if not os.path.exists(tokenfile):
@@ -35,11 +40,18 @@ def get_token():
             def prompt_user_passwd(self, host, realm):
                 return getpass.getuser(), getpass.getpass()
 
+        auth_url = config.get('DEFAULT', 'siteurl') + 'authtoken'
         url = AuthTokenOpener()
-        doc = url.open(config.get('DEFAULT', 'siteurl') + 'authtoken')
+        doc = url.open(auth_url)
         token = doc.read()
         doc.close()
         url.close()
+
+        if len(token) != 128:
+            raise Exception(
+                f"Error: Failed to automatically generate token! "
+                f"Please create {tokenfile} with the contents of {auth_url}"
+            )
 
         if not os.path.exists(datadir):
             os.makedirs(datadir)
@@ -57,6 +69,7 @@ def get_token():
     fd.close()
 
     return token
+
 
 def request_page(page):
     token = get_token()
@@ -76,8 +89,9 @@ def request_page(page):
     else:
         separator = '&'
 
-    req = urllib.request.Request(config.get('DEFAULT', 'siteurl') +
-                              page + separator + 'format=json')
+    req = urllib.request.Request(
+        config.get('DEFAULT', 'siteurl') + page + separator + 'format=json'
+    )
     if token is not None:
         req.add_header('X-Tiqit-Token', token)
     doc = urllib.request.urlopen(req)
@@ -89,6 +103,7 @@ def request_page(page):
 
     return data
 
+
 def request_named_query(user, query):
     """
     Request the results of a named query for a specific username.
@@ -96,6 +111,7 @@ def request_named_query(user, query):
     data = request_page('api/results/{}/{}'.format(urllib.parse.quote(user),
                                                    urllib.parse.quote(query)))
     return data
+
 
 def request_specific_bugs(bugs, fields):
     """
@@ -111,13 +127,14 @@ def request_specific_bugs(bugs, fields):
     if fields is not None:
         for i in range(len(fields)):
             idx = i + 2
-            page = page + "&selection{}={}".format(idx,
-                                                   urllib.parse.quote(fields[i]))
-        
-    page = page + "&buglist=" + ",".join(urllib.parse.quote(bug) for bug in bugs)
+            page = f"{page}&selection{idx}={urllib.parse.quote(fields[i])}"
+
+    bugs = ",".join(urllib.parse.quote(bug) for bug in bugs)
+    page = f"{page}&buglist={bugs}"
     data = request_page(page)
 
     return data
+
 
 def parse_args(siteurl):
     # Create the top-level parser
@@ -141,6 +158,7 @@ def parse_args(siteurl):
                             help='Fields to fetch')
 
     return parser.parse_args()
+
 
 def process_cli_args(args):
     pp = pprint.PrettyPrinter(indent=4)
