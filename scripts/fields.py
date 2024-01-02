@@ -423,9 +423,10 @@ class TiqitField(object):
 
     def __hash__(self):
         # Create a unique string to represent each TiqitField instance
-        # and then hash it.        
+        # and then hash it. 'viewname' may be set to "None" if it does not
+        # exist in the backend.
         return hash(self.name + 
-            " ".join(self.viewnames) + 
+            " ".join((str(viewname) for viewname in self.viewnames)) +
             " " + self.longname + " " + 
             self.shortname)
 
