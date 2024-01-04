@@ -1,3 +1,10 @@
+tiqit (1.1.1-1) trusty; urgency=low
+
+  * Update the hash function for TiqitField to work for 'viewname' values
+    set to None.
+
+ -- Jonathan Loh <joloh@cisco.com> Mon, 2 Jan 2024 18:47:00 +0000
+
 tiqit (1.1.0-1) trusty; urgency=low
 
   * Migrate all scripts from using python2 to python3.
