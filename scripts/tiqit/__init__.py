@@ -45,7 +45,7 @@ times = [("start", time.time())]
 
 MAJ_VER   = 1
 MIN_VER   = 1
-PATCH_VER = 1
+PATCH_VER = 2
 DEV_VER   = 1
 
 VERSION = (MAJ_VER, MIN_VER, PATCH_VER)
@@ -1118,40 +1118,66 @@ def printPageHeader(pageName, pageTitle="", initScript=None, otherHeaders=[],
     <base href='%s'>
     <link rel='apple-touch-icon' href='%s'>
     <link rel='shortcut icon' type='%s' href='%s'>
-    <link rel='stylesheet' type='text/css' href='styles/print.css' media='print'>""" % (pageTitle, baseurl, pages[pageName].site.appleiconurl, pages[pageName].site.imgtype, pages[pageName].site.imgurl))
+    <link rel='stylesheet' type='text/css' href='styles/print.css?version=%s' media='print'>""" % (
+            pageTitle,
+            baseurl,
+            pages[pageName].site.appleiconurl,
+            pages[pageName].site.imgtype,
+            pages[pageName].site.imgurl,
+            VERSION_STRING,
+        )
+    )
     
     for head in otherHeaders:
         print(head)
 
     # Print styles
-    print("<link rel='stylesheet' type='text/css' href='styles/tiqit.css' media='screen'>")
+    print("<link rel='stylesheet' type='text/css' href='styles/tiqit.css?version=%s' media='screen'>" % VERSION_STRING)
     for style in pages[pageName].styles:
-        print("<link rel='stylesheet' type='text/css' href='styles/%s.css' media='screen'>" % style)
+        print("<link rel='stylesheet' type='text/css' href='styles/%s.css?version=%s' media='screen'>" % (style, VERSION_STRING))
 
     # Plugins may want to add styles too
     for style in plugins.getPageStyles(pageName):
-        print("<link rel='stylesheet' type='text/css' href='styles/%s.css' media='screen'>" % style)
+        # The plugin may provide a version along with the script
+        # in which case it is added to the tiqit version
+        plugin_version = ""
+        if isinstance(style, tuple):
+            style, plugin_version = style
+        print("<link rel='stylesheet' type='text/css' href='styles/%s.css?version=%s+%s' media='screen'>" % (
+            style,
+            VERSION_STRING,
+            plugin_version
+        ))
 
     # Print custom styles (overrides any other styles)
     cfg_section = Config().section('general')
     if 'customstyles' in cfg_section:
         for style in cfg_section.getlist('customstyles'):
-            print("<link rel='stylesheet' type='text/css' " + 
-                   "href='%s' media='screen'>") % style
+            print(("<link rel='stylesheet' type='text/css' " + 
+                   "href='%s?version=%s' media='screen'>") % (style, VERSION_STRING))
 
-    print("<script type='text/javascript' src='scripts/tiqit.js'></script>")
-    print("<script type='text/javascript' src='scripts/Sortable.js'></script>")
+    print("<script type='text/javascript' src='scripts/tiqit.js?version=%s'></script>" % VERSION_STRING)
+    print("<script type='text/javascript' src='scripts/Sortable.js?version=%s'></script>" % VERSION_STRING)
     
     for script in pages[pageName].scripts: 
-        print("<script type='text/javascript' src='scripts/%s.js'></script>" % script)
+        print("<script type='text/javascript' src='scripts/%s.js?version=%s'></script>" % (script, VERSION_STRING))
 
     # Plugins may want to add scripts too
     for script in plugins.getPageScripts(pageName):
-        print("<script type='text/javascript' src='scripts/%s.js'></script>" % script)
+        # The plugin may provide a version along with the script
+        # in which case it is added to the tiqit version
+        plugin_version = ""
+        if isinstance(script, tuple):
+            script, plugin_version = script
+        print("<script type='text/javascript' src='scripts/%s.js?version=%s+%s'></script>" % (
+            script,
+            VERSION_STRING,
+            plugin_version
+        ))
 
     if bugView:
-        print("<link rel='stylesheet' type='text/css' href='styles/%s.css' media='screen'>" % bugView.name)
-        print("<script type='text/javascript' src='scripts/%s.js'></script>" % bugView.name)
+        print("<link rel='stylesheet' type='text/css' href='styles/%s.css?version=%s' media='screen'>" % (bugView.name, VERSION_STRING))
+        print("<script type='text/javascript' src='scripts/%s.js?version=%s'></script>" % (bugView.name, VERSION_STRING))
 
     print("""
     <script type='text/javascript'>
