@@ -80,26 +80,21 @@ Status: %d
 # Bug ID extractor
 #
 
-def extractBugIds(string):
+def extractBugIds(source_string):
     """
-    Extract anything and everything that looks like a bug id from the
-    given string. Will also normalise bugids (so can be used to
-    normalise tqtSd12345 into TQTsd12345).
+    Extract bug IDs from a string.
+
+    This function utilises plugin code - the getBugIds API.
+
+    Sample input:
+    'This is a bug tqtSd12345 I am looking for.'
+
+    Sample output (note that the getBugIds API is expected to normalise any
+    found bug IDs):
+    ["TQTsd12345"]
+
     """
-
-    backends = (k for k, v in Config().section('backends').items())
-    match = re.findall(r"(?:_|\b)((?:%s)?[A-Z][A-Z]\d\d\d\d\d)(?:_|\b)" %
-                           "|".join(backends),
-                       string,
-                       re.I | re.M)
-
-    if match:
-        bugids = [x[:3].upper() + x[3:].lower() for x in match]
-    else:
-        bugids = []
-
-    return list(dict.fromkeys(bugids))
-    return plugins.findBugIds(string)
+    return plugins.getBugIds(source_string)
 
 #
 # Arguments
