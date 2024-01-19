@@ -1,3 +1,25 @@
+tiqit (1.1.2-1) trusty; urgency=low
+
+  * Avoid users needing to clear browser cache when tiqit or plugin versions
+    are updated.
+
+ -- Olli Johnson <ollijohnson93@gmail.com>  Thu, 24 Nov 2022 11:17:00 +0000
+
+tiqit (1.1.1-1) trusty; urgency=low
+
+  * Update the hash function for TiqitField to work for 'viewname' values
+    set to None.
+
+ -- Jonathan Loh <joloh@cisco.com> Mon, 2 Jan 2024 18:47:00 +0000
+
+tiqit (1.1.0-1) trusty; urgency=low
+
+  * Migrate all scripts from using python2 to python3.
+  * Remove warning users that Firefox should be used because Tiqit works
+    on Chrome and other browsers.
+
+ -- Jonathan Loh <joloh@cisco.com> Mon, 7 Jul 2023 16:31:00 +0000
+
 tiqit (1.0.14-1) trusty; urgency=low
 
   * Fix issues with OIDC redirects causing newlines in summaries and

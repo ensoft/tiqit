@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 #
 # Copyright (c) 2017 Ensoft Ltd, 2008-2010 Martin Morrison, Matthew Earl
 #
@@ -61,7 +61,7 @@ prefs = loadPrefs()
 i = 1
 level = 0
 initSearch.append("if (!Tiqit.search.rowsAdded) {");
-while args.has_key('field%d' % i):
+while 'field%d' % i in args:
     initSearch.append("Tiqit.search.addRow(document.getElementById('adder' + %d));" % (i - 1))
     # Move in to level 0
     while level > 0:
@@ -84,14 +84,14 @@ while args.has_key('field%d' % i):
     i += 1
 
 i = 1
-while args.has_key('field%d' % i):
+while 'field%d' % i in args:
     initSearch.append("Tiqit.search.setRowValues(%d, '%s', '%s', '%s', '%s');" \
           % (i, args['field%d' % i], args['rel%d' % i], args['val%d' % i],
              args['operation%d' % i]))
     i += 1
 
 if i == 1:
-    if not args.has_key('modify'):
+    if 'modify' not in args:
         initSearch.append("Tiqit.search.addRow();")
     else:
         initSearch.append("Tiqit.search.showDummyRow(true);")
@@ -99,10 +99,10 @@ if i == 1:
 # Now set up the display fields
 initSearch.append("document.getElementById('selectionSelector').appendChild(createFieldsSelector('selection'));")
 i = 1
-while args.has_key('selection%d' % i):
+while 'selection%d' % i in args:
     initSearch.append("addFieldSelection('selection', 'edit');")
     initSearch.append("setFieldSelection('selection', %d, '%s');" % (i, args['selection%d' % i]))
-    initSearch.append("setFieldEditing('edit', %d, %s);" % (i, args.has_key('edit%d' % i) and 'true' or 'false'))
+    initSearch.append("setFieldEditing('edit', %d, %s);" % (i, 'edit%d' % i in args and 'true' or 'false'))
 
     i += 1
 
@@ -121,13 +121,13 @@ if i == 1:
     while i <= selectionCount and hasattr(prefs, 'selection%d' % i):
         initSearch.append("addFieldSelection('selection', 'edit');")
         initSearch.append("setFieldSelection('selection', %d, '%s');" % (i, getattr(prefs, 'selection%d' % i)))
-        if prefs.has_key('edit%d' % i):
+        if 'edit%d' % i in prefs:
             initSearch.append("setFieldEditing('edit', %d, %s);" % (i, prefs['edit%d' % i] and 'true' or 'false'))
         i += 1
 
 # Now set up sort fields
 i = 1
-while args.has_key('sort%d' % i):
+while 'sort%d' % i in args:
     initSearch.append("Tiqit.search.addSortField('sort');")
     initSearch.append("Tiqit.search.setSortField('sort', %d, '%s', '%s');" \
                       % (i, args['sort%d' % i], args['sortOrder%d' % i]))
@@ -157,30 +157,30 @@ if args['buglist']:
 #
 
 proj = prefs.miscDefaultSearchProject
-if args.has_key('Project'):
+if 'Project' in args:
     proj = args['Project']
 
 initSearch.append("}")
 printPageHeader(PAGE_SEARCH, "Bug Search", "\n".join(initSearch))
 printMessages()
 
-print """
+print("""
   <form action='results' method='get'>
   <h1>Bug Search</h1>
-    <p>Search within  """
+    <p>Search within  """)
 
 writeOptions('Project', [("ALL", "All Projects")] + sorted(allFields['Project'].values), proj, 'handleProjChange();')
 
-print """ and return results as <select name='format'>
+print(""" and return results as <select name='format'>
 <option value='normal'>HTML (default)</option>
 <option value='csv'>CSV (spreadsheet)</option>
 <option value='rss'>RSS feed</option>
 <option value='xml'>XML document</option>
-</select>.</p>"""
+</select>.</p>""")
 
 printSectionHeader("Searcher", "Search Criteria");
 
-print """<p>
+print("""<p>
  <img src='images/help.gif' alt='Help:' title='How does this work?'>
  <em>Build up a query using all the whizz-bang buttons below. The [+] and [-]
  buttons add/remove rows from the query. The [<] and [>] buttons out/indent
@@ -196,7 +196,7 @@ print """<p>
  </div>
 </p>
 <div id='tiqitSearcher'></div>
-<p><input type='submit' value='Search'></p>"""
+<p><input type='submit' value='Search'></p>""")
 
 printSectionFooter()
 
@@ -204,7 +204,7 @@ printSectionFooter()
 
 printSectionHeader("Selector", "Select Fields")
 
-print """<p>
+print("""<p>
  <img src='images/help.gif' alt='Help:' title='How does this work?'>
  <em>Select which columns are shown using the Action buttons below. Tick the
  Editable box to make cells in the column editable.</em>
@@ -213,7 +213,7 @@ print """<p>
   </div>
   <div style='clear: both'></div>
   <p><input type='submit' value='Search'></p>
-"""
+""")
 
 printSectionFooter()
 
@@ -221,12 +221,12 @@ printSectionFooter()
 
 printSectionHeader("Sorter", "Sort By")
 
-if args['groupby'] or (not args.has_key('groupby') and prefs.miscGroupByPrimaryKey != 'false'):
+if args['groupby'] or ('groupby' not in args and prefs.miscGroupByPrimaryKey != 'false'):
     groupby = ' checked'
 else:
     groupby = ''
 
-print """
+print("""
   <p>
     <input type='button' onclick='Tiqit.search.addSortField("sort")' value='Add Field'>
     <input type='button' onclick='Tiqit.search.removeSortField("sort")' value='Remove Field'>
@@ -235,7 +235,7 @@ print """
   </div>
   <input id='tiqitGroupBy' type='checkbox' onchange='checkGroupBy(event)' name='groupby'%s> Group by primary key?
   <p><input type='submit' value='Search'></p>
-""" % groupby
+""" % groupby)
 
 printSectionFooter()
 
@@ -245,48 +245,48 @@ printSectionFooter()
 
 printSectionHeader("Advanced", "Advanced Options")
 
-print """
+print("""
 <p>
  <img src='images/help.gif' alt='Help:' title='How does this work?'>
  <em>Restrictions in this section limit the bugs in which the above query is
  performed.</em>
 </p>
 <p>Restrict search by
-"""
+""")
 
 writeOptions('UserType',
              (('', 'None'),
               ('Engineer', 'Assigned to'),
               ('Submitter', 'Submitted by')),
-             args.has_key('UserType') and args['UserType'] or '')
+             'UserType' in args and args['UserType'] or '')
 
-print "<input type='text' name='UserName' value='%s'></p>" % (args.has_key('UserName') and args['UserName'] or '')
+print("<input type='text' name='UserName' value='%s'></p>" % ('UserName' in args and args['UserName'] or ''))
 
-print """
+print("""
 <p>To Status(es)
-"""
+""")
 
 for st, disp in zip(allFields['Status'].values, allFields['Status'].descs):
-    print "<label><input type='checkbox' name='Status' value='%s'%s> %s</label>" % (st, st in args.asList('Status') and ' checked' or '', st)
+    print("<label><input type='checkbox' name='Status' value='%s'%s> %s</label>" % (st, st in args.asList('Status') and ' checked' or '', st))
 
-print "</p>"
+print("</p>")
 
-print "<p>Within bugs"
+print("<p>Within bugs")
 
-if args.has_key('buglist'):
-    print "<input type='text' size='100' name='buglist' value='%s'>" % ",".join(extractBugIds(args['buglist']))
+if 'buglist' in args:
+    print("<input type='text' size='100' name='buglist' value='%s'>" % ",".join(extractBugIds(args['buglist'])))
 else:
-    print "<input type='text' size='100' name='buglist'></p>"
+    print("<input type='text' size='100' name='buglist'></p>")
 
 # Let plugins add their own advanced options
 for opt in plugins.printSearchOptions(args):
-    print opt
+    print(opt)
 
-print "  <p><input type='submit' value='Search'></p>"
+print("  <p><input type='submit' value='Search'></p>")
 
 printSectionFooter()
 
-print """
-  </form>"""
+print("""
+  </form>""")
 
 printPageFooter()

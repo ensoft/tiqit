@@ -45,7 +45,7 @@ def parseQuery(args):
     # support legacy searches.
     aliases = plugins.getFieldAliases()
 
-    while args.has_key('field%d' % row):
+    while 'field%d' % row in args:
         field = args['field%d' % row]
         rel = args['rel%d' % row]
         val = args['val%d' % row]
@@ -136,7 +136,7 @@ def parseQuery(args):
         # Check for special fields.
         # The only generic special field is dates (soon to be made even better!)
         if allFields[field].type == 'Date':
-            day, mon, year = map(int, val.split('/'))
+            day, mon, year = (int(x) for x in val.split('/'))
             val = '%02u/%02u/%02u' % (mon, day, year)
 
         # Do any filtering
@@ -220,7 +220,7 @@ def parseSelection(args):
     nextSelection = 1
     selection = []
 
-    while args.has_key('selection%d' % nextSelection):
+    while 'selection%d' % nextSelection in args:
         field = args['selection%d' % nextSelection]
 
         selection.append(allFields[field])
@@ -240,14 +240,14 @@ def parseSort(args):
             self.field = field
             self.order = order
 
-    while args.has_key('sort%d' % nextSort):
+    while 'sort%d' % nextSort in args:
         field = args['sort%d' % nextSort]
         order = args['sortOrder%d' % nextSort]
 
         fieldObj = allFields[field]
 
         if not order in (ORDER_ASC, ORDER_DESC):
-            raise ValueError, "%s is not a valid sort order" % order
+            raise ValueError("%s is not a valid sort order" % order)
         if fieldObj.invertsort:
             order = order == ORDER_ASC and ORDER_DESC or ORDER_ASC
 
@@ -258,7 +258,7 @@ def parseSort(args):
 
 def parseAdvanced(args):
     # First status
-    if args.has_key('Status'):
+    if 'Status' in args:
         states = args.asList('Status')
         valid = allFields['Status'].getAllValues()
         
@@ -270,24 +270,24 @@ def parseAdvanced(args):
     if args['Project'] and args['Project'] != 'ALL':
         project = args['Project']
         if project not in allFields['Project'].getAllValues():
-            raise ValueError, "%s is not a valid Project" % project
+            raise ValueError("%s is not a valid Project" % project)
     else:
         project = None
 
     # Buglist
-    if args.has_key('buglist') and args['buglist']:
+    if 'buglist' in args and args['buglist']:
         buglist = extractBugIds(args['buglist'])
     else:
         buglist = None
 
     # UserType
-    if args.has_key('UserType') and args['UserType']:
+    if 'UserType' in args and args['UserType']:
         usertype = args['UserType']
     else:
         usertype = None
 
     # UserName
-    if args.has_key('UserName') and args['UserName']:
+    if 'UserName' in args and args['UserName']:
         username = args['UserName']
     else:
         username = None

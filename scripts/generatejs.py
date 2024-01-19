@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Generate the JS containing all the fields and stuff
 #
@@ -39,18 +39,18 @@ class Intern(object):
    def intern(self):
        prio = [(v, k) for k, v in self.counts.items()]
        prio.sort(reverse=True)
-       print prio[:26]
+       print(prio[:26])
        saved = 0
-       print "Writing interning information to 'interning.dat'..."
-       with open('interning.dat', 'ab') as file:
+       print("Writing interning information to 'interning.dat'...")
+       with open('interning.dat', 'a') as file:
           for v, key in prio:
               self.interns[key] = self.keys.pop()
               saved += v
               file.write("Interning {} saving {} characters\n".format(key, v))
               if not self.keys:
                   break
-       print "Failed to optimise", len(prio) - len(self.interns), "strings"
-       print "But saved", saved, "characters"
+       print("Failed to optimise", len(prio) - len(self.interns), "strings")
+       print("But saved", saved, "characters")
 
    def count(self, key):
        self.counts.setdefault(key, 0)
@@ -86,7 +86,7 @@ def makeInterns(out):
                 for d in f.descs:
                     I.count(utils.encodeJS(d))
         elif f._perParentFieldValues:
-            for key in f._perParentFieldValues.keys():
+            for key in f._perParentFieldValues:
                 for k in key:
                     I.count(utils.encodeJS(k))
                 for v in f._perParentFieldValues[key]:
@@ -162,18 +162,18 @@ def genRelationships(out):
             return ("%s - %s" % (v,d) if v else v for v,d in zip(values,descs))
         if f.values:
             if f.descs != f.values:
-                vals = map(list, zip(f.values, getOptions(f.values, f.descs)))
+                vals = [list(item) for item in zip(f.values, getOptions(f.values, f.descs))]
             else:
-                vals = map(list, zip(f.values, f.descs))
+                vals = [list(item) for item in zip(f.values, f.descs)]
             out.write("""I.values=%s;\n""" % JSListOfListsFromSequence(vals))
             rewriterels = True
         elif f._perParentFieldValues:
             out.write("P=I.perparentvalues;\n")
-            for key in f._perParentFieldValues.keys():
+            for key in f._perParentFieldValues:
                 if f._perParentFieldDescs:
-                    vals = map(list, zip(f._perParentFieldValues[key], getOptions(f._perParentFieldValues[key], f._perParentFieldDescs[key])))
+                    vals = [list(item) for item in zip(f._perParentFieldValues[key], getOptions(f._perParentFieldValues[key], f._perParentFieldDescs[key]))]
                 else:
-                    vals = map(list, zip(f._perParentFieldValues[key], f._perParentFieldValues[key]))
+                    vals = [list(item) for item in zip(f._perParentFieldValues[key], f._perParentFieldValues[key])]
                 out.write("""P[%s]=%s;\n""" % (JSListFromSequence(key), JSListOfListsFromSequence(vals)))
                 rewriterels = True
 
@@ -190,11 +190,11 @@ def genRelationships(out):
             out.write("""I.reverseDefaultsWith=%s;\n""" % JSListFromSequence(reverseDefaultsWith[f.name]))
         if f._mandatoryIf:
             out.write("M=I.mandatoryif;\n")
-        for key in f._mandatoryIf.keys():
+        for key in f._mandatoryIf:
             out.write("""M[%s]=%s;\n""" % (encodeJS(key), JSListFromSequence(f._mandatoryIf[key])))
         if f._bannedIf:
             out.write("B=I.bannedif;\n")
-        for key in f._bannedIf.keys():
+        for key in f._bannedIf:
             out.write("""B[%s]=%s;\n""" % (encodeJS(key), JSListFromSequence(f._bannedIf[key])))
 
         # Some of them have their own rels

@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
 from backend import *
 from tiqit import Arguments
@@ -15,7 +15,7 @@ def getDefaultsForField(field):
     vals = []
     other = []
     for f in field.defaultsWith:
-        if not args.has_key(f):
+        if f not in args:
             return
 
     more = fetchDefaults(field, args)
@@ -38,17 +38,17 @@ printXMLPageHeader()
 printXMLMessages()
 printXMLSectionHeader('defaults')
 for key in defs:
-    print "<field name='%s'><![CDATA[%s]]></field>" % (key.replace("'", "&apos;"), encodeCDATA(defs[key]))
+    print("<field name='%s'><![CDATA[%s]]></field>" % (key.replace("'", "&apos;"), encodeCDATA(defs[key])))
 printXMLSectionFooter('defaults')
 printXMLSectionHeader('reversedefaults')
-print revs
+print(revs)
 for key in revs:
-    print "<defaultfrom name='%s'>" % key.replace("'", "&apos;")
+    print("<defaultfrom name='%s'>" % key.replace("'", "&apos;"))
     for entry in revs[key]:
-        print "<entry>"
+        print("<entry>")
         for k, v in entry.items():
-            print "<field name='%s'><![CDATA[%s]]></field>" % (k.replace("'", '&apos;'), encodeCDATA(v))
-        print "</entry>"
-    print "</defaultfrom>"
+            print("<field name='%s'><![CDATA[%s]]></field>" % (k.replace("'", '&apos;'), encodeCDATA(v)))
+        print("</entry>")
+    print("</defaultfrom>")
 printXMLSectionFooter('reversedefaults')
 printXMLPageFooter()

@@ -11,8 +11,8 @@ import os
 def tokenPage():
     cookie = generateToken()
 
-    print """Content-Type: text/plain
+    print("""Content-Type: text/plain
 
-%s""" % cookie
+%s""" % cookie)
 
 tokenPage()

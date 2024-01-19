@@ -1,13 +1,18 @@
-import os, getpass, urllib, urllib2, json
-from ConfigParser import ConfigParser
+import getpass
+import json
+import os
 import pprint
+import urllib
 from argparse import ArgumentParser
-from urlparse import urlparse
+from configparser import ConfigParser
+from urllib.parse import urlparse
+
 
 datadir = None
 tokenfile = None
 conffile = None
 config = None
+
 
 def initialise(default_siteurl, datadir_l, conffile_l=None, tokenfile_l=None):
     global datadir
@@ -27,27 +32,34 @@ def initialise(default_siteurl, datadir_l, conffile_l=None, tokenfile_l=None):
 
     if tokenfile_l:
         tokenfile = tokenfile_l
-    
+
 
 def get_token():
     if not os.path.exists(tokenfile):
-        class AuthTokenOpener(urllib.FancyURLopener):
+        class AuthTokenOpener(urllib.request.FancyURLopener):
             def prompt_user_passwd(self, host, realm):
                 return getpass.getuser(), getpass.getpass()
 
+        auth_url = config.get('DEFAULT', 'siteurl') + 'authtoken'
         url = AuthTokenOpener()
-        doc = url.open(config.get('DEFAULT', 'siteurl') + 'authtoken')
+        doc = url.open(auth_url)
         token = doc.read()
         doc.close()
         url.close()
 
+        if len(token) != 128:
+            raise Exception(
+                f"Error: Failed to automatically generate token! "
+                f"Please create {tokenfile} with the contents of {auth_url}"
+            )
+
         if not os.path.exists(datadir):
             os.makedirs(datadir)
-        os.chmod(datadir, 0700)
+        os.chmod(datadir, 0o700)
         fd = open(tokenfile, 'w')
         fd.write(token)
         fd.close()
-        os.chmod(tokenfile, 0600)
+        os.chmod(tokenfile, 0o600)
 
     # Check the file is safe
     # ... later
@@ -58,16 +70,17 @@ def get_token():
 
     return token
 
+
 def request_page(page):
     token = get_token()
 
-    auth_handler = urllib2.HTTPBasicAuthHandler()
+    auth_handler = urllib.request.HTTPBasicAuthHandler()
     auth_handler.add_password(realm="Tiqit API",
                               uri=config.get('DEFAULT', 'siteurl'),
                               user="tiqit-api",
                               passwd="tiqit-api")
-    opener = urllib2.build_opener(auth_handler)
-    urllib2.install_opener(opener)
+    opener = urllib.request.build_opener(auth_handler)
+    urllib.request.install_opener(opener)
 
     # If 'page' already contains a query string we append ours to the existing
     # one; otherwise we append a new one.
@@ -76,11 +89,12 @@ def request_page(page):
     else:
         separator = '&'
 
-    req = urllib2.Request(config.get('DEFAULT', 'siteurl') +
-                              page + separator + 'format=json')
+    req = urllib.request.Request(
+        config.get('DEFAULT', 'siteurl') + page + separator + 'format=json'
+    )
     if token is not None:
         req.add_header('X-Tiqit-Token', token)
-    doc = urllib2.urlopen(req)
+    doc = urllib.request.urlopen(req)
     data = doc.read().strip()
     doc.close()
 
@@ -89,13 +103,15 @@ def request_page(page):
 
     return data
 
+
 def request_named_query(user, query):
     """
     Request the results of a named query for a specific username.
     """
-    data = request_page('api/results/{}/{}'.format(urllib.quote(user),
-                                                   urllib.quote(query)))
+    data = request_page('api/results/{}/{}'.format(urllib.parse.quote(user),
+                                                   urllib.parse.quote(query)))
     return data
+
 
 def request_specific_bugs(bugs, fields):
     """
@@ -104,20 +120,21 @@ def request_specific_bugs(bugs, fields):
     The fields to fetch must also be specified.
     """
     if bugs is None or fields is None:
-        print "Must specify at least 1 bug and 1 field"
+        print("Must specify at least 1 bug and 1 field")
         return None
 
     page = 'api/results?sort1=Identifier&sortOrder1=ASC&selection1=Identifier'
     if fields is not None:
         for i in range(len(fields)):
             idx = i + 2
-            page = page + "&selection{}={}".format(idx,
-                                                   urllib.quote(fields[i]))
-        
-    page = page + "&buglist=" + ",".join(urllib.quote(bug) for bug in bugs)
+            page = f"{page}&selection{idx}={urllib.parse.quote(fields[i])}"
+
+    bugs = ",".join(urllib.parse.quote(bug) for bug in bugs)
+    page = f"{page}&buglist={bugs}"
     data = request_page(page)
 
     return data
+
 
 def parse_args(siteurl):
     # Create the top-level parser
@@ -142,9 +159,10 @@ def parse_args(siteurl):
 
     return parser.parse_args()
 
+
 def process_cli_args(args):
     pp = pprint.PrettyPrinter(indent=4)
-    print ""
+    print()
     if args.subparser_name == "search":
         assert(args.user is not None)
         data = request_named_query(args.user, args.query)
@@ -160,4 +178,4 @@ def process_cli_args(args):
         else:
             pp.pprint(data)
     else:
-        print "Nothing to do"
+        print("Nothing to do")

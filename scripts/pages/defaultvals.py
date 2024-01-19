@@ -32,21 +32,21 @@ def showFieldChoices():
 
     fields = [f for f in allFields.values() if f.defaultsWith]
 
-    print """<h1>Default Field Values</h1>
+    print("""<h1>Default Field Values</h1>
 <form action='updatedefvals' method='POST'>
-  <div id='tiqitDefaultVals'>"""
+  <div id='tiqitDefaultVals'>""")
 
-    print "<h3><strong style='font-size: 150%; color: darkred;'>Step 1:</strong> Select Field</h3>"
+    print("<h3><strong style='font-size: 150%; color: darkred;'>Step 1:</strong> Select Field</h3>")
 
 
     if fields:
-        print "<p><em>Select field you want to view defaults for:</em> "
+        print("<p><em>Select field you want to view defaults for:</em> ")
         writeOptions('tiqitDefaultField', [(x.name, x.name) for x in fields], '', onchange='Tiqit.defaults.selectField(event)', optional=True)
-        print "</p>"
+        print("</p>")
     else:
-        print "<p><em>There are no fields that trigger default values in other fields.</em></p>"
+        print("<p><em>There are no fields that trigger default values in other fields.</em></p>")
 
-    print "  </div>\n</form>"
+    print("  </div>\n</form>")
 
     printPageFooter()
 

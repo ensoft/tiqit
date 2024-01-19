@@ -1,8 +1,8 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
 from tiqit import *
 from tiqit.printing import *
-import os, cgi, urllib
+import os, cgi, urllib.request, urllib.parse, urllib.error
 
 newPrefs = loadPrefs(saveTimestamp=True)
 
@@ -13,7 +13,7 @@ sets = {}
 # Map arguments into a set() of deletes, and a dict() of sets.
 # A deleted item has the form "key<N>=<prefName>".
 # A changed item has the form "key<N>=<prefName>&val<N>=<prefVal>"
-for kArg in [x for x in args.keys() if x.startswith("key")]:
+for kArg in [x for x in args if x.startswith("key")]:
     vArg = kArg.replace("key", "val", 1)
     if vArg in args:
         sets[args[kArg]] = str(args[vArg])
@@ -36,7 +36,7 @@ printXMLMessages()
 printXMLSectionHeader("preferences")
  
 for f in args:
-    print """<update><name><![CDATA[%s]]></name><value><![CDATA[%s]]></value></update>""" % (encodeCDATA(f), encodeCDATA(args[f]))
+    print("""<update><name><![CDATA[%s]]></name><value><![CDATA[%s]]></value></update>""" % (encodeCDATA(f), encodeCDATA(args[f])))
 
 printXMLSectionFooter("preferences")
 printXMLPageFooter()

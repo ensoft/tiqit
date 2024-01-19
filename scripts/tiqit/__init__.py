@@ -3,14 +3,14 @@
 # the display of HTML pages, management of preferences, news, joke feeds, etc.
 #
 
-import sys, os, urllib, commands, time, cgi, tempfile, re, random, sqlite3 as sqlite, string
+import sys, os, urllib.request, urllib.parse, urllib.error, subprocess, time, cgi, tempfile, re, random, sqlite3 as sqlite, string
 import itertools
-import ConfigParser, types
-import cPickle as pickle
+import configparser, types
+import pickle as pickle
 from utils import *
-from toolbars import *
-import database
-import cookie
+from .toolbars import *
+from . import database
+from . import cookie
 
 __all__ = [
     'MSG_WARNING', 'MSG_INFO', 'MSG_WARNING', 'queueMessage', 'sendMessage',
@@ -44,9 +44,9 @@ times = [("start", time.time())]
 # Global Constants
 
 MAJ_VER   = 1
-MIN_VER   = 0
-PATCH_VER = 14
-DEV_VER   = 0
+MIN_VER   = 1
+PATCH_VER = 2
+DEV_VER   = 1
 
 VERSION = (MAJ_VER, MIN_VER, PATCH_VER)
 VERSION_STRING = '.'.join(map(str, VERSION)) + (DEV_VER < 0 and "b%d" % -DEV_VER or "")
@@ -63,7 +63,7 @@ def initialise():
     frontend.loadBugViews()
 
 def errorPage(code, msg=""):
-    print """Content-type: text/html
+    print("""Content-type: text/html
 Status: %d
 
 <html>
@@ -74,7 +74,7 @@ Status: %d
     <h1>Error - %d</h1>
     %s
   </body>
-</html>""" % (code, code, code, encodeHTML(msg))
+</html>""" % (code, code, code, encodeHTML(msg)))
 
 #
 # Bug ID extractor
@@ -126,29 +126,30 @@ class Arguments(object):
             self.overrides = {}
 
     def keys(self):
-        return self.cgi.keys() + self.overrides.keys()
+        return list(self.cgi.keys()) + list(self.overrides.keys())
 
-    def has_key(self, key):
-        return self.cgi.has_key(key) or self.overrides.has_key(key)
+    def __contains__(self, key):
+        return key in self.cgi or key in self.overrides
 
     def __repr__(self):
         string = '{'
-        for key in self.keys():
+        for key in list(self.keys()):
             string += "'%s': '%s', " % (str(key), str(self[key]))
         string = string[:-2]
         string += '}'
         return string
 
     def __getitem__(self, key):
-        val = ''
-        if self.overrides.has_key(key):
+        if key in self.overrides:
             val = self.overrides[key]
-        elif self.cgi.has_key(key):
-            val = self.cgi[key].value.decode('utf-8')
+        elif key in self.cgi:
+            val = self.cgi[key].value
+        else:
+            val = ''
 
         # Replace unicode newlines with regular newlines
         # in any argument values
-        return val.replace(u'\u2028', '\n')
+        return val.replace('\u2028', '\n')
 
     def __setitem__(self, key, val):
         self.overrides[key] = val
@@ -170,7 +171,7 @@ class Arguments(object):
         while True:
             name = '%s%s' % (root, ('[%d]' * dims) % tuple(indices))
             # Check if we have this item
-            if self.has_key(name):
+            if name in self:
                 yield (indices, self[name])
                 pos = -1
                 indices[pos] += 1
@@ -232,11 +233,11 @@ class Config:
         def __init__(self, cfg, name):
             self.cfg = cfg
             self.name = name
-            self.opts = Config.cfg_defaults.has_key(self.name) and Config.cfg_defaults[self.name] or {}
+            self.opts = self.name in Config.cfg_defaults and Config.cfg_defaults[self.name] or {}
         def get(self, key, raw=False):
             try:
-                return self.cfg.get(self.name, key, raw)
-            except ConfigParser.NoOptionError:
+                return self.cfg.get(self.name, key, raw=raw)
+            except configparser.NoOptionError:
                 # Maybe the option is in the defaults
                 if key in Config.cfg_defaults[self.name]:
                     return Config.cfg_defaults[self.name][key]
@@ -244,19 +245,24 @@ class Config:
         def __getitem__(self, key):
             try:
                 return self.get(key)
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 raise KeyError
+        def __contains__(self, item):
+            try:
+                _ = self.get(item)
+                return True
+            except configparser.NoOptionError:
+                return False
         def getlist(self, key):
-            if not self[key].strip():
-                return []
-            return map(string.strip, re.compile(r'[\n,]').split(self[key]))
+            ret_list = self[key].split()
+            return ret_list if ret_list else []                
         def items(self, raw=False):
             items = self.cfg.items(self.name, raw)
-            opts = Config.cfg_defaults.has_key(self.name) and Config.cfg_defaults[self.name] or {}
-            items.extend([(x, opts[x]) for x in opts.keys() if not self.cfg.has_option(self.name, x)])
+            opts = self.name in Config.cfg_defaults and Config.cfg_defaults[self.name] or {}
+            items.extend([(x, opts[x]) for x in opts if not self.cfg.has_option(self.name, x)])
             return items
         def has_key(self, key):
-            return self.cfg.has_option(self.name, key) or Config.cfg_defaults[self.name].has_key(key)
+            return self.cfg.has_option(self.name, key) or key in Config.cfg_defaults[self.name]
 
     singleton = None
     def __new__(self):
@@ -283,8 +289,8 @@ class Config:
             raise Exception('Config file not found in any of the expected ' +
                     'locations: %s' % ', '.join(CFG_PATHS))
 
-        self.cfg = ConfigParser.ConfigParser()
-        [self.cfg.add_section(sect) for sect in Config.cfg_defaults.keys()]
+        self.cfg = configparser.ConfigParser()
+        [self.cfg.add_section(sect) for sect in Config.cfg_defaults]
         self.cfg.optionxform = str
 
         if os.path.exists(path):
@@ -346,7 +352,7 @@ def generateToken():
     return token
 
 def authenticate():
-    if not os.environ.has_key('REMOTE_USER') or not os.environ['REMOTE_USER']:
+    if not os.environ.get('REMOTE_USER'):
         raise TiqitError("User is not logged in.")
     elif os.environ['REMOTE_USER'] == 'tiqit-api':
         # Should be a custom header with the auto token
@@ -357,7 +363,7 @@ def authenticate():
         if uname and uname[0]:
             os.environ['REMOTE_USER'] = uname[0]
         else:
-            print "Status: 409\n\n"
+            print("Status: 409\n\n")
             sys.exit()
         cu.close()
         database.commit()
@@ -392,7 +398,7 @@ class PluginManager:
         def __call__(self, *args, **kwargs):
             return self
 
-        def __nonzero__(self):
+        def __bool__(self):
             return False
 
     def __init__(self):
@@ -422,9 +428,9 @@ class PluginManager:
                 continue
             if not rettype:
                 rettype = type(retvals[-1])
-            elif rettype != types.NoneType:
+            elif rettype != type(None):
                 if rettype != type(retvals[-1]):
-                    rettype = types.NoneType
+                    rettype = type(None)
 
         # Collapse if necessary
         if rettype == list:
@@ -439,7 +445,7 @@ class PluginManager:
             return retvals
 
     def __getattr__(self, key):
-        if self.__dict__.has_key(key):
+        if key in self.__dict__:
             return self.__dict__[key]
         else:
             # Slightly convoluted: the outer list comprehension removes empty
@@ -470,7 +476,7 @@ def loadPlugins():
 
     # Some Prefs are required by the Tiqit core, but the defaults must be
     # filled in by plugins. Check that this has been done.
-    unset = [k for k, v in Prefs.defaults.iteritems() if v == None]
+    unset = [k for k, v in Prefs.defaults.items() if v == None]
     assert len(unset) == 0, "Default prefs required for %s" % unset
 
 #
@@ -513,12 +519,12 @@ def _printMsg(msgType, msg, extraclass='', tick=None,
     Actually print out a message.
     """
     tickStr = "<img src='%s' onclick=%s title='%s' alt='%s' style='float: right'>" % ('images/tick-small.png', encodeJS(tick[0]), encodeHTML(tick[1]), encodeHTML(tick[2])) if tick else ''
-    print """
+    print("""
 <p class='tiqitMessage %s'>
   %s<img src='%s' alt='%s' onclick=%s title='%s' alt='%s'>
   %s
 </p>""" % (extraclass, tickStr, msgIcons[msgType][1], msgIcons[msgType][0],
-           encodeJS(clear[0]), encodeHTML(clear[1]), encodeHTML(clear[2]), msg)
+           encodeJS(clear[0]), encodeHTML(clear[1]), encodeHTML(clear[2]), msg))
 
 def queueMessage(msgType, msg):
     """
@@ -536,39 +542,17 @@ def sendMessage(msgType, msg):
     if currentPage:
         # We kind of assume it's OK to add a <script> tag right here
         sys.stdout.flush()
-        print "<script type='text/javascript'>sendMessage(%d, %s);</script>" % \
-              (msgType, encodeJS(msg))
+        print("<script type='text/javascript'>sendMessage(%d, %s);</script>" % \
+              (msgType, encodeJS(msg)))
         sys.stdout.flush()
     else:
         queueMessage(msgType, msg)
 
 def printMessages():
     """
-    Prints all messages for this page. This includes compatibility
-    messages for browser version, messages passed on via cookie and
-    any queued messages.
+    Prints all messages for this page. This includes messages passed on via cookie 
+    and any queued messages.
     """
-
-    # First check for right browser
-    if os.environ.has_key('HTTP_USER_AGENT'):
-        ua = os.environ['HTTP_USER_AGENT']
-        firefox = ua.find('Firefox')
-        if firefox != -1:
-            version = re.compile('Firefox/(\d+?)\.(\d+?)').search(ua)
-            if version:
-                majorv = int(version.group(1))
-                minorv = int(version.group(2))
-            else:
-                majorv, minorv = (0, 0)
-            if (majorv, minorv) < (1, 5):
-                _printMsg(MSG_WARNING, "Your version of Firefox is not tested. You may encounter problems with some of the scripts on this page.")
-        elif ua.find('Chrome') != -1:
-            _printMsg(MSG_INFO, "Chrome is not fully supported, but should work fine. There may be minor differences compared to <a href='https://getfirefox.com'>Firefox</a>, which is the main target browser.")
-        elif ua.find('Safari') != -1:
-            _printMsg(MSG_INFO, "Safari is not fully supported, but should work fine. There may be minor differences compared to <a href='https://getfirefox.com'>Firefox</a>, which is the main target browser.")
-        else:
-            _printMsg(MSG_ERROR, "Your browser is not supported! This page is tested only in Firefox 1.5 and up. Things will likely not work for you as expected. Go and <a href='https://getfirefox.com'>get Firefox now</a>.")
-
     # Let plugins print their own messages
     for typ, msg, cls in plugins.printExtraMessages():
         _printMsg(typ, msg, cls)
@@ -582,10 +566,9 @@ def printMessages():
 
     # Print out any message in a cookie
     try:
-        if os.environ.has_key('HTTP_COOKIE'):
+        if 'HTTP_COOKIE' in os.environ:
             for cookie in os.environ['HTTP_COOKIE'].split(';'):
-                name, update = map(urllib.unquote,
-                                   cookie.strip().split('=', 1))
+                name, update = (urllib.parse.unquote(x) for x in cookie.strip().split('=', 1))
                 if name == 'update':
                     # Get the relevant icon
                     msgType = msgText[update[:3]]
@@ -597,11 +580,11 @@ def printMessages():
         _printMsg(MSG_ERROR, "Failed to parse cookies! Cookie string: '%s'" % os.environ['HTTP_COOKIE'])
 
 def printXMLMessages():
-    print " <messages>"
+    print(" <messages>")
     # Print queued messages
     for t, m in msgQueue:
-        print "  <message type='%s'><![CDATA[%s]]></message>" % (t, m)
-    print " </messages>"
+        print("  <message type='%s'><![CDATA[%s]]></message>" % (t, m))
+    print(" </messages>")
 
 #
 # Preferences
@@ -660,9 +643,9 @@ class Prefs(dict):
         """
         Allows getting preferences by attribute access.
         """
-        if self.has_key(key):
+        if key in self:
             return self[key]
-        elif Prefs.defaults.has_key(key):
+        elif key in Prefs.defaults:
             return Prefs.defaults[key]
         else:
             return dict.__getattr__(self, key)
@@ -670,21 +653,21 @@ class Prefs(dict):
         """
         Sets attributes in dict instead.
         """
-        if Prefs.defaults.has_key(key) and Prefs.defaults[key] == value:
-            if self.has_key(key):
+        if key in Prefs.defaults and Prefs.defaults[key] == value:
+            if key in self:
                 del self[key]
         elif value:
             self[key] = value
         else:
-            if self.has_key(key):
+            if key in self:
                 del self[key]
     def __getitem__(self, key):
         """
         Allow getting defaults.
         """
-        if self.has_key(key):
+        if key in self:
             return dict.__getitem__(self, key)
-        elif Prefs.defaults.has_key(key):
+        elif key in Prefs.defaults:
             return Prefs.defaults[key]
         else:
             raise KeyError
@@ -723,7 +706,7 @@ def loadPrefs(username=None, saveTimestamp=False):
     lost! If you must call it on a hidden page (or one that doesn't
     show news) pass True for the 'saveTimestamp' argument.
     """
-    if not os.environ.has_key('REMOTE_USER'):
+    if 'REMOTE_USER' not in os.environ:
         raise TiqitError("User is not logged in")
     
     if not username:
@@ -731,7 +714,7 @@ def loadPrefs(username=None, saveTimestamp=False):
 
     mine = (username == os.environ['REMOTE_USER'])
 
-    if prefsCache.has_key(username):
+    if username in prefsCache:
         return prefsCache[username]
 
     profile = PROFILE_PATH + username
@@ -841,8 +824,7 @@ def _loadNamedPage(ofType):
             break
         if not arg.find('=') >= 0:
             break
-        key, val = arg.split('=', 1)
-        key, val = map(urllib.unquote, (key, val))
+        key, val = [urllib.parse.unquote(elem) for elem in arg.split('=', 1)]
         if key == 'byname':
             searchName = val
         elif key == 'fromuser':
@@ -895,13 +877,13 @@ def _printNamedPages(ofType, introStr, path, saverStr, saveType, bugid=None):
 
     # Box needed if at least one named page, or the 'save as' box is required.
     if namedPages or (needSave and saverStr):
-        print printToolbarHeader(introStr, ofType, path, saveType)
-        print "<span class='tiqitBarIntroStr' style='display: %s;'>%s: </span>" % (len(namedPages) > 0 and 'inline' or 'none', introStr)
+        print(printToolbarHeader(introStr, ofType, path, saveType))
+        print("<span class='tiqitBarIntroStr' style='display: %s;'>%s: </span>" % (len(namedPages) > 0 and 'inline' or 'none', introStr))
 
     # Generate output worthy strings
     if namedPages:
         namedPages = ["<a id='tiqitBar%s%s' class='%s' href='%s%s' tiqitPrefValue='%s' tiqitViewing=%s>%s</a>" %
-            (saveType, urllib.quote(x), ofType, path, urllib.quote(x), y, "1" if x==searchName else "0", encodeHTML(x)) for (x, y) in namedPages]
+            (saveType, urllib.parse.quote(x), ofType, path, urllib.parse.quote(x), y, "1" if x==searchName else "0", encodeHTML(x)) for (x, y) in namedPages]
 
     # Add separators to the left of each item, hiding the first item's
     # separator.
@@ -932,8 +914,8 @@ def _printNamedPages(ofType, introStr, path, saverStr, saveType, bugid=None):
 
     # Print it all out.
     if namedPages:
-        print "".join(namedPages)
-        print printToolbarFooter()
+        print("".join(namedPages))
+        print(printToolbarFooter())
 
 #
 # News
@@ -1121,85 +1103,111 @@ def printPageHeader(pageName, pageTitle="", initScript=None, otherHeaders=[],
     outgoingCookies = plugins.getOutgoingCookies()
     if outgoingCookies:
         for c in outgoingCookies:
-            print c
-    print "Set-Cookie: update=; Max-Age=0; path=%s" % getBasePath()
-    print "Content-Type: text/html; charset=utf-8"
-    print """
+            print(c)
+    print("Set-Cookie: update=; Max-Age=0; path=%s" % getBasePath())
+    print("Content-Type: text/html; charset=utf-8")
+    print("""
 <html>
   <head>
     <title>%s</title>
     <base href='%s'>
     <link rel='apple-touch-icon' href='%s'>
     <link rel='shortcut icon' type='%s' href='%s'>
-    <link rel='stylesheet' type='text/css' href='styles/print.css' media='print'>""" % (pageTitle, baseurl, pages[pageName].site.appleiconurl, pages[pageName].site.imgtype, pages[pageName].site.imgurl)
+    <link rel='stylesheet' type='text/css' href='styles/print.css?version=%s' media='print'>""" % (
+            pageTitle,
+            baseurl,
+            pages[pageName].site.appleiconurl,
+            pages[pageName].site.imgtype,
+            pages[pageName].site.imgurl,
+            VERSION_STRING,
+        )
+    )
     
     for head in otherHeaders:
-        print head
+        print(head)
 
     # Print styles
-    print "<link rel='stylesheet' type='text/css' href='styles/tiqit.css' media='screen'>"
+    print("<link rel='stylesheet' type='text/css' href='styles/tiqit.css?version=%s' media='screen'>" % VERSION_STRING)
     for style in pages[pageName].styles:
-        print "<link rel='stylesheet' type='text/css' href='styles/%s.css' media='screen'>" % style
+        print("<link rel='stylesheet' type='text/css' href='styles/%s.css?version=%s' media='screen'>" % (style, VERSION_STRING))
 
     # Plugins may want to add styles too
     for style in plugins.getPageStyles(pageName):
-        print "<link rel='stylesheet' type='text/css' href='styles/%s.css' media='screen'>" % style
+        # The plugin may provide a version along with the script
+        # in which case it is added to the tiqit version
+        plugin_version = ""
+        if isinstance(style, tuple):
+            style, plugin_version = style
+        print("<link rel='stylesheet' type='text/css' href='styles/%s.css?version=%s+%s' media='screen'>" % (
+            style,
+            VERSION_STRING,
+            plugin_version
+        ))
 
     # Print custom styles (overrides any other styles)
     cfg_section = Config().section('general')
-    if cfg_section.has_key('customstyles'):
+    if 'customstyles' in cfg_section:
         for style in cfg_section.getlist('customstyles'):
-            print ("<link rel='stylesheet' type='text/css' " + 
-                   "href='%s' media='screen'>") % style
+            print(("<link rel='stylesheet' type='text/css' " + 
+                   "href='%s?version=%s' media='screen'>") % (style, VERSION_STRING))
 
-    print "<script type='text/javascript' src='scripts/tiqit.js'></script>"
-    print "<script type='text/javascript' src='scripts/Sortable.js'></script>"
+    print("<script type='text/javascript' src='scripts/tiqit.js?version=%s'></script>" % VERSION_STRING)
+    print("<script type='text/javascript' src='scripts/Sortable.js?version=%s'></script>" % VERSION_STRING)
     
     for script in pages[pageName].scripts: 
-        print "<script type='text/javascript' src='scripts/%s.js'></script>" % script
+        print("<script type='text/javascript' src='scripts/%s.js?version=%s'></script>" % (script, VERSION_STRING))
 
     # Plugins may want to add scripts too
     for script in plugins.getPageScripts(pageName):
-        print "<script type='text/javascript' src='scripts/%s.js'></script>" % script
+        # The plugin may provide a version along with the script
+        # in which case it is added to the tiqit version
+        plugin_version = ""
+        if isinstance(script, tuple):
+            script, plugin_version = script
+        print("<script type='text/javascript' src='scripts/%s.js?version=%s+%s'></script>" % (
+            script,
+            VERSION_STRING,
+            plugin_version
+        ))
 
     if bugView:
-        print "<link rel='stylesheet' type='text/css' href='styles/%s.css' media='screen'>" % bugView.name
-        print "<script type='text/javascript' src='scripts/%s.js'></script>" % bugView.name
+        print("<link rel='stylesheet' type='text/css' href='styles/%s.css?version=%s' media='screen'>" % (bugView.name, VERSION_STRING))
+        print("<script type='text/javascript' src='scripts/%s.js?version=%s'></script>" % (bugView.name, VERSION_STRING))
 
-    print """
+    print("""
     <script type='text/javascript'>
     <!--
-    Tiqit.version = "%s";""" % VERSION_STRING
-    print "    tiqitUserID = '%s'" % encodeHTML(os.environ['REMOTE_USER']) + ";"
-    print """    Tiqit.prefs = new Object();"""
+    Tiqit.version = "%s";""" % VERSION_STRING)
+    print("    tiqitUserID = '%s'" % encodeHTML(os.environ['REMOTE_USER']) + ";")
+    print("""    Tiqit.prefs = new Object();""")
 
     # Print all the lovely preferences
     for p in prefs.defaults:
-        if type(prefs[p]) in (str, unicode):
-            print "    Tiqit.prefs['%s'] = '%s';" % (encodeHTML(p), encodeHTML(prefs[p]))
+        if type(prefs[p]) in (str, str):
+            print("    Tiqit.prefs['%s'] = '%s';" % (encodeHTML(p), encodeHTML(prefs[p])))
         elif type(prefs[p]) == list:
-            print "    Tiqit.prefs['%s'] = new Array('%s');" % (encodeHTML(p), "','".join(map(encodeHTML, prefs[p])))
+            print("    Tiqit.prefs['%s'] = new Array('%s');" % (encodeHTML(p), "','".join(map(encodeHTML, prefs[p]))))
         elif type(prefs[p]) == dict:
-            # Don't include it @@@ if dict prefs ever needed in JS, add this
+            # Don't include it, if dict prefs ever needed in JS, add this
             None
         else:
-            raise ValueError, "Don't support prefs of type %s" % type(prefs[p])
+            raise ValueError("Don't support prefs of type %s" % type(prefs[p]))
 
-    print """    Tiqit.config = new Object();"""
+    print("""    Tiqit.config = new Object();""")
 
     # Print the configuration
     for s in cfg.cfg.sections():
-        print "    Tiqit.config['%s'] = new Object();" % encodeHTML(s)
+        print("    Tiqit.config['%s'] = new Object();" % encodeHTML(s))
         for o, v in cfg.cfg.items(s, raw=True):
-            print "    Tiqit.config['%s']['%s'] = '%s';" % (encodeHTML(s), encodeHTML(o), encodeHTML(v.replace('\n', '\\n')))
+            print("    Tiqit.config['%s']['%s'] = '%s';" % (encodeHTML(s), encodeHTML(o), encodeHTML(v.replace('\n', '\\n'))))
 
     # If the page requires an initialisation script, print it
     if initScript:
-        print initScript
+        print(initScript)
     else:
-        print "    function init() { };"
+        print("    function init() { };")
 
-    print """    -->
+    print("""    -->
     </script>
   </head>
   <body class='%s' onload='runInitOnce()'>
@@ -1208,23 +1216,23 @@ def printPageHeader(pageName, pageTitle="", initScript=None, otherHeaders=[],
     <div id='tiqitHeader'>""" % (bodyClass,
                                  " class='tiqitWatermark'" if
                                  prefs.miscHideWatermark == 'false' else
-                                 "")
+                                 ""))
 
     # Now we're on the page proper. Print the relevant search box
-    print pages[pageName].site.searchfunc()
+    print(pages[pageName].site.searchfunc())
 
     # Print the list of links for this page
-    print "<p>"
+    print("<p>")
     links = pages[pageName].links + [LINK_INFO]
     if prefs.miscToolbar == 'icons':
-        print " | ".join(["<a href='%s' title='%s'><img src='%s' alt='%s'></a>" % (x.target, x.tooltip, x.img, x.title) for x in links])
+        print(" | ".join(["<a href='%s' title='%s'><img src='%s' alt='%s'></a>" % (x.target, x.tooltip, x.img, x.title) for x in links]))
     elif prefs.miscToolbar == 'text':
-        print " | ".join(["<a href='%s' title='%s'>%s</a>" % (x.target, x.tooltip, x.title) for x in links])
+        print(" | ".join(["<a href='%s' title='%s'>%s</a>" % (x.target, x.tooltip, x.title) for x in links]))
     else:
-        print " | ".join(["<a href='%s' title='%s'><img src='%s' alt='%s'>%s</a>" % (x.target, x.tooltip, x.img, x.title, x.title) for x in links])
+        print(" | ".join(["<a href='%s' title='%s'><img src='%s' alt='%s'>%s</a>" % (x.target, x.tooltip, x.img, x.title, x.title) for x in links]))
 
-    print """</p>
-    </div>"""
+    print("""</p>
+    </div>""")
 
     # Print Saved Searches and Named Bugs now
     if prefs.miscHideSavedSearches != 'on' and not hideSavedSearches:
@@ -1237,9 +1245,9 @@ def printPageHeader(pageName, pageTitle="", initScript=None, otherHeaders=[],
                          showNamedBugSaver and 'Name this bug' or None,
                          "bug", bugid=bugid)
 
-    print '\n'.join(plugins.printToolbars(pages[pageName]))
+    print('\n'.join(plugins.printToolbars(pages[pageName])))
 
-    print "<div id='tiqitContent'>"
+    print("<div id='tiqitContent'>")
 
 def printPageFooter():
     """
@@ -1251,28 +1259,28 @@ def printPageFooter():
     versions = ['TiQiT version %s' % VERSION_STRING]
     versions.extend(plugins.printVersion(currentPage))
     footerText = ' '.join(plugins.printFooterText())
-    print """
+    print("""
     </div>
     <div id='tiqitFooter'>
      <p>%s. Generated in %.2fs. %s</p>
     </div>""" % ('. '.join(versions),
                  now - times[0][1],
-                 footerText)
+                 footerText))
 
     times.append(("end", now))
-    print "<!--"
+    print("<!--")
     for i in range(1, len(times)):
-        print times[i][0], times[i][1] - times[i - 1][1]
-    print """-->
+        print(times[i][0], times[i][1] - times[i - 1][1])
+    print("""-->
     <!--
-    Plugins installed:"""
+    Plugins installed:""")
     for i in plugins._plugins:
         vers = hasattr(i.module, 'VERSION') and i.module.VERSION or (1, 0)
-        print i.module.__name__, vers
-    print """-->
+        print(i.module.__name__, vers)
+    print("""-->
    </div>
   </body>
-</html>"""
+</html>""")
 
 def printSectionHeader(name, displayName=None, hide=False):
     """
@@ -1283,7 +1291,7 @@ def printSectionHeader(name, displayName=None, hide=False):
     """
     if not displayName:
         displayName = name
-    print """
+    print("""
   <div id='tiqitSection%(name)s'%(hide)s>
     <h3>
      <span style='float:right;'>
@@ -1294,15 +1302,15 @@ def printSectionHeader(name, displayName=None, hide=False):
     </h3>
     <div id='tiqitSectionContents%(name)s'>
     """ % {'name': name, 'displayName': displayName,
-           'hide': hide and " style='display: none;'" or ''}
+           'hide': hide and " style='display: none;'" or ''})
 
 def printSectionFooter():
     """
     Close anything opened in printSectionHeader()
     """
-    print """
+    print("""
     </div>
-  </div>"""
+  </div>""")
 
 #
 # Error handling
@@ -1346,16 +1354,16 @@ def errorHandler(exType, val, tb):
     if exType in (TiqitError, TiqitWarning, TiqitInfo):
         try:
             redirect("error?type=%d&msg=%s&cmd=%s&output=%s" \
-                     % (val.type, urllib.quote(val.msg.encode('utf-8')),
-                        urllib.quote(val.cmd.encode('utf-8')),
-                        urllib.quote(val.output.encode('utf-8'))))
+                     % (val.type, urllib.parse.quote(val.msg.encode('utf-8')),
+                        urllib.parse.quote(val.cmd.encode('utf-8')),
+                        urllib.parse.quote(val.output.encode('utf-8'))))
         except:
-            print """Content-Type: text/plain
+            print("""Content-Type: text/plain
 
             Weirdness! Something seriously bad has happened.
             '%s'
             '%s'
-            '%s'""" % (val.msg, val.cmd, val.output)
+            '%s'""" % (val.msg, val.cmd, val.output))
     else:
         tbhandler(exType, val, tb)
 
@@ -1368,13 +1376,13 @@ sys.excepthook = errorHandler
 
 def redirect(location, code=303):
     newpath = '%s%s' % (getBasePath(), location.strip())
-    print "Status: %d" % code
-    print "Location: %s" % newpath
+    print("Status: %d" % code)
+    print("Location: %s" % newpath)
     for t, m in msgQueue:
-        print "Set-Cookie: update=%s; path=%s" % \
-              (urllib.quote("%s %s" % (msgIcons[t][0], m)), getBasePath())
-    print
-    print "<a href='%s'>%s</a>" % (newpath, newpath)
+        print("Set-Cookie: update=%s; path=%s" % \
+              (urllib.parse.quote("%s %s" % (msgIcons[t][0], m)), getBasePath()))
+    print()
+    print("<a href='%s'>%s</a>" % (newpath, newpath))
     sys.exit()
 
 #

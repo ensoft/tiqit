@@ -1,7 +1,7 @@
 #
 # Module for parsing Cookies, and printing Set-cookie lines
 #
-import Cookie
+import http.cookies
 
 #
 # Parse a HTTP_COOKIE environment variable into a dict mapping cookie keys to values
@@ -29,5 +29,5 @@ def parseCookie(cookie_string):
 # Keys and values must conform to RFC 2109 and RFC 2068
 #
 def getSetCookie(cookie):
-    return Cookie.SimpleCookie(cookie).output()
+    return http.cookies.SimpleCookie(cookie).output()
     

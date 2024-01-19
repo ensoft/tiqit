@@ -3,7 +3,7 @@
 #
 
 import random
-import cPickle as pickle
+import pickle as pickle
 import os.path
 from tiqit import *
 from backend import *
@@ -52,7 +52,7 @@ def loadBugs(bugids):
         try:
             with open(os.path.join(BASE, bid), 'rb') as fd:
                 results.append(pickle.load(fd))
-        except Exception, e:
+        except Exception as e:
             raise TiqitException("Failed to load bug %s: %s" % (bid, str(e)))
 
     return results

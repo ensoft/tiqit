@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2017 Ensoft Ltd, 2010 Martin Morrison
 #
@@ -34,7 +34,7 @@ _fullSummary = None
 def prepareNewBug(fields):
     global _fullSummary
     # If the summary is too large, put it in a note
-    if fields.has_key('Summary') and len(fields['Summary']) > 2000:
+    if 'Summary' in fields and len(fields['Summary']) > 2000:
         fullsum = fields['Summary'].replace('\r\n', '\n')
         shortsum = fullsum[:1900]
         shortsum = shortsum[:shortsum.rfind('\n\n')]
