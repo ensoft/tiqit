@@ -3,6 +3,7 @@ tiqit (1.1.2-1) trusty; urgency=low
   * Avoid users needing to clear browser cache when tiqit or plugin versions
     are updated.
   * Use plugins to obtain bug IDs.
+  * Support multiple update cookies to allow for multiple messages.
 
  -- Olli Johnson <ollijohnson93@gmail.com>  Thu, 24 Jan 2024 11:17:00 +0000
 
