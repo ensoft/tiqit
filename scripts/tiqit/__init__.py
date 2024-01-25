@@ -569,12 +569,11 @@ def printMessages():
         if 'HTTP_COOKIE' in os.environ:
             for cookie in os.environ['HTTP_COOKIE'].split(';'):
                 name, update = (urllib.parse.unquote(x) for x in cookie.strip().split('=', 1))
-                if name == 'update':
+                if name.startswith("update"):
                     # Get the relevant icon
                     msgType = msgText[update[:3]]
 
                     _printMsg(msgType, update[4:])
-                    break
     except:
         # Never mind
         _printMsg(MSG_ERROR, "Failed to parse cookies! Cookie string: '%s'" % os.environ['HTTP_COOKIE'])
@@ -1098,13 +1097,23 @@ def printPageHeader(pageName, pageTitle="", initScript=None, otherHeaders=[],
     baseurl = getBaseHost()
 
     bodyClass = bugView and bugView.bodyClass or ''
-    
+
     # Print the HTTP header, including any cookies.
     outgoingCookies = plugins.getOutgoingCookies()
     if outgoingCookies:
         for c in outgoingCookies:
             print(c)
-    print("Set-Cookie: update=; Max-Age=0; path=%s" % getBasePath())
+
+    # Clear existing update cookies
+    try:
+        if 'HTTP_COOKIE' in os.environ:
+            for cookie in os.environ['HTTP_COOKIE'].split(';'):
+                name, _ = (urllib.parse.unquote(x) for x in cookie.strip().split('=', 1))
+                if name.startswith("update"):
+                    print(f"Set-Cookie: {name}=; Max-Age=0; path={getBasePath()}")
+    except:
+        pass
+
     print("Content-Type: text/html; charset=utf-8")
     print("""
 <html>
@@ -1378,9 +1387,12 @@ def redirect(location, code=303):
     newpath = '%s%s' % (getBasePath(), location.strip())
     print("Status: %d" % code)
     print("Location: %s" % newpath)
+    update_count = 0
     for t, m in msgQueue:
-        print("Set-Cookie: update=%s; path=%s" % \
-              (urllib.parse.quote("%s %s" % (msgIcons[t][0], m)), getBasePath()))
+        icon = msgIcons[t][0]
+        new_update_cookie = urllib.parse.quote(f"{icon} {m}")
+        print(f"Set-Cookie: update{update_count}={new_update_cookie}; path={getBasePath()}")
+        update_count += 1
     print()
     print("<a href='%s'>%s</a>" % (newpath, newpath))
     sys.exit()
