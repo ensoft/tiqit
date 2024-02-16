@@ -83,7 +83,7 @@ def createBug(fields):
     pickle.dump(data, fd)
     fd.close()
 
-def updateBug(bugid, changes):
+def updateBug(bugid, changes, old_values):
     assert 'Identifier' not in changes, "Can't change the ID of a bug"
     with open(os.path.join(BASE, bugid), 'rb') as fd:
         data = pickle.load(fd)

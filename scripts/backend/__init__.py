@@ -276,8 +276,8 @@ def performQuery(*args):
 def createBug(fields):
     return _backends[fields['Project'][:3]].createBug(fields)
 
-def updateBug(bugid, changes):
-    return _backends[bugid[:3]].updateBug(bugid, changes)
+def updateBug(bugid, changes, old_values):
+    return _backends[bugid[:3]].updateBug(bugid, changes, old_values)
 
 def addNote(bugid, noteType, noteTitle, noteContent, isUpdate=False):
     """
