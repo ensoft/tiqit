@@ -255,7 +255,7 @@ class Config:
                 return False
         def getlist(self, key):
             ret_list = self[key].split()
-            return ret_list if ret_list else []                
+            return ret_list if ret_list else []
         def items(self, raw=False):
             items = self.cfg.items(self.name, raw)
             opts = self.name in Config.cfg_defaults and Config.cfg_defaults[self.name] or {}
@@ -326,7 +326,7 @@ CFG_DIRS = ["../",
 #
 
 def getAdministrators():
-    return tuple(Config().section('general').getlist('administrators'))
+    return tuple([admin.strip(", \t") for admin in Config().section('general').getlist('administrators')])
 
 #
 # Authentication (for hypothetical future CLI)

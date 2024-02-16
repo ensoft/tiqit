@@ -31,6 +31,7 @@ else:
 
     fields = args['fields'].split(',')
     changes = {}
+    old_values = {}
 
     is_get_changes_success = True
     for f in fields:
@@ -39,6 +40,7 @@ else:
 
         try:
             changes[allFields[f].savename] = allFields[f].filterEdit(args, args[f])
+            old_values[allFields[f].name] = data[allFields[f].name]
         except Exception as err:
             # There's an issue with the conversion to the backend format.
             is_get_changes_success = False
@@ -54,7 +56,7 @@ else:
         # Attempt to save the changes
         #
         try:
-            updateBug(args['Identifier'], changes)
+            updateBug(args['Identifier'], changes, old_values)
 
             data = loadBugs([args['Identifier']])[0]
 

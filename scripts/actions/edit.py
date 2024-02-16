@@ -32,6 +32,7 @@ bugView = getBugViewFromBugData(data)
 #
 
 changes = {}
+old_values = {}
 
 cls = TiqitClass.forName(args['Project'])
 
@@ -58,6 +59,7 @@ for field in [x for x in fieldsInUpdate if allFields[x].editable]:
 
     if old != new:
         changes[fieldObj.name] = new
+        old_values[fieldObj.name] = old
 
 # Convert any changed fields to the backend format
 for field in changes:
@@ -67,7 +69,7 @@ for field in changes:
 # Now fix multi value fields
 for field in changes:
     if field in [x for x in fieldsInUpdate if allFields[x].mvf]:
-        changes[field] =  ",".join(changes[field].split(' '))
+        changes[field] =  " ".join(changes[field].split(' '))
 
 # Recheck at this point that all the fields being sent are valid given
 # the current values. This handles cases where a field is sent from
@@ -114,5 +116,5 @@ bugView.prepareUpdateBug(changes, fieldsInUpdate, data)
 
 changes_save = dict([(allFields[field].savename, changes[field]) for field in changes])
 
-updateBug(args['Identifier'], changes_save)
+updateBug(args['Identifier'], changes_save, old_values)
 redirect('%s' % args['Identifier'])
