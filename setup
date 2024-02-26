@@ -47,7 +47,7 @@ sed -i -e "s|RewriteBase .*|RewriteBase $NEWBASE|" .htaccess
 # Skip updating data files if we're just creating a .deb: These aren't included
 # in the deb anyway.
 if [ "$PACKAGEMODE" != true ]; then
-    python -c "import pickle; pickle.dump({}, open('data/tiqit.pickle', 'wb'))"
+    python3 -c "import pickle; pickle.dump({}, open('data/tiqit.pickle', 'wb'))"
     echo > static/scripts/fielddata.js
 
     cd scripts
