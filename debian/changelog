@@ -4,6 +4,8 @@ tiqit (1.1.2-1) trusty; urgency=low
     are updated.
   * Use plugins to obtain bug IDs.
   * Support multiple update cookies to allow for multiple messages.
+  * Specify python3 as part of the setup script.
+  * Fixup administrator detection.
 
  -- Olli Johnson <ollijohnson93@gmail.com>  Thu, 24 Jan 2024 11:17:00 +0000
 

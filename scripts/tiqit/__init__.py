@@ -326,7 +326,7 @@ CFG_DIRS = ["../",
 #
 
 def getAdministrators():
-    return tuple(Config().section('general').getlist('administrators'))
+    return tuple([admin.strip(", \t") for admin in Config().section('general').getlist('administrators')])
 
 #
 # Authentication (for hypothetical future CLI)
