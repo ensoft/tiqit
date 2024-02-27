@@ -97,11 +97,25 @@ function tiqitTableAddSubmenu(table, img, alt, title) {
   parent.className = 'tiqitTableMenuItemWithMenu tiqitTableMenuItem';
   span.appendChild(parent);
 
+  function toggleLockVisibility(ele) {
+    return (event) => {
+      var clsName = "tiqitTableMenuItemMenuLockVisible";
+      if (ele.classList.contains(clsName)) {
+        ele.classList.remove(clsName)
+      } else {
+        ele.classList.add(clsName);
+      }
+      console.log(ele);
+      console.log(ele.classList);
+    }
+  }
+
   var item = document.createElement('img');
   item.src = img;
   item.alt = alt;
   item.title = title;
   parent.appendChild(item);
+  item.addEventListener('click', toggleLockVisibility(parent), false);
 
   item = document.createElement('div');
   item.className = 'tiqitTableMenuItemMenu';
@@ -158,6 +172,11 @@ function tiqitTableResetMenu(event) {
 function tiqitTableCloseMenu(event) {
   event.target.parentNode.style.display = 'none';
   setTimeout(tiqitTableResetMenu, 100, event);
+
+  var clsName = "tiqitTableMenuItemMenuLockVisible";
+  if (event.target.parentNode.parentNode.classList.contains(clsName)) {
+    event.target.parentNode.parentNode.classList.remove(clsName)
+  }
 }
 
 //
@@ -190,4 +209,3 @@ function getTables(tableName) {
 
   return tables;
 }
-

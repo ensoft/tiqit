@@ -43,8 +43,12 @@ div.tiqitTableMenuItemWithMenu:hover {
   background-color: whitesmoke;
 }
 */
-div.tiqitTableMenuItemWithMenu:hover div.tiqitTableMenuItemMenu {
+div.tiqitTableMenuItemWithMenu:hover div.tiqitTableMenuItemMenu,
+div.tiqitTableMenuItemMenuLockVisible div.tiqitTableMenuItemMenu {
   display: block;
+}
+div.tiqitTableMenuItemMenuLockVisible {
+  border: solid black 1px;
 }
 div.tiqitTableMenuItemMenu {
   position: absolute;
