@@ -29,31 +29,36 @@ span.tiqitTableActions {
 div.tiqitTableMenuItemWithMenu {
   width: 18;
   height: 18;
-  overflow: hidden;
+  overflow: visible;
   text-align: left;
   font-size: 70%;
   border: solid transparent 1px;
 }
+/*
 div.tiqitTableMenuItemWithMenu:hover {
   height: auto;
-  overflow: visible;
   padding-left: 3px;
   padding-right: 1px;
   border: black outset 1px;
   background-color: whitesmoke;
 }
+*/
 div.tiqitTableMenuItemWithMenu:hover div.tiqitTableMenuItemMenu {
+  display: block;
+}
+div.tiqitTableMenuItemMenu {
+  position: absolute;
+  display: none;
   padding: 0.2em;
   opacity: 0.95;
   background: white;
   border: solid black 1px;
   margin-top: 1px;
-  display: block;
   z-index: 100;
   margin-left: -4px;
   background-color: whitesmoke;
 }
-div.tiqitTableMenuItemWithMenu:hover ul {
+div.tiqitTableMenuItemMenu ul {
   padding: 0;
   margin-bottom: 0;
 }
@@ -61,29 +66,31 @@ div.tiqitTableMenuItemMenu img {
   cursor: pointer;
   float: left;
 }
-div.tiqitTableMenuItemWithMenu label {
+div.tiqitTableMenuItemMenu label {
   display: block;
   cursor: pointer;
 }
-div.tiqitTableMenuItemWithMenu li {
+div.tiqitTableMenuItemMenu li {
   list-style: none;
   white-space: nowrap;
   border-top: 1px grey dashed;
 }
+/*
 div.tiqitTableMenuItemMenu {
   padding-left: 0;
   padding-top: 0;
   display: none;
   position: absolute;
 }
-div.tiqitTableMenuItemWithMenu li.tiqitTableMenuTitle {
+*/
+div.tiqitTableMenuItemMenu li.tiqitTableMenuTitle {
   font-weight: bold;
   font-style: italic;
   border-top: solid black 1px;
 }
-div.tiqitTableMenuItemWithMenu li.tiqitTableMenuTitle label {
+div.tiqitTableMenuItemMenu li.tiqitTableMenuTitle label {
   cursor: auto;
 }
-div.tiqitTableMenuItemWithMenu li.tiqitTableMenuTitle input {
+div.tiqitTableMenuItemMenu li.tiqitTableMenuTitle input {
   visibility: hidden;
 }
