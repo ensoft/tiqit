@@ -54,7 +54,7 @@ else:
         # Attempt to save the changes
         #
         try:
-            updateBug(args['Identifier'], changes)
+            updateBug(args['Identifier'], args['Project'], changes)
 
             data = loadBugs([args['Identifier']])[0]
 

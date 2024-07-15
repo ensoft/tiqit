@@ -114,5 +114,5 @@ bugView.prepareUpdateBug(changes, fieldsInUpdate, data)
 
 changes_save = dict([(allFields[field].savename, changes[field]) for field in changes])
 
-updateBug(args['Identifier'], changes_save)
+updateBug(args['Identifier'], args['Project'], changes_save)
 redirect('%s' % args['Identifier'])

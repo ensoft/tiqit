@@ -554,9 +554,10 @@ def displayRelates(hide=False):
     relates = theDom.getRelates()
 
     # Now add the other known relationships
-    dup = args['Duplicate-ofRaw']
-    if dup:
-        relates.append((dup, 'Duplicate of', False))
+    if 'Duplicate-ofRaw' in args:
+        dup = args['Duplicate-ofRaw']
+        if dup:
+            relates.append((dup, 'Duplicate of', False))
 
     if 'BadcodefixIdRaw' in args:
         bad = args['BadcodefixIdRaw']
