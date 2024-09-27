@@ -1,3 +1,10 @@
+tiqit (1.1.3-1) trusty; urgency=low
+
+  * Add project information sent to the backend when modifying bugs.
+  * During bug cloning prevent crash.
+
+ -- Jonathan Loh <joloh@cisco.com>  Mon, 15 Jul 2024 18:17:00 +0000
+
 tiqit (1.1.2-1) trusty; urgency=low
 
   * Avoid users needing to clear browser cache when tiqit or plugin versions
