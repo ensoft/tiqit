@@ -3,6 +3,7 @@
 from tiqit import *
 from utils import *
 import backend
+from tiqit import overrides
 
 __all__ = [
     'clearDefaults',
@@ -45,6 +46,9 @@ def fetchDefaults(field, data, useDatabase=True, preCache=False):
             saveDefaults(field, data, defs)
         else:
            defs = {}
+
+    for f, val in overrides.get(field, value):
+        defs[f] = val
 
     return defs
 
