@@ -116,11 +116,16 @@ def test_no_overrides(mock_overrides_path: Path, mock_field: TiqitField) -> None
 @dataclass
 class InvalidOverridesTestcase:
     name: str
-    input_dict: dict[str, Any]
+    input_dict: Any
     expected_output: overrides._OverridesDict
 
 
 INVALID_OVERRIDES_TESTCASES = [
+    InvalidOverridesTestcase(
+        "top_level_invalid",
+        ["NOT A DICT"],
+        {},
+    ),
     InvalidOverridesTestcase(
         "invalid_proj",
         {
