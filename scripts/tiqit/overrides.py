@@ -24,29 +24,112 @@
 Provides utilities for interacting with the overrides to the tiqit DB defaults.
 """
 
+import logging
 import tiqit
 import yaml
 from fields import TiqitField
 from pathlib import Path
-from typing import Iterator
+from typing import Union
 
-def get(field: TiqitField, value: str) -> dict[str, str]:
-    parts = value.split("&")
-    proj = parts[0]
-    prod = parts[1]
-    comp = parts[2]
+_logger = logging.getLogger()
 
+CompOverridesDict = dict[str, Union[str, list[str]]]
+
+_OverridesDict = dict[
+    # Project
+    str,
+    dict[
+        # Product
+        str,
+        dict[
+            # Component
+            str,
+            CompOverridesDict,
+        ],
+    ],
+]
+
+
+def _load_overrides(field: TiqitField) -> _OverridesDict:
     overrides_file = Path(tiqit.OVERRIDES_PATH) / (field.name + ".yaml")
     if not overrides_file.exists():
         return {}
 
     overrides = yaml.full_load(overrides_file.read_text())
+    if not isinstance(overrides, dict):
+        _logger.warning("Overrides YAML file loaded is not a dict. Ignoring.")
+        overrides = {}
+    for proj, proj_value in overrides.items():
+        # Verify the value is a valid dict of product overrides
+        if not isinstance(proj_value, dict):
+            _logger.warning("Overrides entry for %s is not a dict. Ignoring.", proj)
+            overrides[proj] = {}
+            continue
+
+        for prod, prod_value in proj_value.items():
+            # Verify the value is a valid dict of component overrides
+            if not isinstance(prod_value, dict):
+                _logger.warning(
+                    "Overrides entry for %s -> %s is not a dict. Ignoring.", proj, prod
+                )
+                overrides[proj][prod] = {}
+                continue
+
+            for comp, comp_value in prod_value.items():
+                # Verify the value is a valid dict of overrides
+                if not isinstance(comp_value, dict):
+                    _logger.warning(
+                        "Overrides entry for %s -> %s -> %s is not a dict. Ignoring.",
+                        proj,
+                        prod,
+                        comp,
+                    )
+                    overrides[proj][prod][comp] = {}
+                    continue
+
+                # Verify each of the override entries is of valid type
+                for field, f_value in comp_value.copy().items():
+                    if field == "keywords":
+                        if not isinstance(f_value, list) or not all(
+                            isinstance(s, str) for s in f_value
+                        ):
+                            _logger.warning(
+                                "Overrides entry for %s -> %s -> %s -> keywords is not a valid list of strings. Ignoring.",
+                                proj,
+                                prod,
+                                comp,
+                            )
+                            del overrides[proj][prod][comp]["keywords"]
+                            continue
+                    else:
+                        if not isinstance(f_value, str):
+                            _logger.warning(
+                                "Overrides entry for %s -> %s -> %s -> %s is not a valid string. Ignoring.",
+                                proj,
+                                prod,
+                                comp,
+                                field,
+                            )
+                            del overrides[proj][prod][comp][field]
+                            continue
+
+    return overrides
+
+
+def get(field: TiqitField, value: str) -> dict[str, Union[str, list[str]]]:
+    overrides = _load_overrides(field)
+
+    parts = value.split("&")
+    proj = parts[0]
+    prod = parts[1]
+    comp = parts[2]
+
     ret = {}
     wildcard_combos = [
         ("*", "*", comp),
         ("*", prod, comp),
         (proj, "*", comp),
-        (proj, prod, comp)
+        (proj, prod, comp),
     ]
     for prj, prd, cmpn in wildcard_combos:
         ret.update(overrides.get(prj, {}).get(prd, {}).get(cmpn, {}))

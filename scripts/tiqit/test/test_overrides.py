@@ -26,10 +26,11 @@ import pytest
 import tiqit
 import tempfile
 import yaml
+from dataclasses import dataclass
 from pathlib import Path
 from tiqit import overrides
 from fields import TiqitField
-from typing import Iterator
+from typing import Any, Iterator
 from unittest import mock
 
 _STUB_OVERRIDES = {
@@ -104,9 +105,119 @@ def test_get_overrides(
     assert actual.get("Manager") == expected_manager
 
 
-def test_no_overrides(mock_overrides_path: Path, mock_field):
+def test_no_overrides(mock_overrides_path: Path, mock_field: TiqitField) -> None:
     """Test the handling when the overrides file is not found."""
     actual = overrides.get(
         mock_field, "tiqit_test_proj&tiqit_test_prod&test_comp_no_wildcard"
     )
     assert actual == {}
+
+
+@dataclass
+class InvalidOverridesTestcase:
+    name: str
+    input_dict: dict[str, Any]
+    expected_output: overrides._OverridesDict
+
+
+INVALID_OVERRIDES_TESTCASES = [
+    InvalidOverridesTestcase(
+        "invalid_proj",
+        {
+            "invalid_proj": "not a dict",
+            "valid_proj": {"prod": {"comp": {"manager": "bert"}}},
+        },
+        {
+            "invalid_proj": {},
+            "valid_proj": {"prod": {"comp": {"manager": "bert"}}},
+        },
+    ),
+    InvalidOverridesTestcase(
+        "invalid_prod",
+        {
+            "proj": {
+                "invalid_prod": "not a dict",
+                "valid_prod": {"comp": {"manager": "bert"}},
+            }
+        },
+        {
+            "proj": {
+                "invalid_prod": {},
+                "valid_prod": {"comp": {"manager": "bert"}},
+            }
+        },
+    ),
+    InvalidOverridesTestcase(
+        "invalid_comp",
+        {
+            "proj": {
+                "prod": {
+                    "invalid_comp": "not a dict",
+                    "valid_comp": {"manager": "bert"},
+                },
+            }
+        },
+        {
+            "proj": {
+                "prod": {
+                    "invalid_comp": {},
+                    "valid_comp": {"manager": "bert"},
+                }
+            }
+        },
+    ),
+    InvalidOverridesTestcase(
+        "invalid_overrides",
+        {
+            "proj": {
+                "prod": {
+                    "compA": {
+                        "somefield": "somevalue",
+                        "keywords": "INVALID - not a list",
+                    },
+                    "compB": {
+                        "somefield": "somevalue",
+                        "keywords": ["VALID", "LIST"],
+                    },
+                    "compC": {
+                        "somefield": "somevalue",
+                        "keywords": ["INVALID", 2, 3, 4, "LIST"],
+                    },
+                    "compD": {
+                        "somefield": "somevalue",
+                        "badfield": 1234,
+                    },
+                }
+            }
+        },
+        {
+            "proj": {
+                "prod": {
+                    "compA": {"somefield": "somevalue"},
+                    "compB": {
+                        "somefield": "somevalue",
+                        "keywords": ["VALID", "LIST"],
+                    },
+                    "compC": {"somefield": "somevalue"},
+                    "compD": {"somefield": "somevalue"},
+                }
+            }
+        },
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "testcase",
+    INVALID_OVERRIDES_TESTCASES,
+    ids=[x.name for x in INVALID_OVERRIDES_TESTCASES],
+)
+def test_invalid_overrides(
+    testcase: InvalidOverridesTestcase,
+    mock_overrides_path: Path,
+    mock_field: TiqitField,
+) -> None:
+    tmppath = mock_overrides_path / (mock_field.name + ".yaml")
+    tmppath.write_text(yaml.safe_dump(testcase.input_dict))
+    actual = overrides._load_overrides(mock_field)
+    assert actual == testcase.expected_output
