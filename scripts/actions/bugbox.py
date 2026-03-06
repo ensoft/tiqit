@@ -85,5 +85,5 @@ else:
     bugbox += '&' + "&".join(["=".join((x, getattr(prefs, x))) for x in prefs.ofType('sort')])
     bugbox += "&buglist=%s" % ",".join(bugids)
 
-    sendMessage(MSG_INFO, "%d bug ids extracted from the BugBox" % len(bugids))
+    sendMessage(MSG_INFO, "%d bug ids extracted" % len(bugids))
     redirect("results?%s" % bugbox)
