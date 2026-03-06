@@ -1,3 +1,11 @@
+tiqit (1.1.4-1) trusty; urgency=low
+
+  * Make bugbox log milder so functionality can be used elsewhere without definitively attributing to the bugbox.
+  * Update the search fields modification flow to appropriate display field/functionality.
+
+ -- Jonathan Loh <joloh@cisco.com>  Mon, 15 Jul 2024 18:17:00 +0000
+
+
 tiqit (1.1.3-1) trusty; urgency=low
 
   * Add project information sent to the backend when modifying bugs.
