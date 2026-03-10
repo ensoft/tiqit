@@ -45,7 +45,7 @@ times = [("start", time.time())]
 
 MAJ_VER   = 1
 MIN_VER   = 1
-PATCH_VER = 3
+PATCH_VER = 4
 DEV_VER   = 1
 
 VERSION = (MAJ_VER, MIN_VER, PATCH_VER)
@@ -213,6 +213,7 @@ class Config:
             'infourl': 'https://github.com/ensoft/tiqit',
             'administrators': '',
             'datapath': '/var/lib/tiqit/data/',
+            'overridespath': '/var/lib/tiqit/overrides/',
             'pluginpath': '/usr/share/tiqit/scripts/plugins/',
             'staticpath': '/usr/share/tiqit/static/',
             'overlays': '',
@@ -315,6 +316,9 @@ gen_cfg = Config().section('general')
 DATA_PATH = gen_cfg.get('datapath')
 if not DATA_PATH.endswith('/'):
     DATA_PATH = DATA_PATH + '/'
+OVERRIDES_PATH = gen_cfg.get('overridespath')
+if not OVERRIDES_PATH.endswith('/'):
+    OVERRIDES_PATH = OVERRIDES_PATH + '/'
 PROFILE_PATH = DATA_PATH + 'profiles/'
 NEWS_PATH    = DATA_PATH + 'news/'
 CFG_DIRS = ["../",
