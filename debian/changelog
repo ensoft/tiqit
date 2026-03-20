@@ -1,5 +1,7 @@
 tiqit (1.1.4-1) trusty; urgency=low
 
+  * Make bugbox log milder so functionality can be used elsewhere without definitively attributing to the bugbox.
+  * Update the search fields modification flow to appropriate display field/functionality.
   * Allow plugins to provide default field overrides.
 
  -- Olli Johnson <ollijohnson93@gmail.com>  Tue, 10 Mar 2026 16:30:00 +0000

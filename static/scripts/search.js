@@ -738,6 +738,7 @@ function setRowValues(num, field, rel, val, op) {
 
   if (rel) {
     document.getElementById('rel' + num).value = rel;
+    updateVals(theF, num);
   }
   if (val) {
     document.getElementById('val' + num).input.value = val;
