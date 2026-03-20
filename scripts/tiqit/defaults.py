@@ -46,6 +46,11 @@ def fetchDefaults(field, data, useDatabase=True, preCache=False):
         else:
            defs = {}
 
+    overrides = plugins.getOverrides(field, data)
+    if overrides and isinstance(overrides, dict):
+        for f, val in overrides.items():
+            defs[f] = val
+
     return defs
 
 

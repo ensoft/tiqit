@@ -33,6 +33,7 @@ pluginpath = .
 
 ## Directories in which data and static files are found
 datapath = ../data
+overridespath = ../overrides
 staticpath = ../static
 
 ## Overlay information
